@@ -60,9 +60,7 @@ export const useAuthStore = create(
             password,
             role,
           });
-          const { token, user } = res.data;
-          get().setToken(token);
-          get().setUser(user);
+          
           return true;
         } catch (error) {
           console.error(
