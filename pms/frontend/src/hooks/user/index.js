@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiInstance } from "../../service";
 import toast from "react-hot-toast";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
 export const useUsers = () => {
   return useQuery({
