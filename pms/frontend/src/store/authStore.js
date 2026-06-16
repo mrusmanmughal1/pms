@@ -77,6 +77,8 @@ export const useAuthStore = create(
         delete axios.defaults.headers.common["Authorization"];
         // Persisted storage will be cleared on next reload by persist middleware
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        
       },
     }),
     {
