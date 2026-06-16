@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 /* use poppins font */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 :root {
   --bg-color: #f4f7fb;
@@ -36,7 +35,7 @@
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+font-family: "Open Sans", sans-serif;
   background-color: var(--bg-color);
   color: var(--text-primary);
   min-height: 100vh;
@@ -217,6 +216,22 @@ p {
   color: #dc2626;
 }
 
+.priority-low {
+  color: #10b981;
+  background: #d1fae5;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.priority-medium {
+  color: #d97706;
+  background: #fef3c7;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
 .priority-high {
   color: #ea580c;
   background: #ffedd5;
@@ -334,4 +349,43 @@ p {
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Project Details Specific */
+.project-details-title h2 {
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+}
+.project-aside .progress-fill {
+  height: 12px;
+  border-radius: 8px;
+}
+.project-aside .progress-bg {
+  height: 12px;
+}
+.form-label {
+  font-size: 0.875rem;
+}
+.pill-planning,
+.pill-inprogress,
+.pill-completed,
+.pill-testing,
+.pill-onhold {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    position: relative;
+  }
+  .main-content {
+    padding: 1rem;
+  }
 }

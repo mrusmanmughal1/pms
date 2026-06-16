@@ -60,29 +60,50 @@ export const useCreateProject = () => {
 // Update an existing project
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
-  return useMutation(
-    ({ id, updates }) =>
+  return useMutation({
+    mutationFn: async ({ id, updates }) => {
       apiInstance
         .put(`${API_BASE}/projects/${id}`, updates)
-        .then((res) => res.data),
-    {
-      onSuccess: () => queryClient.invalidateQueries(["projects", "stats"]),
+        .then((res) => res.data);
     },
-  );
+
+    onSuccess: () => {
+      queryClient.invalidateQueries(["projects", "stats"]),
+        toast.success("Project updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message || "Failed to update project");
+    },
+
+  });
 };
 
 // Delete a project
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
-  return useMutation(
-    (id) =>
-      apiInstance.delete(`${API_BASE}/projects/${id}`).then((res) => res.data),
-    {
-      onSuccess: () => queryClient.invalidateQueries(["projects"]),
+  return useMutation({
+    mutationFn: async (id) => {
+      apiInstance.delete(`${API_BASE}/projects/${id}`).then((res) => res.data);
     },
-  );
-};
+    onSuccess: () => {
+      queryClient.invalidateQueries(["projects"]);
+      toast.success("Project deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message || "Failed to delete project");
+    }
 
+  });
+};
+// get single project by id
+export const useProjectById = (id) => {
+  return useQuery({
+    queryKey: ["project", id],
+    queryFn: () =>
+      apiInstance.get(`${API_BASE}/projects/${id}`).then((res) => res.data),
+    enabled: !!id, // Only run the query if id is truthy
+  });
+}
 export const useCategories = () => {
   return useQuery({
     queryKey: ["categories"],

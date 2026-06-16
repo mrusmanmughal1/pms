@@ -5,7 +5,7 @@ import ProjectForm from "../components/ProjectForm";
 import { formatDate } from "../utils/date";
 import { Calendar, FolderOpen } from "lucide-react";
 import ProjectCard from "../components/ProjectCard";
-import { getCatBadge } from "../utils/helpers";
+import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 
 const AllProjects = () => {
   const { user } = useAuthStore();
@@ -24,23 +24,9 @@ const AllProjects = () => {
     return matchCat && matchStatus && matchPriority;
   });
 
-  const getCategoryColor = (cat) => {
-    switch (cat) {
-      case "RMS":
-        return "var(--cat-rms)";
-      case "Smart meter":
-        return "var(--cat-smartmeter)";
-      case "Smart Lock":
-        return "var(--cat-smartlock)";
-      default:
-        return "var(--primary-color)";
-    }
-  };
+  
 
-  const getPriorityBadge = (prio) => {
-    if (prio === "Critical") return "priority-critical";
-    return "priority-high";
-  };
+ 
 
   if (isLoading) {
     return (

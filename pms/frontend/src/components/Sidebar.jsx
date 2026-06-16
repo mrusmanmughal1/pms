@@ -11,8 +11,10 @@ import {
   UserCog,
 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
+import { useCategories } from "../hooks/project";
 //working
 export default function Sidebar() {
+   const { data: categories = [], isLoading } = useCategories();
   const {
     user,
 
@@ -58,27 +60,26 @@ export default function Sidebar() {
         </NavLink>
 
         <div className="sidebar-heading">Categories</div>
-        <NavLink
-          to="/category/RMS"
-          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-        >
-          <Radio size={20} />
-          <span>RMS</span>
-        </NavLink>
-        <NavLink
-          to="/category/Smart meter"
-          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-        >
-          <Gauge size={20} />
-          <span>Smart Meter</span>
-        </NavLink>
-        <NavLink
-          to="/category/Smart Lock"
-          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-        >
-          <Lock size={20} />
-          <span>Smart Lock</span>
-        </NavLink>
+        {isLoading ? (
+          <div style={{ padding: "0.5rem 1.5rem", color: "#94a3b8", fontSize: "0.875rem" }}>
+            Loading...
+          </div>
+        ) : categories.length > 0 ? (
+          categories.map((category) => (
+            <NavLink
+              key={category._id}
+              to={`/category/${category.name}`}
+              className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+            >
+              <Radio size={20} />
+              <span>{category.name}</span>
+            </NavLink>
+          ))
+        ) : (
+          <div style={{ padding: "0.5rem 1.5rem", color: "#94a3b8", fontSize: "0.875rem" }}>
+            No categories
+          </div>
+        )}
 
         <div className="sidebar-heading">Management</div>
         <NavLink

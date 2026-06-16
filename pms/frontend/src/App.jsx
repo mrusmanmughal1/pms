@@ -15,6 +15,7 @@ import Categories from "./pages/Categories";
 import Sidebar from "./components/Sidebar";
 import AllProjects from "./pages/AllProjects";
 import Users from "./pages/Users";
+import ProjectDetails from "./pages/ProjectDetails";
 
 function Header() {
   const location = useLocation();
@@ -58,6 +59,7 @@ function MainLayout() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/category/:categoryName" element={<ProjectList />} />
+              <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/projects" element={<AllProjects />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/users" element={<Users />} />

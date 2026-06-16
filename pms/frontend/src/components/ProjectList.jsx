@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import ProjectForm from "./ProjectForm";
 import { useAuthStore } from "../store/authStore";
 import { useProjectsByCategory } from "../hooks/project";
+import { getCategoryColor } from "../utils/helpers";
+import ProjectCard from "./ProjectCard";
 
 const ProjectList = () => {
   const { user } = useAuthStore();
@@ -14,18 +16,7 @@ const ProjectList = () => {
     error,
   } = useProjectsByCategory(categoryName);
 
-  const getCategoryColor = (cat) => {
-    switch (cat) {
-      case "RMS":
-        return "var(--cat-rms)";
-      case "Smart meter":
-        return "var(--cat-smartmeter)";
-      case "Smart Lock":
-        return "var(--cat-smartlock)";
-      default:
-        return "var(--primary-color)";
-    }
-  };
+
 
   return (
     <div>
@@ -72,54 +63,7 @@ const ProjectList = () => {
           }}
         >
           {projects.map((project) => (
-            <div key={project._id} className="glass-panel">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "1rem",
-                }}
-              >
-                <h3 style={{ margin: 0 }}>{project.title}</h3>
-                <span
-                  className={`badge`}
-                  style={{
-                    backgroundColor: "rgba(255,255,255,0.1)",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    color:
-                      project.status === "Completed"
-                        ? "#10b981"
-                        : "var(--text-primary)",
-                  }}
-                >
-                  {project.status}
-                </span>
-              </div>
-              <p style={{ fontSize: "0.9rem", marginBottom: "1.5rem" }}>
-                {project.description}
-              </p>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <small style={{ color: "var(--text-secondary)" }}>
-                  {new Date(project.createdAt).toLocaleDateString()}
-                </small>
-                {user?.role === "Admin" && (
-                  <button
-                    className="btn btn-danger"
-                    style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
-                    onClick={() => handleDelete(project._id)}
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-            </div>
+            <ProjectCard key={project._id}  proj={project}     />
           ))}
         </div>
       )}

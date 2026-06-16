@@ -1,11 +1,13 @@
+import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
+import { formatDate } from "../utils/date";
+import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 
 export default function ProjectCard({
   proj,
   i,
-  getCatBadge,
-  getPriorityBadge,
-  formatDate,
+ 
+ 
 }) {
   return (
     <div
@@ -29,7 +31,9 @@ export default function ProjectCard({
             textTransform: "uppercase",
           }}
         >
-          {proj.title}
+          <Link to={`/projects/${proj._id}`} style={{ color: "inherit", textDecoration: "none" }}>
+            {proj.title}
+          </Link>
         </h3>
         <span className={`badge ${getCatBadge(proj.category)}`}>
           {proj.category}
