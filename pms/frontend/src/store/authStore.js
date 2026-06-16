@@ -71,14 +71,14 @@ export const useAuthStore = create(
         }
       },
 
-      // Logout clears user and token
+      // Logout clears user and tokenss
       logout: () => {
         set({ user: null, token: null });
         delete axios.defaults.headers.common["Authorization"];
         // Persisted storage will be cleared on next reload by persist middleware
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        
+
       },
     }),
     {
