@@ -10,7 +10,7 @@ import { useAuthStore } from "../store/authStore";
 import { getCatBadge } from "../utils/helpers";
 import { Calendar } from "lucide-react";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5003/api";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
 export default function ProjectDetails() {
     const { id } = useParams();

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
+import { apiInstance } from "../service";
 
 /**
  * Zustand store for authentication.
@@ -19,8 +20,10 @@ export const useAuthStore = create(
         set({ token });
         if (token) {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          apiInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         } else {
           delete axios.defaults.headers.common["Authorization"];
+          delete apiInstance.defaults.headers.common["Authorization"];
         }
       },
       // Loading state helper
@@ -29,15 +32,16 @@ export const useAuthStore = create(
       // Login action
       login: async (email, password) => {
         try {
-          const apiBase = import.meta.env.VITE_API_BASE;
+          const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
           const res = await axios.post(`${apiBase}/auth/login`, {
             email,
             password,
           });
           const { token, user } = res.data;
           // Update store
-          get().setToken(token);
           localStorage.setItem("token", token);
+
+          get().setToken(token);
           localStorage.setItem("user", JSON.stringify(user));
           get().setUser(user);
           return true;
@@ -53,14 +57,14 @@ export const useAuthStore = create(
       // Register action
       register: async (name, email, password, role = "User") => {
         try {
-          const apiBase = import.meta.env.VITE_API_BASE;
+          const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
           const res = await axios.post(`${apiBase}/auth/register`, {
             name,
             email,
             password,
             role,
           });
-          
+
           return true;
         } catch (error) {
           console.error(
