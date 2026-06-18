@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Save } from "lucide-react";
+import { SaudiRiyal, Save } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import {
   useCreateProject,
@@ -200,7 +200,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     </option>
                     {categories.map((cat) => (
                       <option key={cat._id} value={cat.name}>
-                        {cat.name} — ₡{cat.budget?.toLocaleString() ?? 0}
+                        {cat.name} —  &#x20C1; {cat.budget?.toLocaleString() ?? 0}
                       </option>
                     ))}
                   </select>

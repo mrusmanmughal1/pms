@@ -14,7 +14,7 @@ export default function Categories() {
   const { mutate: createCategory, isLoading: isCreating } = useCreateCategory();
   const { mutate: deleteCategory, isLoading: isDeleting } = useDeleteCategory();
   const [newCat, setNewCat] = useState("");
-  const [newCatBudget, setNewCatBudget] = useState(0);
+  const [newCatBudget, setNewCatBudget] = useState("");
   const [catToDelete, setCatToDelete] = useState(null);
 
   const handleAdd = (e) => {
