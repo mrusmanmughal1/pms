@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   DollarSign,
   ArrowRight,
+  SaudiRiyal,
 } from "lucide-react";
 
 import { toast } from "react-hot-toast";
@@ -98,8 +99,8 @@ const Dashboard = () => {
     },
     {
       title: "Total Budget",
-      value: `$${totalBudget.toLocaleString()}`,
-      icon: <DollarSign size={20} color="#8b5cf6" />,
+      value: `  ${totalBudget.toLocaleString()}`,
+      icon: <SaudiRiyal size={20} color="#8b5cf6" />,
       bg: "#ede9fe",
     },
   ];

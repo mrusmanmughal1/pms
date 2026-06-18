@@ -14,15 +14,19 @@ export default function Categories() {
   const { mutate: createCategory, isLoading: isCreating } = useCreateCategory();
   const { mutate: deleteCategory, isLoading: isDeleting } = useDeleteCategory();
   const [newCat, setNewCat] = useState("");
+  const [newCatBudget, setNewCatBudget] = useState(0);
   const [catToDelete, setCatToDelete] = useState(null);
 
   const handleAdd = (e) => {
     e.preventDefault();
     if (!newCat.trim()) return;
     createCategory(
-      { name: newCat.trim() },
+      { name: newCat.trim(), budget: Number(newCatBudget) || 0 },
       {
-        onSuccess: () => setNewCat(""),
+        onSuccess: () => {
+          setNewCat("");
+          setNewCatBudget(0);
+        },
       },
     );
   };
@@ -47,7 +51,7 @@ export default function Categories() {
       <div style={{ maxWidth: "600px" }}>
         <form
           onSubmit={handleAdd}
-          style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}
+          style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "1rem", marginBottom: "2rem" }}
         >
           <input
             type="text"
@@ -55,7 +59,25 @@ export default function Categories() {
             value={newCat}
             onChange={(e) => setNewCat(e.target.value)}
             style={{
-              flex: 1,
+              padding: "0.6rem 1rem",
+              border: "1px solid #e2e8f0",
+              borderRadius: "0.5rem",
+              background: "#fff",
+            }}
+            disabled={isCreating}
+          />
+          <input
+            type="text"
+            placeholder="Budget"
+            value={newCatBudget}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Allow only numeric values (0-9 and decimal point)
+              if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                setNewCatBudget(value);
+              }
+            }}
+            style={{
               padding: "0.6rem 1rem",
               border: "1px solid #e2e8f0",
               borderRadius: "0.5rem",
@@ -102,43 +124,123 @@ export default function Categories() {
               No categories found
             </div>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {categories.map((cat, i) => (
-                <li
-                  key={cat._id}
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+              }}
+            >
+              <thead>
+                <tr
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "1rem 1.5rem",
-                    borderBottom:
-                      i < categories.length - 1 ? "1px solid #f1f5f9" : "none",
+                    background: "#f8fafc",
+                    borderBottom: "2px solid #e2e8f0",
+                    fontSize: "0.775rem",
                   }}
                 >
-                  <span style={{ fontWeight: "500", color: "#334155" }}>
-                    {cat.name}
-                  </span>
-                  <button
-                    onClick={() => setCatToDelete(cat)}
-                    disabled={isDeleting}
+                  <th
                     style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "#ef4444",
-                      cursor: "pointer",
-                      padding: "0.4rem",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "0.3rem",
+                      padding: "1rem 1.5rem",
+                      textAlign: "left",
+                      fontWeight: "600",
+                      color: "#475569",
                     }}
-                    title="Delete Category"
                   >
-                    <Trash2 size={18} />
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    Category Name
+                  </th>
+                  <th
+                    style={{
+                      padding: "1rem 1.5rem",
+                      textAlign: "right",
+                      fontWeight: "600",
+                      color: "#475569",
+                    }}
+                  >
+                    Budget
+                  </th>
+                  <th
+                    style={{
+                      padding: "1rem 1.5rem",
+                      textAlign: "center",
+                      fontWeight: "600",
+                      color: "#475569",
+                    }}
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories.map((cat, i) => (
+                  <tr
+                    key={cat._id}
+                    style={{
+                      fontSize: "0.875rem",
+
+                      borderBottom:
+                        i < categories.length - 1 ? "1px solid #f1f5f9" : "none",
+                      "&:hover": { background: "#f8fafc" },
+                    }}
+                  >
+                    <td
+                      style={{
+                        padding: "1rem 1.5rem",
+                        color: "#334155",
+                        fontWeight: "500",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {cat.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: "1rem 1.5rem",
+                        textAlign: "right",
+                        color: "#475569",
+                        fontWeight: "600",
+                      }}
+                    >
+                      ${(cat.budget ?? 0).toLocaleString()}
+                    </td>
+                    <td
+                      style={{
+                        padding: "1rem 1.5rem",
+                        textAlign: "center",
+                      }}
+                    >
+                      <button
+                        onClick={() => setCatToDelete(cat)}
+                        disabled={isDeleting}
+                        style={{
+                          background: "#fee2e2",
+                          border: "1px solid #fca5a5",
+                          color: "#dc2626",
+                          padding: "0.5rem 0.75rem",
+                          borderRadius: "0.375rem",
+                          cursor: "pointer",
+                          fontSize: "0.875rem",
+                          fontWeight: "500",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          transition: "all 0.2s",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.background = "#fecaca";
+                          e.target.style.borderColor = "#f87171";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.background = "#fee2e2";
+                          e.target.style.borderColor = "#fca5a5";
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>

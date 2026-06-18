@@ -6,7 +6,7 @@ const { protect, authorize } = require("../middleware/auth");
 // Get all users (accessible by Admin and Manager)
 router.get("/", protect, authorize("Admin", "Manager"), async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find({ role: { $ne: "Admin" } }).select("-password");
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });

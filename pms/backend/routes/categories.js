@@ -20,13 +20,14 @@ router.post(
   authorize('Admin'),
   async (req, res) => {
     try {
-      const { name } = req.body;
+      const { name, budget = 0 } = req.body;
       if (!name) return res.status(400).json({ message: 'Category name is required' });
-      
+      if (budget < 0) return res.status(400).json({ message: 'Budget must be at least 0' });
+
       const existing = await Category.findOne({ name });
       if (existing) return res.status(400).json({ message: 'Category already exists' });
 
-      const category = await Category.create({ name });
+      const category = await Category.create({ name, budget });
       res.status(201).json(category);
     } catch (err) {
       res.status(500).json({ message: err.message });

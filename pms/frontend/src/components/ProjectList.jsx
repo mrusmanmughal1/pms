@@ -28,12 +28,13 @@ const ProjectList = () => {
           marginBottom: "2rem",
         }}
       >
-        <h1>
-          <span style={{ color: getCategoryColor(categoryName) }}>
+        <p>
+          Showing &nbsp;
+          <span style={{ color: getCategoryColor(categoryName), fontSize: "1.25rem", fontWeight: "600", textTransform: "capitalize" }}>
             {categoryName}
           </span>{" "}
           Projects
-        </h1>
+        </p>
 
         {(user?.role === "Admin" || user?.role === "Manager") && (
           <button
@@ -63,7 +64,7 @@ const ProjectList = () => {
           }}
         >
           {projects.map((project) => (
-            <ProjectCard key={project._id}  proj={project}     />
+            <ProjectCard key={project._id} proj={project} />
           ))}
         </div>
       )}

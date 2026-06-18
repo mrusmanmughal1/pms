@@ -56,6 +56,11 @@ const ProjectSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    categoryBudget: {
+      type: Number,
+      default: 0,
+      min: [0, 'Category budget must be at least 0'],
+    },
   },
   {
     timestamps: true,

@@ -7,6 +7,11 @@ const CategorySchema = new mongoose.Schema({
     unique: true,
     trim: true,
   },
+  budget: {
+    type: Number,
+    default: 0,
+    min: [0, 'Budget must be at least 0'],
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Category', CategorySchema);

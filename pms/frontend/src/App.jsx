@@ -40,8 +40,8 @@ function Header() {
       }}
     >
       <div>
-        <h1 style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>{title}</h1>
-        <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+        <h1 style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>{title}</h1>
+        <p style={{ fontSize: "0.775rem", color: "var(--text-secondary)" }}>
           {title} overview and details.
         </p>
       </div>
@@ -59,7 +59,7 @@ function MainLayout() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/category/:categoryName" element={<ProjectList />} />
-              <Route path="/projects/:id" element={<ProjectDetails />} />
+          <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/projects" element={<AllProjects />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/users" element={<Users />} />

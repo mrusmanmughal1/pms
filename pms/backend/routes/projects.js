@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Project = require("../models/Project");
+const Category = require("../models/Category");
 const { protect, authorize } = require("../middleware/auth");
 
 // Get all projects
@@ -83,8 +84,21 @@ router.get("/:id", protect, async (req, res) => {
 
 // Create a new project (Admin, Manager only)
 router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
-  const project = new Project(req.body);
   try {
+    const { category, budget = 0, spent = 0 } = req.body;
+    if (category) {
+      const cat = await Category.findOne({ name: category });
+      if (!cat) return res.status(400).json({ message: "Selected category does not exist" });
+      if (budget > cat.budget) {
+        return res.status(400).json({ message: "Project budget cannot exceed category budget" });
+      }
+      if (spent > cat.budget) {
+        return res.status(400).json({ message: "Project spent cannot exceed category budget" });
+      }
+      req.body.categoryBudget = cat.budget;
+    }
+
+    const project = new Project(req.body);
     const newProject = await project.save();
     res.status(201).json(newProject);
   } catch (error) {
@@ -95,6 +109,19 @@ router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
 // Update a project (Admin, Manager only)
 router.put("/:id", protect, authorize("Admin", "Manager"), async (req, res) => {
   try {
+    const { category, budget = 0, spent = 0 } = req.body;
+    if (category) {
+      const cat = await Category.findOne({ name: category });
+      if (!cat) return res.status(400).json({ message: "Selected category does not exist" });
+      if (budget > cat.budget) {
+        return res.status(400).json({ message: "Project budget cannot exceed category budget" });
+      }
+      if (spent > cat.budget) {
+        return res.status(400).json({ message: "Project spent cannot exceed category budget" });
+      }
+      req.body.categoryBudget = cat.budget;
+    }
+
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,

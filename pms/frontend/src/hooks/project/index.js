@@ -6,15 +6,17 @@ import toast from "react-hot-toast";
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
 // get project by category
-export const useProjectsByCategory = (categoryName) => {
+export const useProjectsByCategory = (categoryName, options = {}) => {
   return useQuery({
     queryKey: ["projects", categoryName],
     queryFn: () =>
       apiInstance
         .get(`${API_BASE}/projects/category/${categoryName}`)
         .then((res) => res.data),
+    enabled: !!categoryName,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000,
+    ...options,
   });
 };
 export const useStats = () => {
