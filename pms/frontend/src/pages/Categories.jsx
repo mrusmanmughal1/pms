@@ -211,6 +211,7 @@ export default function Categories() {
                         fontWeight: "600",
                       }}
                     >
+                      {/* //test  */}
                       {editingCategoryId === cat._id ? (
                         <input
                           type="text"
