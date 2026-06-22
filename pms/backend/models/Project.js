@@ -67,6 +67,24 @@ const ProjectSchema = new mongoose.Schema(
     latitude: {
       type: Number,
     },
+    mapping: {
+      woRequest: {
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      woIssuance: {
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      materialsRequest: {
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      generalRemarks: { type: String, default: "" }
+    }
   },
   {
     timestamps: true,
