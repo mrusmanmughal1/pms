@@ -40,7 +40,9 @@ function Header() {
       }}
     >
       <div>
-        <h1 style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>{title}</h1>
+        <h1 style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>
+          {title}
+        </h1>
         <p style={{ fontSize: "0.775rem", color: "var(--text-secondary)" }}>
           {title} overview and details.
         </p>

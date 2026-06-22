@@ -3,12 +3,7 @@ import { Calendar } from "lucide-react";
 import { formatDate } from "../utils/date";
 import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 
-export default function ProjectCard({
-  proj,
-  i,
- 
- 
-}) {
+export default function ProjectCard({ proj, i }) {
   return (
     <div
       key={i}
@@ -31,7 +26,10 @@ export default function ProjectCard({
             textTransform: "uppercase",
           }}
         >
-          <Link to={`/projects/${proj._id}`} style={{ color: "inherit", textDecoration: "none" }}>
+          <Link
+            to={`/projects/${proj._id}`}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
             {proj.title}
           </Link>
         </h3>
