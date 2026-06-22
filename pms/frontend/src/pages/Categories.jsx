@@ -20,6 +20,7 @@ export default function Categories() {
   const [catToDelete, setCatToDelete] = useState(null);
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const [editingBudget, setEditingBudget] = useState("");
+  const [editingCat, setEditingCat] = useState("");
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -30,6 +31,20 @@ export default function Categories() {
         onSuccess: () => {
           setNewCat("");
           setNewCatBudget(0);
+        },
+      },
+    );
+  };
+
+  const handleUpdate = (id, cat, budget) => {
+    const budgetValue = Number(budget || 0);
+    updateCategory(
+      { id, name: cat, budget: budgetValue },
+      {
+        onSuccess: () => {
+          setEditingCategoryId(null);
+          setEditingBudget("");
+          setEditingCat("");
         },
       },
     );
@@ -201,7 +216,24 @@ export default function Categories() {
                         textTransform: "capitalize",
                       }}
                     >
-                      {cat.name}
+                      {editingCategoryId === cat._id ? (
+                        <input
+                          type="text"
+                          value={editingCat}
+                          onChange={(e) => {
+                            setEditingCat(e.target.value);
+                          }}
+                          style={{
+                            width: "100px",
+                            padding: "0.4rem 0.6rem",
+                            border: "1px solid #cbd5e1",
+                            borderRadius: "0.35rem",
+                            textAlign: "left",
+                          }}
+                        />
+                      ) : (
+                        cat.name
+                      )}
                     </td>
                     <td
                       style={{
@@ -253,16 +285,7 @@ export default function Categories() {
                         >
                           <button
                             onClick={() => {
-                              const budgetValue = Number(editingBudget || 0);
-                              updateCategory(
-                                { id: cat._id, budget: budgetValue },
-                                {
-                                  onSuccess: () => {
-                                    setEditingCategoryId(null);
-                                    setEditingBudget("");
-                                  },
-                                },
-                              );
+                              handleUpdate(cat._id, editingCat, editingBudget);
                             }}
                             disabled={isUpdating}
                             style={{
@@ -309,6 +332,7 @@ export default function Categories() {
                             onClick={() => {
                               setEditingCategoryId(cat._id);
                               setEditingBudget(cat.budget?.toString() ?? "");
+                              setEditingCat(cat.name ?? "");
                             }}
                             disabled={isUpdating}
                             style={{

@@ -150,9 +150,9 @@ export const useDeleteCategory = () => {
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, budget }) =>
+    mutationFn: ({ id, name, budget }) =>
       apiInstance
-        .put(`${API_BASE}/categories/${id}`, { budget })
+        .put(`${API_BASE}/categories/${id}`, { name, budget })
         .then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
