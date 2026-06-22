@@ -42,14 +42,21 @@ router.put(
   authorize('Admin'),
   async (req, res) => {
     try {
-      const { budget } = req.body;
+      const { name, budget } = req.body;
       if (budget == null || Number(budget) < 0) {
         return res.status(400).json({ message: 'Budget must be provided and at least 0' });
       }
 
+
+
       const category = await Category.findById(req.params.id);
       if (!category) return res.status(404).json({ message: 'Category not found' });
 
+      if (name) {
+        const existing = await Category.findOne({ name, _id: { $ne: category._id } });
+        if (existing) return res.status(400).json({ message: 'Another category with this name already exists' });
+        category.name = name;
+      }
       category.budget = Number(budget);
       await category.save();
       res.json(category);
@@ -68,7 +75,7 @@ router.delete(
     try {
       const category = await Category.findById(req.params.id);
       if (!category) return res.status(404).json({ message: 'Category not found' });
-      
+
       await category.deleteOne();
       res.json({ message: 'Category removed' });
     } catch (err) {
