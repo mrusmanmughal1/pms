@@ -98,7 +98,7 @@ const Dashboard = () => {
       bg: "#fee2e2",
     },
     {
-      title: "Total Budget",
+      title: "Total  Allocated Budget",
       value: `  ${totalBudget.toLocaleString()}`,
       icon: <SaudiRiyal size={20} color="#8b5cf6" />,
       bg: "#ede9fe",

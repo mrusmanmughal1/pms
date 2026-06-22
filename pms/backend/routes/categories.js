@@ -35,6 +35,30 @@ router.post(
   }
 );
 
+// Update a category budget - admin only
+router.put(
+  '/:id',
+  protect,
+  authorize('Admin'),
+  async (req, res) => {
+    try {
+      const { budget } = req.body;
+      if (budget == null || Number(budget) < 0) {
+        return res.status(400).json({ message: 'Budget must be provided and at least 0' });
+      }
+
+      const category = await Category.findById(req.params.id);
+      if (!category) return res.status(404).json({ message: 'Category not found' });
+
+      category.budget = Number(budget);
+      await category.save();
+      res.json(category);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
 // Delete a category - admin only
 router.delete(
   '/:id',

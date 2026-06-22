@@ -61,6 +61,12 @@ const ProjectSchema = new mongoose.Schema(
       default: 0,
       min: [0, 'Category budget must be at least 0'],
     },
+    longitude: {
+      type: Number,
+    },
+    latitude: {
+      type: Number,
+    },
   },
   {
     timestamps: true,

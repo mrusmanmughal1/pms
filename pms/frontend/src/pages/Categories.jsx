@@ -5,6 +5,7 @@ import {
   useCategories,
   useCreateCategory,
   useDeleteCategory,
+  useUpdateCategory,
 } from "../hooks/project";
 import ConfirmModal from "../components/ConfirmModal";
 
@@ -13,9 +14,12 @@ export default function Categories() {
   const { data: categories = [], isLoading } = useCategories();
   const { mutate: createCategory, isLoading: isCreating } = useCreateCategory();
   const { mutate: deleteCategory, isLoading: isDeleting } = useDeleteCategory();
+  const { mutate: updateCategory, isLoading: isUpdating } = useUpdateCategory();
   const [newCat, setNewCat] = useState("");
   const [newCatBudget, setNewCatBudget] = useState("");
   const [catToDelete, setCatToDelete] = useState(null);
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [editingBudget, setEditingBudget] = useState("");
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -200,7 +204,27 @@ export default function Categories() {
                         fontWeight: "600",
                       }}
                     >
-                      ${(cat.budget ?? 0).toLocaleString()}
+                      {editingCategoryId === cat._id ? (
+                        <input
+                          type="text"
+                          value={editingBudget}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                              setEditingBudget(value);
+                            }
+                          }}
+                          style={{
+                            width: "100px",
+                            padding: "0.4rem 0.6rem",
+                            border: "1px solid #cbd5e1",
+                            borderRadius: "0.35rem",
+                            textAlign: "right",
+                          }}
+                        />
+                      ) : (
+                        `$${(cat.budget ?? 0).toLocaleString()}`
+                      )}
                     </td>
                     <td
                       style={{
@@ -208,34 +232,105 @@ export default function Categories() {
                         textAlign: "center",
                       }}
                     >
-                      <button
-                        onClick={() => setCatToDelete(cat)}
-                        disabled={isDeleting}
-                        style={{
-                          background: "#fee2e2",
-                          border: "1px solid #fca5a5",
-                          color: "#dc2626",
-                          padding: "0.5rem 0.75rem",
-                          borderRadius: "0.375rem",
-                          cursor: "pointer",
-                          fontSize: "0.875rem",
-                          fontWeight: "500",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                          transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.background = "#fecaca";
-                          e.target.style.borderColor = "#f87171";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.background = "#fee2e2";
-                          e.target.style.borderColor = "#fca5a5";
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {editingCategoryId === cat._id ? (
+                        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+                          <button
+                            onClick={() => {
+                              const budgetValue = Number(editingBudget || 0);
+                              updateCategory(
+                                { id: cat._id, budget: budgetValue },
+                                {
+                                  onSuccess: () => {
+                                    setEditingCategoryId(null);
+                                    setEditingBudget("");
+                                  },
+                                },
+                              );
+                            }}
+                            disabled={isUpdating}
+                            style={{
+                              background: "#10b981",
+                              border: "none",
+                              color: "white",
+                              padding: "0.45rem 0.75rem",
+                              borderRadius: "0.35rem",
+                              cursor: "pointer",
+                              fontSize: "0.8rem",
+                              fontWeight: "600",
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingCategoryId(null);
+                              setEditingBudget("");
+                            }}
+                            style={{
+                              background: "#f8fafc",
+                              border: "1px solid #cbd5e1",
+                              color: "#334155",
+                              padding: "0.45rem 0.75rem",
+                              borderRadius: "0.35rem",
+                              cursor: "pointer",
+                              fontSize: "0.8rem",
+                              fontWeight: "600",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+                          <button
+                            onClick={() => {
+                              setEditingCategoryId(cat._id);
+                              setEditingBudget(cat.budget?.toString() ?? "");
+                            }}
+                            disabled={isUpdating}
+                            style={{
+                              background: "#eef2ff",
+                              border: "1px solid #c7d2fe",
+                              color: "#4338ca",
+                              padding: "0.45rem 0.75rem",
+                              borderRadius: "0.35rem",
+                              cursor: "pointer",
+                              fontSize: "0.8rem",
+                              fontWeight: "600",
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => setCatToDelete(cat)}
+                            disabled={isDeleting}
+                            style={{
+                              background: "#fee2e2",
+                              border: "1px solid #fca5a5",
+                              color: "#dc2626",
+                              padding: "0.5rem 0.75rem",
+                              borderRadius: "0.375rem",
+                              cursor: "pointer",
+                              fontSize: "0.875rem",
+                              fontWeight: "500",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                              transition: "all 0.2s",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.background = "#fecaca";
+                              e.target.style.borderColor = "#f87171";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.background = "#fee2e2";
+                              e.target.style.borderColor = "#fca5a5";
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

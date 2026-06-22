@@ -70,13 +70,12 @@ export const useUpdateProject = () => {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries(["projects", "stats"]),
-        toast.success("Project updated successfully");
+      (queryClient.invalidateQueries(["projects", "stats"]),
+        toast.success("Project updated successfully"));
     },
     onError: (error) => {
       toast.error(error.response.data.message || "Failed to update project");
     },
-
   });
 };
 
@@ -93,8 +92,7 @@ export const useDeleteProject = () => {
     },
     onError: (error) => {
       toast.error(error.response.data.message || "Failed to delete project");
-    }
-
+    },
   });
 };
 // get single project by id
@@ -105,7 +103,7 @@ export const useProjectById = (id) => {
       apiInstance.get(`${API_BASE}/projects/${id}`).then((res) => res.data),
     enabled: !!id, // Only run the query if id is truthy
   });
-}
+};
 export const useCategories = () => {
   return useQuery({
     queryKey: ["categories"],
@@ -149,6 +147,41 @@ export const useDeleteCategory = () => {
   });
 };
 
+export const useUpdateCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, budget }) =>
+      apiInstance
+        .put(`${API_BASE}/categories/${id}`, { budget })
+        .then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories"]);
+      toast.success("Category budget updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to update category");
+    },
+  });
+};
+
+export const useUploadProjectsBulk = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ projects }) =>
+      apiInstance
+        .post(`${API_BASE}/projects/bulk`, { projects })
+        .then((res) => res.data),
+    onSuccess: () => {
+      toast.success("Projects uploaded successfully");
+      queryClient.invalidateQueries(["projects"]);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to upload projects");
+    },
+  });
+};
+
 export default {
   useProjectsHook,
   useCreateProject,
@@ -157,4 +190,6 @@ export default {
   useCategories,
   useCreateCategory,
   useDeleteCategory,
+  useUpdateCategory,
+  useUploadProjectsBulk,
 };

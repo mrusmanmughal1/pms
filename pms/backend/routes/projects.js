@@ -82,6 +82,79 @@ router.get("/:id", protect, async (req, res) => {
   }
 });
 
+const ErrorResponse = require("../utils/errorResponse");
+
+// Bulk add projects (Admin, Manager only)
+router.post("/bulk", protect, authorize("Admin", "Manager"), async (req, res, next) => {
+  try {
+    let projects = req.body.projects ?? req.body;
+
+    if (!Array.isArray(projects)) {
+      return next(new ErrorResponse("Projects must be an array", 400));
+    }
+
+    if (projects.length === 0) {
+      return next(new ErrorResponse("At least one project is required", 400));
+    }
+
+    const validatedProjects = [];
+
+    // Validate each project
+    for (let i = 0; i < projects.length; i++) {
+      const projectData = projects[i];
+      const { category, budget = 0, spent = 0 } = projectData;
+
+      if (!projectData.title) {
+        next({
+          status: 400, message: "Project title is required",
+        });
+
+
+      }
+
+      if (category) {
+        const cat = await Category.findOne({ name: category });
+        if (!cat) {
+          next({
+            status: 400, message: "Category does not exist "
+
+          });
+        }
+
+        if (budget > cat.budget) {
+          return next({ status: 400, message: "the Project budget cannot exceed category budget" });
+        }
+
+        if (spent > cat.budget) {
+          return next({ status: 400, message: "the Project spent cannot exceed category budget" });
+        }
+
+        projectData.categoryBudget = cat.budget;
+      }
+      validatedProjects.push(projectData);
+    }
+
+    if (validatedProjects.length === 0) {
+      return res.status(400).json({
+        message: "No valid projects to add",
+
+      });
+    }
+
+    // Create all valid projects
+    const createdProjects = await Project.insertMany(validatedProjects);
+
+    res.status(201).json({
+      message: `${createdProjects.length} project(s) created successfully`,
+
+
+
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 // Create a new project (Admin, Manager only)
 router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
   try {

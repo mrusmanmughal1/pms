@@ -26,6 +26,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
     endDate: "",
     budget: 0,
     spent: 0,
+    longitude: "",
+    latitude: "",
     teamMembers: [],
     tags: "",
   });
@@ -65,6 +67,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
 
     const parsedBudget = Number(formData.budget) || 0;
     const parsedSpent = Number(formData.spent) || 0;
+    const parsedLongitude = formData.longitude === "" ? undefined : Number(formData.longitude);
+    const parsedLatitude = formData.latitude === "" ? undefined : Number(formData.latitude);
 
     if (selectedCategory) {
       const remainingBudget = Math.max(
@@ -88,11 +92,22 @@ const ProjectForm = ({ isOpen, onClose }) => {
       return;
     }
 
+    if (formData.longitude !== "" && (Number.isNaN(parsedLongitude) || parsedLongitude < -180 || parsedLongitude > 180)) {
+      setValidationError("Longitude must be a number between -180 and 180.");
+      return;
+    }
+    if (formData.latitude !== "" && (Number.isNaN(parsedLatitude) || parsedLatitude < -90 || parsedLatitude > 90)) {
+      setValidationError("Latitude must be a number between -90 and 90.");
+      return;
+    }
+
     const parsedData = {
       ...formData,
       budget: parsedBudget,
       spent: parsedSpent,
       categoryBudget,
+      longitude: parsedLongitude,
+      latitude: parsedLatitude,
       tags: formData.tags
         .split(",")
         .map((s) => s.trim())
@@ -114,6 +129,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
           endDate: "",
           budget: 0,
           spent: 0,
+          longitude: "",
+          latitude: "",
           teamMembers: [],
           tags: "",
         });
@@ -342,6 +359,35 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     value={formData.spent}
                     onChange={(e) =>
                       setFormData({ ...formData, spent: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div style={formStyles.gridRow}>
+                <div>
+                  <label style={formStyles.label}>Latitude</label>
+                  <input
+                    type="number"
+                    step="any"
+                    style={formStyles.input}
+                    placeholder="e.g. 24.7136"
+                    value={formData.latitude}
+                    onChange={(e) =>
+                      setFormData({ ...formData, latitude: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label style={formStyles.label}>Longitude</label>
+                  <input
+                    type="number"
+                    step="any"
+                    style={formStyles.input}
+                    placeholder="e.g. 46.6753"
+                    value={formData.longitude}
+                    onChange={(e) =>
+                      setFormData({ ...formData, longitude: e.target.value })
                     }
                   />
                 </div>

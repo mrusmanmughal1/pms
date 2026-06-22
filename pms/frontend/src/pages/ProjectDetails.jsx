@@ -43,6 +43,8 @@ const updateMutation = useUpdateProject();
                 teamLead: project.teamLead || "",
                 startDate: project.startDate ? new Date(project.startDate).toISOString().slice(0, 10) : "",
                 endDate: project.endDate ? new Date(project.endDate).toISOString().slice(0, 10) : "",
+                longitude: project.longitude ?? "",
+                latitude: project.latitude ?? "",
                 tags: (project.tags || []).join(", "),
             });
     }, [project]);
@@ -56,6 +58,8 @@ const updateMutation = useUpdateProject();
                 tags: typeof form.tags === "string" ? form.tags.split(",").map((s) => s.trim()).filter(Boolean) : form.tags,
                 startDate: form.startDate || null,
                 endDate: form.endDate || null,
+                longitude: form.longitude === "" ? undefined : Number(form.longitude),
+                latitude: form.latitude === "" ? undefined : Number(form.latitude),
             };
             await updateMutation.mutateAsync({ id, updates: payload });
             setEditMode(false);
@@ -110,7 +114,7 @@ const updateMutation = useUpdateProject();
                     </div>
 
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                        {user?.role === "Admin" && (
+                        {(user?.role === "Admin" || user?.role === "Manager") && (
                             <>
                                 {editMode ? (
                                     <>
@@ -130,6 +134,8 @@ const updateMutation = useUpdateProject();
                                                 teamLead: project.teamLead || "",
                                                 startDate: project.startDate ? new Date(project.startDate).toISOString().slice(0, 10) : "",
                                                 endDate: project.endDate ? new Date(project.endDate).toISOString().slice(0, 10) : "",
+                                                longitude: project.longitude ?? "",
+                                                latitude: project.latitude ?? "",
                                                 tags: (project.tags || []).join(", "),
                                             });
                                         }}>
@@ -371,8 +377,37 @@ const updateMutation = useUpdateProject();
                             <div style={{ marginTop: "0.75rem" }}>
                                 <strong>Tags: </strong>{(project.tags || []).join(", ") || "—"}
                             </div>
+                            <div style={{ marginTop: "0.75rem" }}>
+                                <strong>Latitude: </strong>{project.latitude ?? "—"}
+                            </div>
+                            <div style={{ marginTop: "0.25rem" }}>
+                                <strong>Longitude: </strong>{project.longitude ?? "—"}
+                            </div>
                         </div>
                     </div>
+                    {project.latitude != null && project.longitude != null && (
+                        <div className="glass-panel" style={{ padding: "1.25rem 1.5rem", marginTop: "1rem" }}>
+                            <h4 style={{ margin: "0 0 0.5rem 0" }}>Location</h4>
+                            <div style={{ width: "100%", height: "260px", borderRadius: "0.75rem", overflow: "hidden", border: "1px solid #e2e8f0" }}>
+                                <iframe
+                                    title="Project location map"
+                                    width="100%"
+                                    height="100%"
+                                    frameBorder="0"
+                                    scrolling="no"
+                                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${project.longitude - 0.02}%2C${project.latitude - 0.01}%2C${project.longitude + 0.02}%2C${project.latitude + 0.01}&layer=mapnik&marker=${project.latitude}%2C${project.longitude}`}
+                                ></iframe>
+                            </div>
+                            <div style={{ marginTop: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                                <a
+                                    href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=15/${project.latitude}/${project.longitude}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    style={{ color: "#2563eb" }}
+                                >View on OpenStreetMap</a>
+                            </div>
+                        </div>
+                    )}
                 </aside>
             </div>
         </div>
