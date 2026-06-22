@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, SaudiRiyal, Trash2 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import {
   useCategories,
@@ -55,7 +55,12 @@ export default function Categories() {
       <div style={{ maxWidth: "600px" }}>
         <form
           onSubmit={handleAdd}
-          style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "1rem", marginBottom: "2rem" }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr 1fr 1fr",
+            gap: "1rem",
+            marginBottom: "2rem",
+          }}
         >
           <input
             type="text"
@@ -182,7 +187,9 @@ export default function Categories() {
                       fontSize: "0.875rem",
 
                       borderBottom:
-                        i < categories.length - 1 ? "1px solid #f1f5f9" : "none",
+                        i < categories.length - 1
+                          ? "1px solid #f1f5f9"
+                          : "none",
                       "&:hover": { background: "#f8fafc" },
                     }}
                   >
@@ -223,7 +230,10 @@ export default function Categories() {
                           }}
                         />
                       ) : (
-                        `$${(cat.budget ?? 0).toLocaleString()}`
+                        <div>
+                          <SaudiRiyal size={16} />{" "}
+                          {(cat.budget ?? 0).toLocaleString()}
+                        </div>
                       )}
                     </td>
                     <td
@@ -233,7 +243,13 @@ export default function Categories() {
                       }}
                     >
                       {editingCategoryId === cat._id ? (
-                        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
                           <button
                             onClick={() => {
                               const budgetValue = Number(editingBudget || 0);
@@ -281,7 +297,13 @@ export default function Categories() {
                           </button>
                         </div>
                       ) : (
-                        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
                           <button
                             onClick={() => {
                               setEditingCategoryId(cat._id);
