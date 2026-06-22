@@ -389,3 +389,14 @@ p {
     padding: 1rem;
   }
 }
+
+/* progress color  */
+.progress-bar-color {
+  background: #44489d;
+  background: linear-gradient(
+    215deg,
+    rgba(68, 72, 157, 1) 5%,
+    rgba(195, 107, 169, 1) 47%,
+    rgba(176, 33, 143, 1) 100%
+  );
+}

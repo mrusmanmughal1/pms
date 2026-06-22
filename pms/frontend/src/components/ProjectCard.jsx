@@ -68,15 +68,15 @@ export default function ProjectCard({ proj, i }) {
         </div>
         <div className="progress-bg">
           <div
-            className="progress-fill"
+            className="progress-fill progress-bar-color"
             style={{
               width: `${proj.progress}%`,
-              background:
-                proj.category === "Smart Meter"
-                  ? "#10b981"
-                  : proj.category === "RMS"
-                    ? "#3b82f6"
-                    : "#8b5cf6",
+              // background:
+              //   proj.category === "Smart Meter"
+              //     ? "#10b981"
+              //     : proj.category === "RMS"
+              //       ? "#3b82f6"
+              //       : "#8b5cf6",
             }}
           ></div>
         </div>

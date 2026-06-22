@@ -30,7 +30,10 @@ export default function Users() {
     e.preventDefault();
     if (editingUser && selectedRole) {
       updateUser(
-        { id: editingUser, updates: { role: selectedRole, status: selectedStatus } },
+        {
+          id: editingUser,
+          updates: { role: selectedRole, status: selectedStatus },
+        },
         {
           onSuccess: () => {
             setEditingUser(null);
@@ -244,19 +247,25 @@ export default function Users() {
                   </td>
                   <td style={{ padding: "1rem" }}>
                     {editingUser === u._id ? (
-                      <span style={{ color: '#94a3b8' }}>Editing...</span>
+                      <span style={{ color: "#94a3b8" }}>Editing...</span>
                     ) : (
                       <span
                         style={{
-                          background: (u.status || 'Active') === "Active" ? "#dcfce7" : "#f1f5f9",
-                          color: (u.status || 'Active') === "Active" ? "#166534" : "#475569",
+                          background:
+                            (u.status || "Active") === "Active"
+                              ? "#dcfce7"
+                              : "#f1f5f9",
+                          color:
+                            (u.status || "Active") === "Active"
+                              ? "#166534"
+                              : "#475569",
                           padding: "0.2rem 0.6rem",
                           borderRadius: "9999px",
                           fontSize: "0.75rem",
                           fontWeight: "600",
                         }}
                       >
-                        {u.status || 'Active'}
+                        {u.status || "Active"}
                       </span>
                     )}
                   </td>
@@ -310,7 +319,7 @@ export default function Users() {
         onClose={() => setUserToDelete(null)}
         onConfirm={() => {
           deleteUser(userToDelete._id, {
-            onSuccess: () => setUserToDelete(null)
+            onSuccess: () => setUserToDelete(null),
           });
         }}
         title="Delete User"
