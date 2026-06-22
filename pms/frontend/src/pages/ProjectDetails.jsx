@@ -20,6 +20,7 @@ import {
 import { useAuthStore } from "../store/authStore";
 import { getCatBadge } from "../utils/helpers";
 import { Calendar, SaudiRiyal } from "lucide-react";
+import { getWoStatusColor } from "../utils/statusColor";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
@@ -602,7 +603,16 @@ export default function ProjectDetails() {
                       className={`pill-${(project.mapping?.woRequest?.status || "pending").toLowerCase()}`}
                       style={{ fontSize: "0.8rem", display: "inline-block" }}
                     >
-                      {project.mapping?.woRequest?.status || "Pending"}
+                      <span
+                        className="badge"
+                        style={{
+                          backgroundColor: getWoStatusColor(
+                            project.mapping?.woRequest?.status,
+                          ),
+                        }}
+                      >
+                        {project.mapping?.woRequest?.status || "Pending"}
+                      </span>{" "}
                     </div>
                   )}
                 </div>
@@ -716,7 +726,16 @@ export default function ProjectDetails() {
                       className={`pill-${(project.mapping?.woIssuance?.status || "pending").toLowerCase()}`}
                       style={{ fontSize: "0.8rem", display: "inline-block" }}
                     >
-                      {project.mapping?.woIssuance?.status || "Pending"}
+                      <span
+                        className="badge"
+                        style={{
+                          backgroundColor: getWoStatusColor(
+                            project.mapping?.woRequest?.status,
+                          ),
+                        }}
+                      >
+                        {project.mapping?.woRequest?.status || "Pending"}
+                      </span>{" "}
                     </div>
                   )}
                 </div>
@@ -832,7 +851,16 @@ export default function ProjectDetails() {
                       className={`pill-${(project.mapping?.materialsRequest?.status || "pending").toLowerCase()}`}
                       style={{ fontSize: "0.8rem", display: "inline-block" }}
                     >
-                      {project.mapping?.materialsRequest?.status || "Pending"}
+                      <span
+                        className="badge"
+                        style={{
+                          backgroundColor: getWoStatusColor(
+                            project.mapping?.materialsRequest?.status,
+                          ),
+                        }}
+                      >
+                        {project.mapping?.materialsRequest?.status || "Pending"}
+                      </span>{" "}
                     </div>
                   )}
                 </div>

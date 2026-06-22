@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, SaudiRiyal, Trash2 } from "lucide-react";
+import { Pen, Plus, SaudiRiyal, Trash2 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import {
   useCategories,
@@ -346,7 +346,7 @@ export default function Categories() {
                               fontWeight: "600",
                             }}
                           >
-                            Edit
+                            <Pen className="w-4 h-4" size={14} />
                           </button>
                           <button
                             onClick={() => setCatToDelete(cat)}

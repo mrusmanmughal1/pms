@@ -7,11 +7,13 @@ import {
   useProjectsByCategory,
 } from "../hooks/project";
 import { useUsers } from "../hooks/user";
+import LocationPicker from "./LocationPicker";
 
 const ProjectForm = ({ isOpen, onClose }) => {
   const { user } = useAuthStore();
   const { mutate, isLoading, error } = useCreateProject();
-  const { data: categories = [], isLoading: isCategoriesLoading } = useCategories();
+  const { data: categories = [], isLoading: isCategoriesLoading } =
+    useCategories();
   const { data: users = [], isLoading: isUsersLoading } = useUsers();
   const [validationError, setValidationError] = useState("");
   const [formData, setFormData] = useState({
@@ -39,9 +41,12 @@ const ProjectForm = ({ isOpen, onClose }) => {
 
   const categoryBudget = selectedCategory?.budget || 0;
 
-  const { data: categoryProjects = [] } = useProjectsByCategory(formData.category, {
-    enabled: !!formData.category,
-  });
+  const { data: categoryProjects = [] } = useProjectsByCategory(
+    formData.category,
+    {
+      enabled: !!formData.category,
+    },
+  );
 
   const existingCategoryAllocated = useMemo(
     () =>
@@ -67,8 +72,10 @@ const ProjectForm = ({ isOpen, onClose }) => {
 
     const parsedBudget = Number(formData.budget) || 0;
     const parsedSpent = Number(formData.spent) || 0;
-    const parsedLongitude = formData.longitude === "" ? undefined : Number(formData.longitude);
-    const parsedLatitude = formData.latitude === "" ? undefined : Number(formData.latitude);
+    const parsedLongitude =
+      formData.longitude === "" ? undefined : Number(formData.longitude);
+    const parsedLatitude =
+      formData.latitude === "" ? undefined : Number(formData.latitude);
 
     if (selectedCategory) {
       const remainingBudget = Math.max(
@@ -92,11 +99,21 @@ const ProjectForm = ({ isOpen, onClose }) => {
       return;
     }
 
-    if (formData.longitude !== "" && (Number.isNaN(parsedLongitude) || parsedLongitude < -180 || parsedLongitude > 180)) {
+    if (
+      formData.longitude !== "" &&
+      (Number.isNaN(parsedLongitude) ||
+        parsedLongitude < -180 ||
+        parsedLongitude > 180)
+    ) {
       setValidationError("Longitude must be a number between -180 and 180.");
       return;
     }
-    if (formData.latitude !== "" && (Number.isNaN(parsedLatitude) || parsedLatitude < -90 || parsedLatitude > 90)) {
+    if (
+      formData.latitude !== "" &&
+      (Number.isNaN(parsedLatitude) ||
+        parsedLatitude < -90 ||
+        parsedLatitude > 90)
+    ) {
       setValidationError("Latitude must be a number between -90 and 90.");
       return;
     }
@@ -181,7 +198,6 @@ const ProjectForm = ({ isOpen, onClose }) => {
         <div
           style={{ padding: "1.5rem", maxHeight: "90vh", overflowY: "auto" }}
         >
-
           {user?.role === "Admin" || user?.role === "Manager" ? (
             <form onSubmit={handleSubmit}>
               <h3 className="text-xl font-bold mb-8 text-center">
@@ -217,11 +233,11 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     </option>
                     {categories.map((cat) => (
                       <option key={cat._id} value={cat.name}>
-                        {cat.name} —  &#x20C1; {cat.budget?.toLocaleString() ?? 0}
+                        {cat.name} — &#x20C1;{" "}
+                        {cat.budget?.toLocaleString() ?? 0}
                       </option>
                     ))}
                   </select>
-
                 </div>
               </div>
 
@@ -392,6 +408,16 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   />
                 </div>
               </div>
+
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={formStyles.label}>Pick Location on Map</label>
+                <LocationPicker 
+                  latitude={formData.latitude} 
+                  longitude={formData.longitude} 
+                  onLocationChange={(loc) => setFormData({ ...formData, latitude: loc.latitude, longitude: loc.longitude })}
+                />
+              </div>
+
               <div className="">
                 {selectedCategory && formData.budget > 0 && (
                   <div
@@ -404,15 +430,17 @@ const ProjectForm = ({ isOpen, onClose }) => {
                       marginBottom: "1rem",
                     }}
                   >
-                    <b>Category budget:</b> &#x20C1; {categoryBudget.toLocaleString()}.
+                    <b>Category budget:</b> &#x20C1;{" "}
+                    {categoryBudget.toLocaleString()}.
                     <span>
                       {" "}
-                      <b>Allocated:</b>&#x20C1; {categoryAllocated.toLocaleString()}.
+                      <b>Allocated:</b>&#x20C1;{" "}
+                      {categoryAllocated.toLocaleString()}.
                     </span>
-
                     <span>
                       {" "}
-                      <b>Remaining:</b> &#x20C1;{remainingCategoryBudget.toLocaleString()}
+                      <b>Remaining:</b> &#x20C1;
+                      {remainingCategoryBudget.toLocaleString()}
                     </span>
                   </div>
                 )}
@@ -453,7 +481,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, tags: e.target.value })
                   }
-                />.
+                />
+                .
               </div>
               <div className="">
                 {error && (
@@ -462,7 +491,13 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   </div>
                 )}
                 {validationError && (
-                  <div style={{ color: "#ef4444", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      marginBottom: "0.5rem",
+                      fontSize: "0.9rem",
+                    }}
+                  >
                     *{validationError}
                   </div>
                 )}
@@ -537,7 +572,6 @@ const ProjectForm = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
-
 };
 
 export default ProjectForm;
