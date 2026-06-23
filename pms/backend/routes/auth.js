@@ -1,14 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const User = require('../models/User');
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const User = require("../models/User");
 
 // Helper to get token
 const sendTokenResponse = (user, statusCode, res) => {
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
-  });
+  const token = jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRE },
+  );
 
   res.status(statusCode).json({
     success: true,
@@ -17,31 +19,52 @@ const sendTokenResponse = (user, statusCode, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role
-    }
+      role: user.role,
+    },
   });
 };
+
+// @desc    Get roles
+// @route   GET /api/auth/roles
+// @access  Public
+router.get("/roles", (req, res) => {
+  try {
+    const roles = User.schema.path("role").enumValues;
+    res.status(200).json(roles);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: 'Email already registered' });
+      return res.status(400).json({ message: "Email already registered" });
     }
 
     const user = await User.create({
       name,
       email,
       password,
-      role
+      role,
     });
 
-    sendTokenResponse(user, 201, res);
+    res.status(201).json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      message: "User registered successfully",
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -50,24 +73,26 @@ router.post('/register', async (req, res) => {
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide an email and password' });
+      return res
+        .status(400)
+        .json({ message: "Please provide an email and password" });
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     sendTokenResponse(user, 200, res);
@@ -79,12 +104,14 @@ router.post('/login', async (req, res) => {
 // @desc    Forgot password
 // @route   POST /api/auth/forgotpassword
 // @access  Public
-router.post('/forgotpassword', async (req, res) => {
+router.post("/forgotpassword", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
-      return res.status(404).json({ message: 'There is no user with that email' });
+      return res
+        .status(404)
+        .json({ message: "There is no user with that email" });
     }
 
     // Get reset token
@@ -97,7 +124,10 @@ router.post('/forgotpassword', async (req, res) => {
     const resetUrl = `http://localhost:5173/resetpassword/${resetToken}`;
     console.log(`[Forgot Password] Reset URL for ${user.email}: ${resetUrl}`);
 
-    res.status(200).json({ success: true, message: 'Reset token generated. Check server console for URL.' });
+    res.status(200).json({
+      success: true,
+      message: "Reset token generated. Check server console for URL.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -106,13 +136,13 @@ router.post('/forgotpassword', async (req, res) => {
 // @desc    Reset password
 // @route   PUT /api/auth/resetpassword/:resettoken
 // @access  Public
-router.put('/resetpassword/:resettoken', async (req, res) => {
+router.put("/resetpassword/:resettoken", async (req, res) => {
   try {
     // Get hashed token
     const resetPasswordToken = crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(req.params.resettoken)
-      .digest('hex');
+      .digest("hex");
 
     const user = await User.findOne({
       resetPasswordToken,
@@ -120,7 +150,7 @@ router.put('/resetpassword/:resettoken', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: "Invalid or expired token" });
     }
 
     // Set new password

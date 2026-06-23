@@ -17,10 +17,21 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
-    // Verify token
+    // Verify token and extract embedded claims
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = await User.findById(decoded.id);
+    // Fetch user from DB (for up-to-date data), then override with token claims
+    const dbUser = await User.findById(decoded.id);
+    if (!dbUser) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    // Attach user to request — prefer token claims for email & role
+    req.user = {
+      ...dbUser.toObject(),
+      email: decoded.email || dbUser.email,
+      role: decoded.role || dbUser.role,
+    };
 
     next();
   } catch (error) {
