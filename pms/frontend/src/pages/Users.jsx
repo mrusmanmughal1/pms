@@ -5,6 +5,7 @@ import { useUsers, useUpdateUser, useDeleteUser } from "../hooks/user";
 import { formatDate } from "../utils/date";
 import ConfirmModal from "../components/ConfirmModal";
 import { NavLink } from "react-router-dom";
+import { useRole, useUpdateRole } from "../hooks/auth";
 
 export default function Users() {
   const { user } = useAuthStore();
