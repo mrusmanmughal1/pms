@@ -103,18 +103,12 @@ const Login = () => {
               fontSize: "0.875rem",
             }}
           >
-            <Link
-              to="/register"
-              style={{ color: "var(--primary-color)", textDecoration: "none" }}
-            >
-              Create Account
-            </Link>
-            <Link
+            {/* <Link
               to="/forgotpassword"
               style={{ color: "var(--primary-color)", textDecoration: "none" }}
             >
               Forgot Password?
-            </Link>
+            </Link> */}
           </div>
           <button
             type="submit"

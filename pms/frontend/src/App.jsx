@@ -16,6 +16,7 @@ import Sidebar from "./components/Sidebar";
 import AllProjects from "./pages/AllProjects";
 import Users from "./pages/Users";
 import ProjectDetails from "./pages/ProjectDetails";
+import Unauthorized from "./pages/Unauthorized";
 
 function Header() {
   const location = useLocation();
@@ -59,12 +60,49 @@ function MainLayout() {
       <main className="main-content">
         <Header />
         <Routes>
+          {/* All authenticated users can see dashboard & projects */}
           <Route path="/" element={<Dashboard />} />
-          <Route path="/category/:categoryName" element={<ProjectList />} />
-          <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/projects" element={<AllProjects />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/users" element={<Users />} />
+          <Route path="/projects/:id" element={<ProjectDetails />} />
+          <Route path="/category/:categoryName" element={<ProjectList />} />
+
+          {/* PM and above: can also access register (add user is admin-only but PM may need it) */}
+          <Route
+            path="/register"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "PM",
+                  "Coordinator",
+                  "Integration & Support",
+                  "User",
+                ]}
+              >
+                <Register />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin only */}
+          <Route
+            path="/categories"
+            element={
+              <ProtectedRoute allowedRoles={["Admin"]}>
+                <Categories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedRoles={["Admin"]}>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Unauthorized fallback */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
         </Routes>
       </main>
     </div>
@@ -76,7 +114,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
 
         <Route

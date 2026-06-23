@@ -1,19 +1,26 @@
-import { useState, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import axios from "axios";
+import { useRole } from "../hooks/auth";
+import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState("User");
   const [error, setError] = useState("");
   const { register } = useAuthStore();
   const navigate = useNavigate();
 
+  const { data: roles } = useRole();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    const success = await register(name, email, password);
+    const success = await register(name, email, password, role);
     if (success) {
       navigate("/");
     } else {
@@ -27,26 +34,20 @@ const Register = () => {
       style={{
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#231d48ff",
+        padding: "10px",
+        backgroundColor: "#1c2745ff",
       }}
     >
-      <div className="glass-panel" style={{ width: "100%", maxWidth: "400px" }}>
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              padding: "1rem",
-              borderRadius: "50%",
-              marginBottom: "1rem",
-            }}
-          >
-            <img
-              alt="Auth Logo"
-              width="150"
-              class=" "
-              src="https://dev.smart-life.sa/assets/smartlife-text-black-THaafVXq.png"
-            />
-          </div>
+      <div
+        className="glass-panel"
+        style={{
+          width: "100%",
+          maxWidth: "400px",
+          maxHeight: "550px",
+          overflowY: "auto",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: "1rem" }}>
           <h2>Create Account</h2>
         </div>
 
@@ -85,14 +86,56 @@ const Register = () => {
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input
-              type="password"
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength="6"
+                style={{
+                  paddingRight: "40px",
+                  width: "100%",
+                  boxSizing: "border-box",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "#64748b",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Role</label>
+            <select
               className="form-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
               required
-              minLength="6"
-            />
+            >
+              {roles?.length > 0 &&
+                roles.map((r) => (
+                  <option key={r + 1} value={r}>
+                    {r}
+                  </option>
+                ))}
+            </select>
           </div>
           <div
             style={{
@@ -101,21 +144,7 @@ const Register = () => {
               marginBottom: "1.5rem",
               fontSize: "0.875rem",
             }}
-          >
-            <span style={{ color: "var(--text-secondary)" }}>
-              Already have an account?{" "}
-            </span>
-            <Link
-              to="/login"
-              style={{
-                color: "var(--primary-color)",
-                textDecoration: "none",
-                marginLeft: "0.5rem",
-              }}
-            >
-              Login
-            </Link>
-          </div>
+          ></div>
           <button
             type="submit"
             className="btn btn-primary"

@@ -4,6 +4,7 @@ import { useAuthStore } from "../store/authStore";
 import { useUsers, useUpdateUser, useDeleteUser } from "../hooks/user";
 import { formatDate } from "../utils/date";
 import ConfirmModal from "../components/ConfirmModal";
+import { NavLink } from "react-router-dom";
 
 export default function Users() {
   const { user } = useAuthStore();
@@ -47,8 +48,15 @@ export default function Users() {
 
   return (
     <div className="page-content">
-      <div className="flex justify-between items-center mb-6">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <h2 className="text-2xl font-bold">Manage Users</h2>
+        <NavLink to="/register">Add New User</NavLink>
       </div>
 
       <div

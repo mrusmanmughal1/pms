@@ -33,7 +33,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
     teamMembers: [],
     tags: "",
   });
-
+  console.log(formData);
   const selectedCategory = useMemo(
     () => categories.find((cat) => cat.name === formData.category),
     [categories, formData.category],
@@ -411,10 +411,16 @@ const ProjectForm = ({ isOpen, onClose }) => {
 
               <div style={{ marginBottom: "1rem" }}>
                 <label style={formStyles.label}>Pick Location on Map</label>
-                <LocationPicker 
-                  latitude={formData.latitude} 
-                  longitude={formData.longitude} 
-                  onLocationChange={(loc) => setFormData({ ...formData, latitude: loc.latitude, longitude: loc.longitude })}
+                <LocationPicker
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  onLocationChange={(loc) =>
+                    setFormData({
+                      ...formData,
+                      latitude: loc.latitude,
+                      longitude: loc.longitude,
+                    })
+                  }
                 />
               </div>
 
@@ -464,8 +470,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   disabled={isUsersLoading}
                 >
                   {users.map((u) => (
-                    <option key={u._id} value={u.name}>
-                      {u.name}
+                    <option key={u._id} value={u.email}>
+                      {u.name} -- {u.email}
                     </option>
                   ))}
                 </select>

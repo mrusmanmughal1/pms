@@ -14,7 +14,7 @@ import { useAuthStore } from "../store/authStore";
 import { useCategories } from "../hooks/project";
 //working
 export default function Sidebar() {
-   const { data: categories = [], isLoading } = useCategories();
+  const { data: categories = [], isLoading } = useCategories();
   const {
     user,
 
@@ -44,6 +44,7 @@ export default function Sidebar() {
           padding: "5px",
         }}
       >
+        {/* Dashboard — all roles */}
         <NavLink
           to="/"
           className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
@@ -51,6 +52,8 @@ export default function Sidebar() {
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </NavLink>
+
+        {/* All Projects — all roles */}
         <NavLink
           to="/projects"
           className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
@@ -59,61 +62,91 @@ export default function Sidebar() {
           <span>All Projects</span>
         </NavLink>
 
-        <div className="sidebar-heading">Categories</div>
-        {isLoading ? (
-          <div style={{ padding: "0.5rem 1.5rem", color: "#94a3b8", fontSize: "0.875rem" }}>
-            Loading...
-          </div>
-        ) : categories.length > 0 ? (
-          categories.map((category) => (
-            <NavLink
-              key={category._id}
-              to={`/category/${category.name}`}
-              className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-            >
-              <Radio size={20} />
-              <span>{category.name}</span>
-            </NavLink>
-          ))
-        ) : (
-          <div style={{ padding: "0.5rem 1.5rem", color: "#94a3b8", fontSize: "0.875rem" }}>
-            No categories
-          </div>
+        {/* Category links — hidden for Coordinator */}
+        {user?.role !== "Coordinator" && (
+          <>
+            <div className="sidebar-heading">Categories</div>
+            {isLoading ? (
+              <div
+                style={{
+                  padding: "0.5rem 1.5rem",
+                  color: "#94a3b8",
+                  fontSize: "0.875rem",
+                }}
+              >
+                Loading...
+              </div>
+            ) : categories.length > 0 ? (
+              categories.map((category) => (
+                <NavLink
+                  key={category._id}
+                  to={`/category/${category.name}`}
+                  className={({ isActive }) =>
+                    `nav-item ${isActive ? "active" : ""}`
+                  }
+                >
+                  <Radio size={20} />
+                  <span>{category.name}</span>
+                </NavLink>
+              ))
+            ) : (
+              <div
+                style={{
+                  padding: "0.5rem 1.5rem",
+                  color: "#94a3b8",
+                  fontSize: "0.875rem",
+                }}
+              >
+                No categories
+              </div>
+            )}
+          </>
         )}
 
-        <div className="sidebar-heading">Management</div>
-        <NavLink
-          to="/tasks"
-          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-        >
-          <ListTodo size={20} />
-          <span>Tasks</span>
-        </NavLink>
+        {/* Management section — Admin only */}
         {user?.role === "Admin" && (
           <>
+            <div className="sidebar-heading">Management</div>
             <NavLink
               to="/categories"
-              className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
             >
               <FolderKanban size={20} />
               <span>Manage Categories</span>
             </NavLink>
             <NavLink
               to="/users"
-              className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
             >
               <UserCog size={20} />
               <span>Manage Users</span>
             </NavLink>
+            <NavLink
+              to="/register"
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
+              <UserCog size={20} />
+              <span>Add User</span>
+            </NavLink>
           </>
         )}
-        <NavLink
-          to="/analytics"
-          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-        >
-          <LineChart size={20} />
-          <span>Analytics</span>
-        </NavLink>
+
+        {/* Analytics — Admin & PM */}
+        {(user?.role === "Admin" || user?.role === "PM") && (
+          <NavLink
+            to="/analytics"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <LineChart size={20} />
+            <span>Analytics</span>
+          </NavLink>
+        )}
       </nav>
       <div
         style={{

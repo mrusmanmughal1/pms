@@ -61,7 +61,9 @@ const AllProjects = () => {
         <h1 style={{ fontSize: "1.2rem", marginBottom: "0.25rem" }}>
           All Projects
         </h1>
-        {(user?.role === "Admin" || user?.role === "Manager") && (
+        {(user?.role === "Admin" ||
+          user?.role === "Manager" ||
+          user?.role === "PM") && (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button
               className="btn btn-primary"
