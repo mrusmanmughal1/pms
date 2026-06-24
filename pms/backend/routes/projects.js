@@ -13,7 +13,7 @@ router.get("/", protect, async (req, res) => {
 
     let query = {};
     if (!fullAccessRoles.includes(role)) {
-      // Restricted roles: only projects where the user's email is in teamMembers
+      // Restricted roles: only projects where the user's email is in teamMembersss
       query = { teamMembers: email };
     }
 
