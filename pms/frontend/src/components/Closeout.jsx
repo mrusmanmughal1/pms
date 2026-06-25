@@ -7,16 +7,13 @@ export default function Closeout({
 }) {
   return (
     <div className="glass-panel" style={{ padding: "1.5rem", width: "100%" }}>
-      <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.1rem" }}>
-        4 Closeout
-      </h3>
+      <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.1rem" }}>Closeout</h3>
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        
         {/* 4.1 PAT TCN */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
           }}
@@ -119,44 +116,8 @@ export default function Closeout({
             ) : (
               <div style={{ fontSize: "0.9rem" }}>
                 {project.closeout?.patTcn?.date
-                  ? new Date(
-                      project.closeout.patTcn.date,
-                    ).toLocaleDateString()
+                  ? new Date(project.closeout.patTcn.date).toLocaleDateString()
                   : "—"}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.closeout?.patTcn?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    closeout: {
-                      ...form.closeout,
-                      patTcn: {
-                        ...form.closeout?.patTcn,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.closeout?.patTcn?.remarks || "—"}
               </div>
             )}
           </div>
@@ -166,7 +127,7 @@ export default function Closeout({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -249,47 +210,13 @@ export default function Closeout({
               </div>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.closeout?.patStatus?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    closeout: {
-                      ...form.closeout,
-                      patStatus: {
-                        ...form.closeout?.patStatus,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.closeout?.patStatus?.remarks || "—"}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* 4.3 Invoicing */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -372,47 +299,13 @@ export default function Closeout({
               </div>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.closeout?.invoicing?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    closeout: {
-                      ...form.closeout,
-                      invoicing: {
-                        ...form.closeout?.invoicing,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.closeout?.invoicing?.remarks || "—"}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* 4.4 Capitalisation Sheet update */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -426,7 +319,9 @@ export default function Closeout({
             {editMode ? (
               <select
                 className="form-select"
-                value={form.closeout?.capitalisationSheetUpdate?.status || "Pending"}
+                value={
+                  form.closeout?.capitalisationSheetUpdate?.status || "Pending"
+                }
                 onChange={(e) =>
                   setForm({
                     ...form,
@@ -458,7 +353,8 @@ export default function Closeout({
                     ),
                   }}
                 >
-                  {project.closeout?.capitalisationSheetUpdate?.status || "Pending"}
+                  {project.closeout?.capitalisationSheetUpdate?.status ||
+                    "Pending"}
                 </span>{" "}
               </div>
             )}
@@ -492,40 +388,6 @@ export default function Closeout({
                       project.closeout.capitalisationSheetUpdate.date,
                     ).toLocaleDateString()
                   : "—"}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.closeout?.capitalisationSheetUpdate?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    closeout: {
-                      ...form.closeout,
-                      capitalisationSheetUpdate: {
-                        ...form.closeout?.capitalisationSheetUpdate,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.closeout?.capitalisationSheetUpdate?.remarks || "—"}
               </div>
             )}
           </div>

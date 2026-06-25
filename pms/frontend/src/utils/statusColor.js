@@ -55,6 +55,10 @@ export const getWoStatusColor = (woStatus) => {
       return "var(--status-inprogress)";
     case "Rejected":
       return "var(--status-testing)";
+    case "Completed":
+      return "var(--status-completed)";
+    case "In Progress":
+      return "var(--status-inprogress)";
     default:
       return "var(--text-secondary)";
   }

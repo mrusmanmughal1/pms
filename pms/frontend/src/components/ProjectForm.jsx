@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { SaudiRiyal, Save } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import {
@@ -8,8 +8,12 @@ import {
 } from "../hooks/project";
 import { useUsers } from "../hooks/user";
 import LocationPicker from "./LocationPicker";
+import { useParams } from "react-router-dom";
 
 const ProjectForm = ({ isOpen, onClose }) => {
+  ///category/IoTs
+  const params = useParams();
+  const SelectCategoryFroMParams = params.categoryName;
   const { user } = useAuthStore();
   const { mutate, isLoading, error } = useCreateProject();
   const { data: categories = [], isLoading: isCategoriesLoading } =
@@ -18,7 +22,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
   const [validationError, setValidationError] = useState("");
   const [formData, setFormData] = useState({
     title: "",
-    category: "",
+    category: SelectCategoryFroMParams || "",
     description: "",
     status: "Planning",
     priority: "Low",
@@ -33,7 +37,14 @@ const ProjectForm = ({ isOpen, onClose }) => {
     teamMembers: [],
     tags: "",
   });
-  console.log(formData);
+  useEffect(() => {
+    if (SelectCategoryFroMParams) {
+      setFormData((prev) => ({
+        ...prev,
+        category: SelectCategoryFroMParams,
+      }));
+    }
+  }, [SelectCategoryFroMParams]);
   const selectedCategory = useMemo(
     () => categories.find((cat) => cat.name === formData.category),
     [categories, formData.category],
@@ -291,21 +302,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              <div style={formStyles.gridRow}>
-                <div>
-                  <label style={formStyles.label}>Progress (%)</label>
-                  <input
-                    type="number"
-                    style={formStyles.input}
-                    min="0"
-                    max="100"
-                    placeholder="0"
-                    value={formData.progress}
-                    onChange={(e) =>
-                      setFormData({ ...formData, progress: e.target.value })
-                    }
-                  />
-                </div>
+              <div style={{ marginBottom: "1rem" }}>
                 <div>
                   <label style={formStyles.label}>Team Lead</label>
                   <select
@@ -319,7 +316,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     <option value="">Select Team Lead</option>
                     {users.map((u) => (
                       <option key={u._id} value={u.name}>
-                        {u.name}
+                        {u.name} -{" "}
+                        <span style={{ fontSize: "0.7rem" }}>{u.role}</span>
                       </option>
                     ))}
                   </select>

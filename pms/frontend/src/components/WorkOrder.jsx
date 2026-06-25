@@ -15,7 +15,7 @@ export default function WorkOrder({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
           }}
@@ -42,9 +42,7 @@ export default function WorkOrder({
                 }
               >
                 <option>Pending</option>
-                <option>Approved</option>
-                <option>Rejected</option>
-                <option>N/A</option>
+                <option>Done</option>
               </select>
             ) : (
               <div
@@ -96,47 +94,13 @@ export default function WorkOrder({
               </div>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.mapping?.woRequest?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    mapping: {
-                      ...form.mapping,
-                      woRequest: {
-                        ...form.mapping?.woRequest,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.mapping?.woRequest?.remarks || "—"}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* WO Issuance */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -166,8 +130,6 @@ export default function WorkOrder({
               >
                 <option>Pending</option>
                 <option>Approved</option>
-                <option>Rejected</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div
@@ -219,47 +181,13 @@ export default function WorkOrder({
               </div>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.mapping?.woIssuance?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    mapping: {
-                      ...form.mapping,
-                      woIssuance: {
-                        ...form.mapping?.woIssuance,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.mapping?.woIssuance?.remarks || "—"}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Materials Request */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -290,7 +218,6 @@ export default function WorkOrder({
                 <option>Pending</option>
                 <option>Approved</option>
                 <option>Rejected</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div
@@ -339,40 +266,6 @@ export default function WorkOrder({
                       project.mapping.materialsRequest.date,
                     ).toLocaleDateString()
                   : "—"}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.mapping?.materialsRequest?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    mapping: {
-                      ...form.mapping,
-                      materialsRequest: {
-                        ...form.mapping?.materialsRequest,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.mapping?.materialsRequest?.remarks || "—"}
               </div>
             )}
           </div>

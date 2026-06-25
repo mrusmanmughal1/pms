@@ -50,7 +50,7 @@ export default function ProjectCard({ proj, i }) {
           overflow: "hidden",
         }}
       >
-        {proj.description || "\u00A0"}
+        {proj.description.slice(0, 100) || "\u00A0"}
       </p>
 
       <div style={{ marginBottom: "1.5rem" }}>

@@ -7,16 +7,13 @@ export default function Integration({
 }) {
   return (
     <div className="glass-panel" style={{ padding: "1.5rem", width: "100%" }}>
-      <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.1rem" }}>
-        3 Integration
-      </h3>
+      <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.1rem" }}>Integration</h3>
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        
         {/* 3.1 Alarms configuration & Integration */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
           }}
@@ -28,7 +25,9 @@ export default function Integration({
             {editMode ? (
               <select
                 className="form-select"
-                value={form.integration?.alarmsConfiguration?.status || "Pending"}
+                value={
+                  form.integration?.alarmsConfiguration?.status || "Pending"
+                }
                 onChange={(e) =>
                   setForm({
                     ...form,
@@ -60,7 +59,8 @@ export default function Integration({
                     ),
                   }}
                 >
-                  {project.integration?.alarmsConfiguration?.status || "Pending"}
+                  {project.integration?.alarmsConfiguration?.status ||
+                    "Pending"}
                 </span>{" "}
               </div>
             )}
@@ -97,47 +97,13 @@ export default function Integration({
               </div>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.integration?.alarmsConfiguration?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    integration: {
-                      ...form.integration,
-                      alarmsConfiguration: {
-                        ...form.integration?.alarmsConfiguration,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.integration?.alarmsConfiguration?.remarks || "—"}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* 3.2 Annex Number */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -197,7 +163,6 @@ export default function Integration({
                 <option>Pending</option>
                 <option>Approved</option>
                 <option>Rejected</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div
@@ -249,47 +214,13 @@ export default function Integration({
               </div>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.integration?.annexNumber?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    integration: {
-                      ...form.integration,
-                      annexNumber: {
-                        ...form.integration?.annexNumber,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.integration?.annexNumber?.remarks || "—"}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* 3.3 Tenants Integration */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -303,7 +234,9 @@ export default function Integration({
             {editMode ? (
               <select
                 className="form-select"
-                value={form.integration?.tenantsIntegration?.status || "Pending"}
+                value={
+                  form.integration?.tenantsIntegration?.status || "Pending"
+                }
                 onChange={(e) =>
                   setForm({
                     ...form,
@@ -369,40 +302,6 @@ export default function Integration({
                       project.integration.tenantsIntegration.date,
                     ).toLocaleDateString()
                   : "—"}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.integration?.tenantsIntegration?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    integration: {
-                      ...form.integration,
-                      tenantsIntegration: {
-                        ...form.integration?.tenantsIntegration,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.integration?.tenantsIntegration?.remarks || "—"}
               </div>
             )}
           </div>

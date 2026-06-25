@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { apiInstance } from "../service/index";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   useDeleteProject,
   useProjectById,
@@ -19,13 +18,14 @@ import {
 } from "recharts";
 import { useAuthStore } from "../store/authStore";
 import { getCatBadge } from "../utils/helpers";
-import { Calendar, SaudiRiyal } from "lucide-react";
+import { Calendar, SaudiRiyal, Users2 } from "lucide-react";
 import { getWoStatusColor } from "../utils/statusColor";
 import MapData from "../components/MapData";
 import WorkOrder from "../components/WorkOrder";
 import Installation from "../components/Installation";
 import Integration from "../components/Integration";
 import Closeout from "../components/Closeout";
+import ProgressBar from "../components/ProgressBar";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
@@ -355,6 +355,23 @@ export default function ProjectDetails() {
       <div style={{ padding: "2rem", color: "red" }}>Project not found.</div>
     );
 
+  const AllowMapping =
+    user.role === "Admin" || user.role === "PM" || user.role === "Logistics";
+
+  const AllowInstallation =
+    user.role === "Admin" || user.role === "PM" || user.role === "Coordinator";
+
+  const AllowIntegration =
+    user.role === "Admin" ||
+    user.role === "PM" ||
+    user.role === "Integration & Support";
+
+  const AllowCloseout =
+    user.role === "Admin" ||
+    user.role === "PM" ||
+    user.role === "Document Controller" ||
+    user.role === "Closeout";
+
   return (
     <div className="">
       <div
@@ -405,6 +422,16 @@ export default function ProjectDetails() {
             >
               <Calendar size={14} /> Created :{" "}
               {new Date(project.createdAt).toLocaleDateString()}
+            </div>
+            <div
+              style={{
+                color: "var(--text-secondary)",
+                marginTop: "0.35rem",
+                fontSize: "0.875rem",
+              }}
+            >
+              <Users2 size={14} /> Team Members :{" "}
+              {project.teamMembers.join(", ")}
             </div>
           </div>
 
@@ -718,7 +745,7 @@ export default function ProjectDetails() {
           {editMode ? (
             <textarea
               className="form-textarea"
-              rows={6}
+              rows={20}
               value={form.description}
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
@@ -733,6 +760,7 @@ export default function ProjectDetails() {
                 overflowWrap: "break-word",
                 height: "350px",
                 overflowY: "auto",
+                fontSize: "0.8rem",
               }}
             >
               {project.description}
@@ -740,7 +768,7 @@ export default function ProjectDetails() {
           )}
         </div>
         <div className="">
-          <div className=" glass-panel">
+          <div className=" glass-panel" style={{ minHeight: "100%" }}>
             <label
               className="form-label"
               style={{ fontSize: "1rem", fontWeight: "600" }}
@@ -1030,275 +1058,12 @@ export default function ProjectDetails() {
           </div>
         </div>
         <div>
-          <div className="  glass-panel">
-            {editMode && (
-              <div style={{ marginBottom: "0.5rem" }}>
-                <label className="form-label" style={{ fontSize: "1rem" }}>
-                  Progress (%)
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={form.progress}
-                  onChange={(e) =>
-                    setForm({ ...form, progress: Number(e.target.value) })
-                  }
-                  style={{ width: "100%", marginBottom: "0.5rem" }}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  className="form-input"
-                  value={form.progress}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      progress: Math.min(
-                        100,
-                        Math.max(0, Number(e.target.value)),
-                      ),
-                    })
-                  }
-                />
-              </div>
-            )}
-            {/* ── Dynamic Phase Progress Bar ── */}
-            {(() => {
-              const phases = [
-                { key: "mapping", label: "Mapping", statusMatch: "Planning" },
-                {
-                  key: "installation",
-                  label: "Installation",
-                  statusMatch: "In Progress",
-                },
-                {
-                  key: "integration",
-                  label: "Integration",
-                  statusMatch: "Testing",
-                },
-                {
-                  key: "closeout",
-                  label: "Closeout",
-                  statusMatch: "Completed",
-                },
-              ];
-              const currentStatus = editMode ? form.status : project.status;
-              const statusOrder = [
-                "Planning",
-                "In Progress",
-                "Testing",
-                "Completed",
-                "On Hold",
-              ];
-              const currentIdx = statusOrder.indexOf(currentStatus);
-              // On Hold is treated as the last active phase before hold
-              const activePhaseIdx =
-                currentStatus === "On Hold" ? -1 : currentIdx;
-              const progressVal = editMode ? form.progress : project.progress;
-
-              return (
-                <div style={{ marginBottom: "1rem" }}>
-                  {/* Percentage display */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                      marginBottom: "0.75rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: "1.25rem",
-                        fontWeight: 700,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                        marginBottom: "0.5rem",
-                      }}
-                    >
-                      <h4 style={{ margin: "0", fontSize: "1rem" }}>
-                        Progress
-                      </h4>
-                      {progressVal}%
-                    </div>
-                    {currentStatus === "On Hold" && (
-                      <span
-                        style={{
-                          fontSize: "0.7rem",
-                          fontWeight: 600,
-                          color: "#f59e0b",
-                          background: "rgba(245,158,11,0.12)",
-                          padding: "2px 8px",
-                          borderRadius: "999px",
-                        }}
-                      >
-                        On Hold
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Stepper track */}
-                  <div
-                    style={{ position: "relative", padding: "0 0 0.25rem 0" }}
-                  >
-                    {/* Background track line */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "14px",
-                        left: "12px",
-                        right: "12px",
-                        height: "4px",
-                        background: "#e2e8f0",
-                        borderRadius: "2px",
-                        zIndex: 0,
-                      }}
-                    />
-                    {/* Active fill line */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "14px",
-                        left: "12px",
-                        width:
-                          activePhaseIdx >= 3
-                            ? "calc(100% - 24px)"
-                            : activePhaseIdx < 0
-                              ? "0%"
-                              : `calc(${(activePhaseIdx / (phases.length - 1)) * 100}% * (1 - 24px / 100%) + 0px)`,
-                        height: "4px",
-                        background:
-                          activePhaseIdx >= 3
-                            ? "linear-gradient(90deg, #10b981, #059669)"
-                            : "linear-gradient(90deg, #3b82f6, #6366f1)",
-                        borderRadius: "2px",
-                        transition: "width 0.5s ease",
-                        zIndex: 1,
-                      }}
-                    />
-
-                    {/* Phase dots + labels */}
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        position: "relative",
-                        zIndex: 2,
-                      }}
-                    >
-                      {phases.map((phase, idx) => {
-                        const isCompleted = activePhaseIdx > idx;
-                        const isActive = activePhaseIdx === idx;
-                        const isFuture = !isCompleted && !isActive;
-
-                        let dotBg = "#cbd5e1";
-                        let dotBorder = "#cbd5e1";
-                        let dotShadow = "none";
-                        let labelColor = "var(--text-secondary)";
-                        let labelWeight = 400;
-
-                        if (isCompleted) {
-                          dotBg = "#10b981";
-                          dotBorder = "#10b981";
-                          labelColor = "#10b981";
-                          labelWeight = 600;
-                        } else if (isActive) {
-                          dotBg = "#3b82f6";
-                          dotBorder = "#3b82f6";
-                          dotShadow = "0 0 0 4px rgba(59,130,246,0.2)";
-                          labelColor = "#3b82f6";
-                          labelWeight = 700;
-                        }
-
-                        return (
-                          <div
-                            key={phase.key}
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              flex: 1,
-                            }}
-                          >
-                            {/* Dot */}
-                            <div
-                              style={{
-                                width: isActive ? "28px" : "24px",
-                                height: isActive ? "28px" : "24px",
-                                borderRadius: "50%",
-                                background: dotBg,
-                                border: `3px solid ${dotBorder}`,
-                                boxShadow: dotShadow,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                transition: "all 0.3s ease",
-                                marginBottom: "6px",
-                              }}
-                            >
-                              {isCompleted ? (
-                                <svg
-                                  width="12"
-                                  height="12"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="#fff"
-                                  strokeWidth="3"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                              ) : isActive ? (
-                                <div
-                                  style={{
-                                    width: "8px",
-                                    height: "8px",
-                                    borderRadius: "50%",
-                                    background: "#fff",
-                                  }}
-                                />
-                              ) : (
-                                <div
-                                  style={{
-                                    width: "6px",
-                                    height: "6px",
-                                    borderRadius: "50%",
-                                    background: "#fff",
-                                  }}
-                                />
-                              )}
-                            </div>
-                            {/* Label */}
-                            <span
-                              style={{
-                                fontSize: "0.65rem",
-                                fontWeight: labelWeight,
-                                color: labelColor,
-                                textAlign: "center",
-                                letterSpacing: "0.02em",
-                                textTransform: "uppercase",
-                                lineHeight: 1.2,
-                                transition: "all 0.3s ease",
-                              }}
-                            >
-                              {phase.label}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Thin overall progress bar underneath */}
-                </div>
-              );
-            })()}
-          </div>
+          <ProgressBar
+            editMode={editMode}
+            form={form}
+            project={project}
+            setForm={setForm}
+          />
           <div className="  glass-panel">
             <h3 style={{ margin: "0 0 0.5rem 0" }}>Budget & Spent</h3>
 
@@ -1433,17 +1198,21 @@ export default function ProjectDetails() {
           </div>
         </div>
       </div>
+      <div className="" style={{ margin: "10px 0" }}>
+        {project.latitude != null && project.longitude != null && (
+          <MapData project={project} />
+        )}
+      </div>
 
       <div
         className=""
         style={{
           display: "grid",
-          gridTemplateColumns: "1.5fr 1fr",
+          gridTemplateColumns: "1fr 1fr",
           gap: "1rem",
-          marginTop: "1rem",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {AllowMapping && (
           <WorkOrder
             project={project}
             editMode={editMode}
@@ -1451,6 +1220,10 @@ export default function ProjectDetails() {
             form={form}
             getWoStatusColor={getWoStatusColor}
           />
+        )}
+
+        {/* admin pm and Coordinator  */}
+        {AllowInstallation && (
           <Installation
             project={project}
             editMode={editMode}
@@ -1458,6 +1231,9 @@ export default function ProjectDetails() {
             form={form}
             getWoStatusColor={getWoStatusColor}
           />
+        )}
+
+        {AllowIntegration && (
           <Integration
             project={project}
             editMode={editMode}
@@ -1465,6 +1241,8 @@ export default function ProjectDetails() {
             form={form}
             getWoStatusColor={getWoStatusColor}
           />
+        )}
+        {AllowCloseout && (
           <Closeout
             project={project}
             editMode={editMode}
@@ -1472,9 +1250,6 @@ export default function ProjectDetails() {
             form={form}
             getWoStatusColor={getWoStatusColor}
           />
-        </div>
-        {project.latitude != null && project.longitude != null && (
-          <MapData project={project} />
         )}
       </div>
     </div>

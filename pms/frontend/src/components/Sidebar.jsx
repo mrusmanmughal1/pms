@@ -63,45 +63,44 @@ export default function Sidebar() {
         </NavLink>
 
         {/* Category links — hidden for Coordinator */}
-        {user?.role !== "Coordinator" && (
-          <>
-            <div className="sidebar-heading">Categories</div>
-            {isLoading ? (
-              <div
-                style={{
-                  padding: "0.5rem 1.5rem",
-                  color: "#94a3b8",
-                  fontSize: "0.875rem",
-                }}
+
+        <>
+          <div className="sidebar-heading">Categories</div>
+          {isLoading ? (
+            <div
+              style={{
+                padding: "0.5rem 1.5rem",
+                color: "#94a3b8",
+                fontSize: "0.875rem",
+              }}
+            >
+              Loading...
+            </div>
+          ) : categories.length > 0 ? (
+            categories.map((category) => (
+              <NavLink
+                key={category._id}
+                to={`/category/${category.name}`}
+                className={({ isActive }) =>
+                  `nav-item ${isActive ? "active" : ""}`
+                }
               >
-                Loading...
-              </div>
-            ) : categories.length > 0 ? (
-              categories.map((category) => (
-                <NavLink
-                  key={category._id}
-                  to={`/category/${category.name}`}
-                  className={({ isActive }) =>
-                    `nav-item ${isActive ? "active" : ""}`
-                  }
-                >
-                  <Radio size={20} />
-                  <span>{category.name}</span>
-                </NavLink>
-              ))
-            ) : (
-              <div
-                style={{
-                  padding: "0.5rem 1.5rem",
-                  color: "#94a3b8",
-                  fontSize: "0.875rem",
-                }}
-              >
-                No categories
-              </div>
-            )}
-          </>
-        )}
+                <Radio size={20} />
+                <span>{category.name}</span>
+              </NavLink>
+            ))
+          ) : (
+            <div
+              style={{
+                padding: "0.5rem 1.5rem",
+                color: "#94a3b8",
+                fontSize: "0.875rem",
+              }}
+            >
+              No categories
+            </div>
+          )}
+        </>
 
         {/* Management section — Admin only */}
         {user?.role === "Admin" && (

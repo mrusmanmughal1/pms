@@ -7,23 +7,20 @@ export default function Installation({
 }) {
   return (
     <div className="glass-panel" style={{ padding: "1.5rem", width: "100%" }}>
-      <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.1rem" }}>
-        2 Installation
-      </h3>
+      <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.1rem" }}>Installation</h3>
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        
         {/* 2.1 TCN request */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr 1fr",
             gap: "1rem",
             alignItems: "start",
           }}
         >
           <div>
             <label className="form-label" style={{ fontWeight: 600 }}>
-              2.1 TCN request
+              TCN request & Approval
             </label>
             {editMode ? (
               <input
@@ -73,8 +70,6 @@ export default function Installation({
               >
                 <option>Pending</option>
                 <option>Approved</option>
-                <option>Rejected</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div
@@ -126,293 +121,110 @@ export default function Installation({
               </div>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.installation?.tcnRequest?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      tcnRequest: {
-                        ...form.installation?.tcnRequest,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.installation?.tcnRequest?.remarks || "—"}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* 2.2 Teams & Materials Mobilization */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
-            gap: "1rem",
-            alignItems: "start",
-            borderTop: "1px solid #e2e8f0",
-            paddingTop: "1rem",
-          }}
-        >
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              2.2 Teams & Materials Mobilization
-            </label>
-            {editMode ? (
-              <select
-                className="form-select"
-                value={form.installation?.teamsMaterialsMobilization?.status || "Pending"}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      teamsMaterialsMobilization: {
-                        ...form.installation?.teamsMaterialsMobilization,
-                        status: e.target.value,
+        {project.installation?.tcnRequest?.status == "Approved" && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr  ",
+              gap: "1rem",
+              alignItems: "start",
+              borderTop: "1px solid #e2e8f0",
+              paddingTop: "1rem",
+            }}
+          >
+            <div>
+              <label className="form-label" style={{ fontWeight: 600 }}>
+                Teams & Materials Mobilization
+              </label>
+              {editMode ? (
+                <select
+                  className="form-select"
+                  value={
+                    form.installation?.teamsMaterialsMobilization?.status ||
+                    "Pending"
+                  }
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      installation: {
+                        ...form.installation,
+                        teamsMaterialsMobilization: {
+                          ...form.installation?.teamsMaterialsMobilization,
+                          status: e.target.value,
+                        },
                       },
-                    },
-                  })
-                }
-              >
-                <option>Pending</option>
-                <option>In Progress</option>
-                <option>Completed</option>
-                <option>N/A</option>
-              </select>
-            ) : (
-              <div
-                className={`pill-${(project.installation?.teamsMaterialsMobilization?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
-                <span
-                  className="badge"
-                  style={{
-                    backgroundColor: getWoStatusColor(
-                      project.installation?.teamsMaterialsMobilization?.status,
-                    ),
-                  }}
+                    })
+                  }
                 >
-                  {project.installation?.teamsMaterialsMobilization?.status || "Pending"}
-                </span>{" "}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Date
-            </label>
-            {editMode ? (
-              <input
-                type="date"
-                className="form-input"
-                value={form.installation?.teamsMaterialsMobilization?.date || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      teamsMaterialsMobilization: {
-                        ...form.installation?.teamsMaterialsMobilization,
-                        date: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div style={{ fontSize: "0.9rem" }}>
-                {project.installation?.teamsMaterialsMobilization?.date
-                  ? new Date(
-                      project.installation.teamsMaterialsMobilization.date,
-                    ).toLocaleDateString()
-                  : "—"}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.installation?.teamsMaterialsMobilization?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      teamsMaterialsMobilization: {
-                        ...form.installation?.teamsMaterialsMobilization,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.installation?.teamsMaterialsMobilization?.remarks || "—"}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 2.3 TCN approval */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 2fr",
-            gap: "1rem",
-            alignItems: "start",
-            borderTop: "1px solid #e2e8f0",
-            paddingTop: "1rem",
-          }}
-        >
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              2.3 TCN approval
-            </label>
-            {editMode ? (
-              <select
-                className="form-select"
-                value={form.installation?.tcnApproval?.status || "Pending"}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      tcnApproval: {
-                        ...form.installation?.tcnApproval,
-                        status: e.target.value,
-                      },
-                    },
-                  })
-                }
-              >
-                <option>Pending</option>
-                <option>Approved</option>
-                <option>Rejected</option>
-                <option>N/A</option>
-              </select>
-            ) : (
-              <div
-                className={`pill-${(project.installation?.tcnApproval?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
-                <span
-                  className="badge"
-                  style={{
-                    backgroundColor: getWoStatusColor(
-                      project.installation?.tcnApproval?.status,
-                    ),
-                  }}
+                  <option>Pending</option>
+                  <option>In Progress</option>
+                  <option>Completed</option>
+                  <option>N/A</option>
+                </select>
+              ) : (
+                <div
+                  className={`pill-${(project.installation?.teamsMaterialsMobilization?.status || "pending").toLowerCase()}`}
+                  style={{ fontSize: "0.8rem", display: "inline-block" }}
                 >
-                  {project.installation?.tcnApproval?.status || "Pending"}
-                </span>{" "}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Date
-            </label>
-            {editMode ? (
-              <input
-                type="date"
-                className="form-input"
-                value={form.installation?.tcnApproval?.date || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      tcnApproval: {
-                        ...form.installation?.tcnApproval,
-                        date: e.target.value,
+                  <span
+                    className="badge"
+                    style={{
+                      backgroundColor: getWoStatusColor(
+                        project.installation?.teamsMaterialsMobilization
+                          ?.status,
+                      ),
+                    }}
+                  >
+                    {project.installation?.teamsMaterialsMobilization?.status ||
+                      "Pending"}
+                  </span>{" "}
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="form-label" style={{ fontWeight: 600 }}>
+                Date
+              </label>
+              {editMode ? (
+                <input
+                  type="date"
+                  className="form-input"
+                  value={
+                    form.installation?.teamsMaterialsMobilization?.date || ""
+                  }
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      installation: {
+                        ...form.installation,
+                        teamsMaterialsMobilization: {
+                          ...form.installation?.teamsMaterialsMobilization,
+                          date: e.target.value,
+                        },
                       },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div style={{ fontSize: "0.9rem" }}>
-                {project.installation?.tcnApproval?.date
-                  ? new Date(
-                      project.installation.tcnApproval.date,
-                    ).toLocaleDateString()
-                  : "—"}
-              </div>
-            )}
+                    })
+                  }
+                />
+              ) : (
+                <div style={{ fontSize: "0.9rem" }}>
+                  {project.installation?.teamsMaterialsMobilization?.date
+                    ? new Date(
+                        project.installation.teamsMaterialsMobilization.date,
+                      ).toLocaleDateString()
+                    : "—"}
+                </div>
+              )}
+            </div>
           </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.installation?.tcnApproval?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      tcnApproval: {
-                        ...form.installation?.tcnApproval,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.installation?.tcnApproval?.remarks || "—"}
-              </div>
-            )}
-          </div>
-        </div>
-
+        )}
         {/* 2.4 Site Installation */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 2fr",
+            gridTemplateColumns: "1fr 1fr 1fr  ",
             gap: "1rem",
             alignItems: "start",
             borderTop: "1px solid #e2e8f0",
@@ -421,7 +233,7 @@ export default function Installation({
         >
           <div>
             <label className="form-label" style={{ fontWeight: 600 }}>
-              2.4 Site Installation
+              Site Installation
             </label>
             {editMode ? (
               <select
@@ -475,13 +287,9 @@ export default function Installation({
                 <option>Pending</option>
                 <option>In Progress</option>
                 <option>Completed</option>
-                <option>N/A</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.installation?.siteInstallation?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -524,40 +332,6 @@ export default function Installation({
                       project.installation.siteInstallation.date,
                     ).toLocaleDateString()
                   : "—"}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="form-label" style={{ fontWeight: 600 }}>
-              Remarks
-            </label>
-            {editMode ? (
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Remarks..."
-                value={form.installation?.siteInstallation?.remarks || ""}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    installation: {
-                      ...form.installation,
-                      siteInstallation: {
-                        ...form.installation?.siteInstallation,
-                        remarks: e.target.value,
-                      },
-                    },
-                  })
-                }
-              />
-            ) : (
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {project.installation?.siteInstallation?.remarks || "—"}
               </div>
             )}
           </div>
