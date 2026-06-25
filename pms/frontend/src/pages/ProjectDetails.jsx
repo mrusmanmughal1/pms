@@ -21,6 +21,11 @@ import { useAuthStore } from "../store/authStore";
 import { getCatBadge } from "../utils/helpers";
 import { Calendar, SaudiRiyal } from "lucide-react";
 import { getWoStatusColor } from "../utils/statusColor";
+import MapData from "../components/MapData";
+import WorkOrder from "../components/WorkOrder";
+import Installation from "../components/Installation";
+import Integration from "../components/Integration";
+import Closeout from "../components/Closeout";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
@@ -34,6 +39,23 @@ export default function ProjectDetails() {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({
     mapping: { woRequest: {}, woIssuance: {}, materialsRequest: {} },
+    installation: {
+      tcnRequest: {},
+      teamsMaterialsMobilization: {},
+      tcnApproval: {},
+      siteInstallation: {},
+    },
+    integration: {
+      alarmsConfiguration: {},
+      annexNumber: {},
+      tenantsIntegration: {},
+    },
+    closeout: {
+      patTcn: {},
+      patStatus: {},
+      invoicing: {},
+      capitalisationSheetUpdate: {},
+    },
   });
   const [saving, setSaving] = useState(false);
   const deleteMutation = useDeleteProject();
@@ -93,6 +115,124 @@ export default function ProjectDetails() {
           },
           generalRemarks: project.mapping?.generalRemarks || "",
         },
+        installation: {
+          tcnRequest: {
+            tcnNumber: project.installation?.tcnRequest?.tcnNumber || "",
+            status: project.installation?.tcnRequest?.status || "Pending",
+            date: project.installation?.tcnRequest?.date
+              ? new Date(project.installation.tcnRequest.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.installation?.tcnRequest?.remarks || "",
+          },
+          teamsMaterialsMobilization: {
+            status:
+              project.installation?.teamsMaterialsMobilization?.status ||
+              "Pending",
+            date: project.installation?.teamsMaterialsMobilization?.date
+              ? new Date(project.installation.teamsMaterialsMobilization.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks:
+              project.installation?.teamsMaterialsMobilization?.remarks || "",
+          },
+          tcnApproval: {
+            status: project.installation?.tcnApproval?.status || "Pending",
+            date: project.installation?.tcnApproval?.date
+              ? new Date(project.installation.tcnApproval.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.installation?.tcnApproval?.remarks || "",
+          },
+          siteInstallation: {
+            type: project.installation?.siteInstallation?.type || "RMS",
+            status: project.installation?.siteInstallation?.status || "Pending",
+            date: project.installation?.siteInstallation?.date
+              ? new Date(project.installation.siteInstallation.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.installation?.siteInstallation?.remarks || "",
+          },
+          generalRemarks: project.installation?.generalRemarks || "",
+        },
+        integration: {
+          alarmsConfiguration: {
+            status:
+              project.integration?.alarmsConfiguration?.status || "Pending",
+            date: project.integration?.alarmsConfiguration?.date
+              ? new Date(project.integration.alarmsConfiguration.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.integration?.alarmsConfiguration?.remarks || "",
+          },
+          annexNumber: {
+            number: project.integration?.annexNumber?.number || "",
+            status: project.integration?.annexNumber?.status || "Pending",
+            date: project.integration?.annexNumber?.date
+              ? new Date(project.integration.annexNumber.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.integration?.annexNumber?.remarks || "",
+          },
+          tenantsIntegration: {
+            status:
+              project.integration?.tenantsIntegration?.status || "Pending",
+            date: project.integration?.tenantsIntegration?.date
+              ? new Date(project.integration.tenantsIntegration.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.integration?.tenantsIntegration?.remarks || "",
+          },
+          generalRemarks: project.integration?.generalRemarks || "",
+        },
+        closeout: {
+          patTcn: {
+            number: project.closeout?.patTcn?.number || "",
+            status: project.closeout?.patTcn?.status || "Pending",
+            date: project.closeout?.patTcn?.date
+              ? new Date(project.closeout.patTcn.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.closeout?.patTcn?.remarks || "",
+          },
+          patStatus: {
+            status: project.closeout?.patStatus?.status || "Pending",
+            date: project.closeout?.patStatus?.date
+              ? new Date(project.closeout.patStatus.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.closeout?.patStatus?.remarks || "",
+          },
+          invoicing: {
+            status: project.closeout?.invoicing?.status || "Pending",
+            date: project.closeout?.invoicing?.date
+              ? new Date(project.closeout.invoicing.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.closeout?.invoicing?.remarks || "",
+          },
+          capitalisationSheetUpdate: {
+            status:
+              project.closeout?.capitalisationSheetUpdate?.status || "Pending",
+            date: project.closeout?.capitalisationSheetUpdate?.date
+              ? new Date(project.closeout.capitalisationSheetUpdate.date)
+                  .toISOString()
+                  .slice(0, 10)
+              : "",
+            remarks: project.closeout?.capitalisationSheetUpdate?.remarks || "",
+          },
+          generalRemarks: project.closeout?.generalRemarks || "",
+        },
       });
   }, [project]);
 
@@ -126,6 +266,59 @@ export default function ProjectDetails() {
           materialsRequest: {
             ...form.mapping?.materialsRequest,
             date: form.mapping?.materialsRequest?.date || null,
+          },
+        },
+        installation: {
+          ...form.installation,
+          tcnRequest: {
+            ...form.installation?.tcnRequest,
+            date: form.installation?.tcnRequest?.date || null,
+          },
+          teamsMaterialsMobilization: {
+            ...form.installation?.teamsMaterialsMobilization,
+            date: form.installation?.teamsMaterialsMobilization?.date || null,
+          },
+          tcnApproval: {
+            ...form.installation?.tcnApproval,
+            date: form.installation?.tcnApproval?.date || null,
+          },
+          siteInstallation: {
+            ...form.installation?.siteInstallation,
+            date: form.installation?.siteInstallation?.date || null,
+          },
+        },
+        integration: {
+          ...form.integration,
+          alarmsConfiguration: {
+            ...form.integration?.alarmsConfiguration,
+            date: form.integration?.alarmsConfiguration?.date || null,
+          },
+          annexNumber: {
+            ...form.integration?.annexNumber,
+            date: form.integration?.annexNumber?.date || null,
+          },
+          tenantsIntegration: {
+            ...form.integration?.tenantsIntegration,
+            date: form.integration?.tenantsIntegration?.date || null,
+          },
+        },
+        closeout: {
+          ...form.closeout,
+          patTcn: {
+            ...form.closeout?.patTcn,
+            date: form.closeout?.patTcn?.date || null,
+          },
+          patStatus: {
+            ...form.closeout?.patStatus,
+            date: form.closeout?.patStatus?.date || null,
+          },
+          invoicing: {
+            ...form.closeout?.invoicing,
+            date: form.closeout?.invoicing?.date || null,
+          },
+          capitalisationSheetUpdate: {
+            ...form.closeout?.capitalisationSheetUpdate,
+            date: form.closeout?.capitalisationSheetUpdate?.date || null,
           },
         },
       };
@@ -172,12 +365,18 @@ export default function ProjectDetails() {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-start",
+            alignItems: "center",
             gap: "1rem",
           }}
         >
           <div style={{ flex: 1 }}>
-            <h2 style={{ margin: 0, fontSize: "1.25rem" }}>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "1.25rem",
+                textTransform: "capitalize",
+              }}
+            >
               {/* add project icon  */}
               {project.title}{" "}
               <span
@@ -194,7 +393,7 @@ export default function ProjectDetails() {
                 fontSize: "0.9rem",
               }}
             >
-              Allocated Budget: <SaudiRiyal size={12} />{" "}
+              Allocated Budget : <SaudiRiyal size={12} />{" "}
               {project.budget?.toLocaleString() ?? 0}
             </div>
             <div
@@ -289,6 +488,182 @@ export default function ProjectDetails() {
                             generalRemarks:
                               project.mapping?.generalRemarks || "",
                           },
+                          installation: {
+                            tcnRequest: {
+                              tcnNumber:
+                                project.installation?.tcnRequest?.tcnNumber ||
+                                "",
+                              status:
+                                project.installation?.tcnRequest?.status ||
+                                "Pending",
+                              date: project.installation?.tcnRequest?.date
+                                ? new Date(project.installation.tcnRequest.date)
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.installation?.tcnRequest?.remarks || "",
+                            },
+                            teamsMaterialsMobilization: {
+                              status:
+                                project.installation?.teamsMaterialsMobilization
+                                  ?.status || "Pending",
+                              date: project.installation
+                                ?.teamsMaterialsMobilization?.date
+                                ? new Date(
+                                    project.installation
+                                      .teamsMaterialsMobilization.date,
+                                  )
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.installation?.teamsMaterialsMobilization
+                                  ?.remarks || "",
+                            },
+                            tcnApproval: {
+                              status:
+                                project.installation?.tcnApproval?.status ||
+                                "Pending",
+                              date: project.installation?.tcnApproval?.date
+                                ? new Date(
+                                    project.installation.tcnApproval.date,
+                                  )
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.installation?.tcnApproval?.remarks ||
+                                "",
+                            },
+                            siteInstallation: {
+                              type:
+                                project.installation?.siteInstallation?.type ||
+                                "RMS",
+                              status:
+                                project.installation?.siteInstallation
+                                  ?.status || "Pending",
+                              date: project.installation?.siteInstallation?.date
+                                ? new Date(
+                                    project.installation.siteInstallation.date,
+                                  )
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.installation?.siteInstallation
+                                  ?.remarks || "",
+                            },
+                            generalRemarks:
+                              project.installation?.generalRemarks || "",
+                          },
+                          integration: {
+                            alarmsConfiguration: {
+                              status:
+                                project.integration?.alarmsConfiguration
+                                  ?.status || "Pending",
+                              date: project.integration?.alarmsConfiguration
+                                ?.date
+                                ? new Date(
+                                    project.integration.alarmsConfiguration
+                                      .date,
+                                  )
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.integration?.alarmsConfiguration
+                                  ?.remarks || "",
+                            },
+                            annexNumber: {
+                              number:
+                                project.integration?.annexNumber?.number || "",
+                              status:
+                                project.integration?.annexNumber?.status ||
+                                "Pending",
+                              date: project.integration?.annexNumber?.date
+                                ? new Date(project.integration.annexNumber.date)
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.integration?.annexNumber?.remarks || "",
+                            },
+                            tenantsIntegration: {
+                              status:
+                                project.integration?.tenantsIntegration
+                                  ?.status || "Pending",
+                              date: project.integration?.tenantsIntegration
+                                ?.date
+                                ? new Date(
+                                    project.integration.tenantsIntegration.date,
+                                  )
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.integration?.tenantsIntegration
+                                  ?.remarks || "",
+                            },
+                            generalRemarks:
+                              project.integration?.generalRemarks || "",
+                          },
+                          closeout: {
+                            patTcn: {
+                              number: project.closeout?.patTcn?.number || "",
+                              status:
+                                project.closeout?.patTcn?.status || "Pending",
+                              date: project.closeout?.patTcn?.date
+                                ? new Date(project.closeout.patTcn.date)
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks: project.closeout?.patTcn?.remarks || "",
+                            },
+                            patStatus: {
+                              status:
+                                project.closeout?.patStatus?.status ||
+                                "Pending",
+                              date: project.closeout?.patStatus?.date
+                                ? new Date(project.closeout.patStatus.date)
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.closeout?.patStatus?.remarks || "",
+                            },
+                            invoicing: {
+                              status:
+                                project.closeout?.invoicing?.status ||
+                                "Pending",
+                              date: project.closeout?.invoicing?.date
+                                ? new Date(project.closeout.invoicing.date)
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.closeout?.invoicing?.remarks || "",
+                            },
+                            capitalisationSheetUpdate: {
+                              status:
+                                project.closeout?.capitalisationSheetUpdate
+                                  ?.status || "Pending",
+                              date: project.closeout?.capitalisationSheetUpdate
+                                ?.date
+                                ? new Date(
+                                    project.closeout.capitalisationSheetUpdate
+                                      .date,
+                                  )
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : "",
+                              remarks:
+                                project.closeout?.capitalisationSheetUpdate
+                                  ?.remarks || "",
+                            },
+                            generalRemarks:
+                              project.closeout?.generalRemarks || "",
+                          },
                         });
                       }}
                     >
@@ -329,656 +704,338 @@ export default function ProjectDetails() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "2fr 1fr",
-          gap: "1.5rem",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "0.5rem",
         }}
       >
-        <div>
-          <div className="glass-panel" style={{ padding: "1.5rem" }}>
-            <div className="form-group glass-panel">
-              <label
-                className="form-label"
-                style={{ fontSize: "1rem", fontWeight: "600" }}
-              >
-                Description
-              </label>
-              {editMode ? (
-                <textarea
-                  className="form-textarea"
-                  rows={6}
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                />
-              ) : (
-                <p
-                  style={{
-                    color: "var(--text-secondary)",
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {project.description}
-                </p>
-              )}
-            </div>
-
-            <div
-              className=" glass-panel"
-              style={{ padding: "1rem", marginTop: "1rem" }}
+        <div className="glass-panel" style={{ width: "100%" }}>
+          <label
+            className="form-label"
+            style={{ fontSize: "1rem", fontWeight: "600" }}
+          >
+            Description
+          </label>
+          {editMode ? (
+            <textarea
+              className="form-textarea"
+              rows={6}
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+            />
+          ) : (
+            <p
+              style={{
+                color: "var(--text-secondary)",
+                whiteSpace: "pre-wrap",
+                width: "350px",
+                overflowWrap: "break-word",
+                height: "350px",
+                overflowY: "auto",
+              }}
             >
-              <label
-                className="form-label"
-                style={{ fontSize: "1rem", fontWeight: "600" }}
-              >
-                Details{" "}
-              </label>
+              {project.description}
+            </p>
+          )}
+        </div>
+        <div className="">
+          <div className=" glass-panel">
+            <label
+              className="form-label"
+              style={{ fontSize: "1rem", fontWeight: "600" }}
+            >
+              Details{" "}
+            </label>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr ",
+                gap: "0.4rem",
+                marginTop: "1rem",
+              }}
+            >
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1rem",
-                  marginTop: "1rem",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
                 }}
               >
-                <div>
-                  <label className="form-label">Team Lead</label>
-                  {editMode ? (
-                    <>
-                      {usersLoading ? (
-                        <select className="form-select" disabled>
-                          <option>Loading users...</option>
-                        </select>
-                      ) : (
-                        <select
-                          className="form-select"
-                          value={form.teamLead}
-                          onChange={(e) =>
-                            setForm({ ...form, teamLead: e.target.value })
-                          }
-                        >
-                          <option value="">— Select team lead —</option>
-                          {users.map((u) => (
-                            <option key={u._id} value={u.name}>
-                              {u.name} {u.email ? `(${u.email})` : ""}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </>
-                  ) : (
-                    <div>{project.teamLead || "—"}</div>
-                  )}
-                </div>
-
-                <div>
-                  <label className="form-label">Tags</label>
-                  {editMode ? (
-                    <input
-                      className="form-input"
-                      value={form.tags}
-                      onChange={(e) =>
-                        setForm({ ...form, tags: e.target.value })
-                      }
-                      placeholder="comma, separated, tags"
-                    />
-                  ) : (
-                    <div>{(project.tags || []).join(", ") || "—"}</div>
-                  )}
-                </div>
+                <label className="form-label">Team Lead</label>
+                {editMode ? (
+                  <>
+                    {usersLoading ? (
+                      <select className="form-select" disabled>
+                        <option>Loading users...</option>
+                      </select>
+                    ) : (
+                      <select
+                        className="form-select"
+                        value={form.teamLead}
+                        onChange={(e) =>
+                          setForm({ ...form, teamLead: e.target.value })
+                        }
+                      >
+                        <option value="">— Select team lead —</option>
+                        {users.map((u) => (
+                          <option key={u._id} value={u.name}>
+                            {u.name} {u.email ? `(${u.email})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </>
+                ) : (
+                  <div>{project.teamLead || "—"}</div>
+                )}
               </div>
 
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1rem",
-                  marginTop: "1rem",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
                 }}
               >
-                <div>
-                  <label className="form-label">Start Date</label>
-                  {editMode ? (
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={form.startDate}
-                      onChange={(e) =>
-                        setForm({ ...form, startDate: e.target.value })
-                      }
-                    />
-                  ) : (
-                    <div>
-                      {project.startDate
-                        ? new Date(project.startDate).toLocaleDateString()
-                        : "—"}
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <label className="form-label">End Date</label>
-                  {editMode ? (
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={form.endDate}
-                      onChange={(e) =>
-                        setForm({ ...form, endDate: e.target.value })
-                      }
-                    />
-                  ) : (
-                    <div>
-                      {project.endDate
-                        ? new Date(project.endDate).toLocaleDateString()
-                        : "—"}
-                    </div>
-                  )}
-                </div>
+                <label className="form-label">Tags</label>
+                {editMode ? (
+                  <input
+                    className="form-input"
+                    value={form.tags}
+                    onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                    placeholder="comma, separated, tags"
+                  />
+                ) : (
+                  <div>{(project.tags || []).join(", ") || "—"}</div>
+                )}
               </div>
             </div>
 
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-                marginTop: "1rem",
+                gridTemplateColumns: "1fr",
+                gap: "0.4rem",
               }}
             >
-              <div className="glass-panel">
-                <label
-                  className="form-label"
-                  style={{ fontSize: "1rem", fontWeight: "600" }}
-                >
-                  Status
-                </label>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <label className="form-label">Start Date</label>
                 {editMode ? (
-                  <select
-                    className="form-select"
-                    value={form.status}
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={form.startDate}
                     onChange={(e) =>
-                      setForm({ ...form, status: e.target.value })
+                      setForm({ ...form, startDate: e.target.value })
                     }
-                  >
-                    <option>Planning</option>
-                    <option>In Progress</option>
-                    <option>Testing</option>
-                    <option>Completed</option>
-                    <option>On Hold</option>
-                  </select>
+                  />
                 ) : (
-                  <div
-                    className={`pill-${project.status.replace(/\s+/g, "").toLowerCase()}`}
-                    style={{ fontSize: "0.8rem" }}
-                  >
-                    {project.status}
+                  <div style={{ fontSize: "0.8rem" }}>
+                    {project.startDate
+                      ? new Date(project.startDate).toLocaleDateString()
+                      : "—"}
                   </div>
                 )}
               </div>
 
-              <div className="glass-panel">
-                <div className="">
-                  <label
-                    className="form-label"
-                    style={{ fontSize: "1rem", fontWeight: "600" }}
-                  >
-                    Priority
-                  </label>
-                  {editMode ? (
-                    <select
-                      className="form-select"
-                      value={form.priority}
-                      onChange={(e) =>
-                        setForm({ ...form, priority: e.target.value })
-                      }
-                    >
-                      <option>Low</option>
-                      <option>Medium</option>
-                      <option>High</option>
-                      <option>Critical</option>
-                    </select>
-                  ) : (
-                    <div className="" style={{ display: "flex" }}>
-                      <div
-                        className={`priority-${project.priority.toLowerCase()}`}
-                        style={{ fontSize: "0.8rem" }}
-                      >
-                        {project.priority}
-                      </div>
-                    </div>
-                  )}
-                </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <label className="form-label">End Date</label>
+                {editMode ? (
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={form.endDate}
+                    onChange={(e) =>
+                      setForm({ ...form, endDate: e.target.value })
+                    }
+                  />
+                ) : (
+                  <div style={{ fontSize: "0.8rem" }}>
+                    {project.endDate
+                      ? new Date(project.endDate).toLocaleDateString()
+                      : "—"}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-
-          <div
-            className="glass-panel"
-            style={{ padding: "1.5rem", marginTop: "1.5rem" }}
-          >
-            <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.1rem" }}>
-              Mapping & Approvals
-            </h3>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+              }}
             >
-              {/* WO Request */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 2fr",
-                  gap: "1rem",
-                  alignItems: "start",
-                }}
-              >
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    WO Request
-                  </label>
-                  {editMode ? (
-                    <select
-                      className="form-select"
-                      value={form.mapping?.woRequest?.status || "Pending"}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            woRequest: {
-                              ...form.mapping?.woRequest,
-                              status: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    >
-                      <option>Pending</option>
-                      <option>Approved</option>
-                      <option>Rejected</option>
-                      <option>N/A</option>
-                    </select>
-                  ) : (
-                    <div
-                      className={`pill-${(project.mapping?.woRequest?.status || "pending").toLowerCase()}`}
-                      style={{ fontSize: "0.8rem", display: "inline-block" }}
-                    >
-                      <span
-                        className="badge"
-                        style={{
-                          backgroundColor: getWoStatusColor(
-                            project.mapping?.woRequest?.status,
-                          ),
-                        }}
-                      >
-                        {project.mapping?.woRequest?.status || "Pending"}
-                      </span>{" "}
-                    </div>
-                  )}
+              <label className="form-label">Status</label>
+              {editMode ? (
+                <select
+                  className="form-select"
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  <option>Planning</option>
+                  <option>In Progress</option>
+                  <option>Testing</option>
+                  <option>Completed</option>
+                  <option>On Hold</option>
+                </select>
+              ) : (
+                <div
+                  className={`pill-${project.status.replace(/\s+/g, "").toLowerCase()}`}
+                  style={{ fontSize: "0.7rem" }}
+                >
+                  {project.status}
                 </div>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    Date
-                  </label>
-                  {editMode ? (
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={form.mapping?.woRequest?.date || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            woRequest: {
-                              ...form.mapping?.woRequest,
-                              date: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    />
-                  ) : (
-                    <div style={{ fontSize: "0.9rem" }}>
-                      {project.mapping?.woRequest?.date
-                        ? new Date(
-                            project.mapping.woRequest.date,
-                          ).toLocaleDateString()
-                        : "—"}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    Remarks
-                  </label>
-                  {editMode ? (
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Remarks..."
-                      value={form.mapping?.woRequest?.remarks || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            woRequest: {
-                              ...form.mapping?.woRequest,
-                              remarks: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        color: "var(--text-secondary)",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {project.mapping?.woRequest?.remarks || "—"}
-                    </div>
-                  )}
-                </div>
-              </div>
+              )}
+            </div>
 
-              {/* WO Issuance */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 2fr",
-                  gap: "1rem",
-                  alignItems: "start",
-                  borderTop: "1px solid #e2e8f0",
-                  paddingTop: "1rem",
-                }}
-              >
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    WO Issuance
-                  </label>
-                  {editMode ? (
-                    <select
-                      className="form-select"
-                      value={form.mapping?.woIssuance?.status || "Pending"}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            woIssuance: {
-                              ...form.mapping?.woIssuance,
-                              status: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    >
-                      <option>Pending</option>
-                      <option>Approved</option>
-                      <option>Rejected</option>
-                      <option>N/A</option>
-                    </select>
-                  ) : (
-                    <div
-                      className={`pill-${(project.mapping?.woIssuance?.status || "pending").toLowerCase()}`}
-                      style={{ fontSize: "0.8rem", display: "inline-block" }}
-                    >
-                      <span
-                        className="badge"
-                        style={{
-                          backgroundColor: getWoStatusColor(
-                            project.mapping?.woRequest?.status,
-                          ),
-                        }}
-                      >
-                        {project.mapping?.woRequest?.status || "Pending"}
-                      </span>{" "}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    Date
-                  </label>
-                  {editMode ? (
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={form.mapping?.woIssuance?.date || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            woIssuance: {
-                              ...form.mapping?.woIssuance,
-                              date: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    />
-                  ) : (
-                    <div style={{ fontSize: "0.9rem" }}>
-                      {project.mapping?.woIssuance?.date
-                        ? new Date(
-                            project.mapping.woIssuance.date,
-                          ).toLocaleDateString()
-                        : "—"}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    Remarks
-                  </label>
-                  {editMode ? (
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Remarks..."
-                      value={form.mapping?.woIssuance?.remarks || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            woIssuance: {
-                              ...form.mapping?.woIssuance,
-                              remarks: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        color: "var(--text-secondary)",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {project.mapping?.woIssuance?.remarks || "—"}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Materials Request */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 2fr",
-                  gap: "1rem",
-                  alignItems: "start",
-                  borderTop: "1px solid #e2e8f0",
-                  paddingTop: "1rem",
-                }}
-              >
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    Materials Request
-                  </label>
-                  {editMode ? (
-                    <select
-                      className="form-select"
-                      value={
-                        form.mapping?.materialsRequest?.status || "Pending"
-                      }
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            materialsRequest: {
-                              ...form.mapping?.materialsRequest,
-                              status: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    >
-                      <option>Pending</option>
-                      <option>Approved</option>
-                      <option>Rejected</option>
-                      <option>N/A</option>
-                    </select>
-                  ) : (
-                    <div
-                      className={`pill-${(project.mapping?.materialsRequest?.status || "pending").toLowerCase()}`}
-                      style={{ fontSize: "0.8rem", display: "inline-block" }}
-                    >
-                      <span
-                        className="badge"
-                        style={{
-                          backgroundColor: getWoStatusColor(
-                            project.mapping?.materialsRequest?.status,
-                          ),
-                        }}
-                      >
-                        {project.mapping?.materialsRequest?.status || "Pending"}
-                      </span>{" "}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    Date
-                  </label>
-                  {editMode ? (
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={form.mapping?.materialsRequest?.date || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            materialsRequest: {
-                              ...form.mapping?.materialsRequest,
-                              date: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    />
-                  ) : (
-                    <div style={{ fontSize: "0.9rem" }}>
-                      {project.mapping?.materialsRequest?.date
-                        ? new Date(
-                            project.mapping.materialsRequest.date,
-                          ).toLocaleDateString()
-                        : "—"}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    Remarks
-                  </label>
-                  {editMode ? (
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Remarks..."
-                      value={form.mapping?.materialsRequest?.remarks || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            materialsRequest: {
-                              ...form.mapping?.materialsRequest,
-                              remarks: e.target.value,
-                            },
-                          },
-                        })
-                      }
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        color: "var(--text-secondary)",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {project.mapping?.materialsRequest?.remarks || "—"}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* General Remarks */}
-              <div
-                style={{ borderTop: "1px solid #e2e8f0", paddingTop: "1rem" }}
-              >
-                <label className="form-label" style={{ fontWeight: 600 }}>
-                  General Remarks
-                </label>
-                {editMode ? (
-                  <textarea
-                    className="form-textarea"
-                    rows={2}
-                    value={form.mapping?.generalRemarks || ""}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        mapping: {
-                          ...form.mapping,
-                          generalRemarks: e.target.value,
-                        },
-                      })
-                    }
-                  ></textarea>
-                ) : (
-                  <p
-                    style={{
-                      color: "var(--text-secondary)",
-                      fontSize: "0.9rem",
-                      whiteSpace: "pre-wrap",
-                    }}
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <label className="form-label" style={{ fontSize: "0.8rem" }}>
+                Priority
+              </label>
+              {editMode ? (
+                <select
+                  className="form-select"
+                  value={form.priority}
+                  onChange={(e) =>
+                    setForm({ ...form, priority: e.target.value })
+                  }
+                >
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                  <option>Critical</option>
+                </select>
+              ) : (
+                <div className="" style={{ display: "flex" }}>
+                  <div
+                    className={`priority-${project.priority.toLowerCase()}`}
+                    style={{ fontSize: "0.8rem", padding: "1px 10px" }}
                   >
-                    {project.mapping?.generalRemarks || "—"}
-                  </p>
-                )}
+                    {project.priority}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "0.4rem",
+              }}
+            >
+              <label className="form-label" style={{ fontSize: "0.8rem" }}>
+                WO Request
+              </label>
+              <div
+                className={`pill-${(project.mapping?.woRequest?.status || "pending").toLowerCase()}`}
+                style={{ fontSize: "0.7rem", padding: "1px 10px" }}
+              >
+                {project.mapping?.woRequest?.status || "Pending"}
+              </div>
+            </div>
+
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "0.4rem",
+              }}
+            >
+              <label className="form-label" style={{ fontSize: "0.8rem" }}>
+                Issued TCN
+              </label>
+              <div
+                className={`pill-${(project.installation?.tcnRequest?.status || "pending").toLowerCase()}`}
+                style={{ fontSize: "0.7rem", padding: "1px 10px" }}
+              >
+                {project.installation?.tcnRequest?.status || "Pending"}
+              </div>
+            </div>
+
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "0.4rem",
+              }}
+            >
+              <label className="form-label" style={{ fontSize: "0.8rem" }}>
+                Site Installation
+              </label>
+              <div
+                className={`pill-${(project.installation?.siteInstallation?.status || "pending").toLowerCase()}`}
+                style={{ fontSize: "0.7rem", padding: "1px 10px" }}
+              >
+                {project.installation?.siteInstallation?.status || "Pending"}
+              </div>
+            </div>
+
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "0.4rem",
+              }}
+            >
+              <label className="form-label" style={{ fontSize: "0.8rem" }}>
+                Integration
+              </label>
+              <div
+                className={`pill-${(project.integration?.alarmsConfiguration?.status || "pending").toLowerCase()}`}
+                style={{ fontSize: "0.7rem", padding: "1px 10px" }}
+              >
+                {project.integration?.alarmsConfiguration?.status || "Pending"}
               </div>
             </div>
           </div>
         </div>
-
-        <aside>
-          <div
-            className="glass-panel"
-            style={{ padding: "1.25rem 1.5rem", marginBottom: "1rem" }}
-          >
-            <h3 style={{ margin: "0 0 0.5rem 0" }}>Progress</h3>
+        <div>
+          <div className="  glass-panel">
             {editMode && (
               <div style={{ marginBottom: "0.5rem" }}>
-                <label className="form-label">Progress (%)</label>
+                <label className="form-label" style={{ fontSize: "1rem" }}>
+                  Progress (%)
+                </label>
                 <input
                   type="range"
                   min="0"
@@ -1007,32 +1064,244 @@ export default function ProjectDetails() {
                 />
               </div>
             )}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                marginBottom: "0.5rem",
-              }}
-            >
-              <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>
-                {editMode ? form.progress : project.progress}%
-              </div>
-              <div style={{ flex: 1 }}>
-                <div className="progress-bg">
+            {/* ── Dynamic Phase Progress Bar ── */}
+            {(() => {
+              const phases = [
+                { key: "mapping", label: "Mapping", statusMatch: "Planning" },
+                {
+                  key: "installation",
+                  label: "Installation",
+                  statusMatch: "In Progress",
+                },
+                {
+                  key: "integration",
+                  label: "Integration",
+                  statusMatch: "Testing",
+                },
+                {
+                  key: "closeout",
+                  label: "Closeout",
+                  statusMatch: "Completed",
+                },
+              ];
+              const currentStatus = editMode ? form.status : project.status;
+              const statusOrder = [
+                "Planning",
+                "In Progress",
+                "Testing",
+                "Completed",
+                "On Hold",
+              ];
+              const currentIdx = statusOrder.indexOf(currentStatus);
+              // On Hold is treated as the last active phase before hold
+              const activePhaseIdx =
+                currentStatus === "On Hold" ? -1 : currentIdx;
+              const progressVal = editMode ? form.progress : project.progress;
+
+              return (
+                <div style={{ marginBottom: "1rem" }}>
+                  {/* Percentage display */}
                   <div
-                    className="progress-fill"
                     style={{
-                      width: `${editMode ? form.progress : project.progress}%`,
-                      background:
-                        (editMode ? form.progress : project.progress) >= 100
-                          ? "var(--status-completed)"
-                          : "var(--status-inprogress)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      marginBottom: "0.75rem",
                     }}
-                  />
+                  >
+                    <div
+                      style={{
+                        fontSize: "1.25rem",
+                        fontWeight: 700,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                        marginBottom: "0.5rem",
+                      }}
+                    >
+                      <h4 style={{ margin: "0", fontSize: "1rem" }}>
+                        Progress
+                      </h4>
+                      {progressVal}%
+                    </div>
+                    {currentStatus === "On Hold" && (
+                      <span
+                        style={{
+                          fontSize: "0.7rem",
+                          fontWeight: 600,
+                          color: "#f59e0b",
+                          background: "rgba(245,158,11,0.12)",
+                          padding: "2px 8px",
+                          borderRadius: "999px",
+                        }}
+                      >
+                        On Hold
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Stepper track */}
+                  <div
+                    style={{ position: "relative", padding: "0 0 0.25rem 0" }}
+                  >
+                    {/* Background track line */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "14px",
+                        left: "12px",
+                        right: "12px",
+                        height: "4px",
+                        background: "#e2e8f0",
+                        borderRadius: "2px",
+                        zIndex: 0,
+                      }}
+                    />
+                    {/* Active fill line */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "14px",
+                        left: "12px",
+                        width:
+                          activePhaseIdx >= 3
+                            ? "calc(100% - 24px)"
+                            : activePhaseIdx < 0
+                              ? "0%"
+                              : `calc(${(activePhaseIdx / (phases.length - 1)) * 100}% * (1 - 24px / 100%) + 0px)`,
+                        height: "4px",
+                        background:
+                          activePhaseIdx >= 3
+                            ? "linear-gradient(90deg, #10b981, #059669)"
+                            : "linear-gradient(90deg, #3b82f6, #6366f1)",
+                        borderRadius: "2px",
+                        transition: "width 0.5s ease",
+                        zIndex: 1,
+                      }}
+                    />
+
+                    {/* Phase dots + labels */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        position: "relative",
+                        zIndex: 2,
+                      }}
+                    >
+                      {phases.map((phase, idx) => {
+                        const isCompleted = activePhaseIdx > idx;
+                        const isActive = activePhaseIdx === idx;
+                        const isFuture = !isCompleted && !isActive;
+
+                        let dotBg = "#cbd5e1";
+                        let dotBorder = "#cbd5e1";
+                        let dotShadow = "none";
+                        let labelColor = "var(--text-secondary)";
+                        let labelWeight = 400;
+
+                        if (isCompleted) {
+                          dotBg = "#10b981";
+                          dotBorder = "#10b981";
+                          labelColor = "#10b981";
+                          labelWeight = 600;
+                        } else if (isActive) {
+                          dotBg = "#3b82f6";
+                          dotBorder = "#3b82f6";
+                          dotShadow = "0 0 0 4px rgba(59,130,246,0.2)";
+                          labelColor = "#3b82f6";
+                          labelWeight = 700;
+                        }
+
+                        return (
+                          <div
+                            key={phase.key}
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              flex: 1,
+                            }}
+                          >
+                            {/* Dot */}
+                            <div
+                              style={{
+                                width: isActive ? "28px" : "24px",
+                                height: isActive ? "28px" : "24px",
+                                borderRadius: "50%",
+                                background: dotBg,
+                                border: `3px solid ${dotBorder}`,
+                                boxShadow: dotShadow,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                transition: "all 0.3s ease",
+                                marginBottom: "6px",
+                              }}
+                            >
+                              {isCompleted ? (
+                                <svg
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="#fff"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              ) : isActive ? (
+                                <div
+                                  style={{
+                                    width: "8px",
+                                    height: "8px",
+                                    borderRadius: "50%",
+                                    background: "#fff",
+                                  }}
+                                />
+                              ) : (
+                                <div
+                                  style={{
+                                    width: "6px",
+                                    height: "6px",
+                                    borderRadius: "50%",
+                                    background: "#fff",
+                                  }}
+                                />
+                              )}
+                            </div>
+                            {/* Label */}
+                            <span
+                              style={{
+                                fontSize: "0.65rem",
+                                fontWeight: labelWeight,
+                                color: labelColor,
+                                textAlign: "center",
+                                letterSpacing: "0.02em",
+                                textTransform: "uppercase",
+                                lineHeight: 1.2,
+                                transition: "all 0.3s ease",
+                              }}
+                            >
+                              {phase.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Thin overall progress bar underneath */}
                 </div>
-              </div>
-            </div>
+              );
+            })()}
+          </div>
+          <div className="  glass-panel">
+            <h3 style={{ margin: "0 0 0.5rem 0" }}>Budget & Spent</h3>
+
             {/* Budget vs Spent chart */}
             {(() => {
               const displayBudget = editMode
@@ -1064,7 +1333,10 @@ export default function ProjectDetails() {
                           className="form-input"
                           value={form.budget}
                           onChange={(e) =>
-                            setForm({ ...form, budget: Number(e.target.value) })
+                            setForm({
+                              ...form,
+                              budget: Number(e.target.value),
+                            })
                           }
                         />
                       </div>
@@ -1075,7 +1347,10 @@ export default function ProjectDetails() {
                           className="form-input"
                           value={form.spent}
                           onChange={(e) =>
-                            setForm({ ...form, spent: Number(e.target.value) })
+                            setForm({
+                              ...form,
+                              spent: Number(e.target.value),
+                            })
                           }
                         />
                       </div>
@@ -1156,83 +1431,51 @@ export default function ProjectDetails() {
               );
             })()}
           </div>
+        </div>
+      </div>
 
-          <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
-            <h4 style={{ margin: "0 0 0.5rem 0" }}>Details</h4>
-            <div style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-              <div style={{ marginBottom: "0.5rem" }}>
-                <strong>Team Lead: </strong>
-                {project.teamLead || "—"}
-              </div>
-              <div style={{ marginBottom: "0.5rem" }}>
-                <strong>Start: </strong>
-                {project.startDate
-                  ? new Date(project.startDate).toLocaleDateString()
-                  : "—"}
-              </div>
-              <div style={{ marginBottom: "0.5rem" }}>
-                <strong>End: </strong>
-                {project.endDate
-                  ? new Date(project.endDate).toLocaleDateString()
-                  : "—"}
-              </div>
-              <div style={{ marginTop: "0.75rem" }}>
-                <strong>Tags: </strong>
-                {(project.tags || []).join(", ") || "—"}
-              </div>
-              <div style={{ marginTop: "0.75rem" }}>
-                <strong>Latitude: </strong>
-                {project.latitude ?? "—"}
-              </div>
-              <div style={{ marginTop: "0.25rem" }}>
-                <strong>Longitude: </strong>
-                {project.longitude ?? "—"}
-              </div>
-            </div>
-          </div>
-          {project.latitude != null && project.longitude != null && (
-            <div
-              className="glass-panel"
-              style={{ padding: "1.25rem 1.5rem", marginTop: "1rem" }}
-            >
-              <h4 style={{ margin: "0 0 0.5rem 0" }}>Location</h4>
-              <div
-                style={{
-                  width: "100%",
-                  height: "260px",
-                  borderRadius: "0.75rem",
-                  overflow: "hidden",
-                  border: "1px solid #e2e8f0",
-                }}
-              >
-                <iframe
-                  title="Project location map"
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  scrolling="no"
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${project.longitude - 0.02}%2C${project.latitude - 0.01}%2C${project.longitude + 0.02}%2C${project.latitude + 0.01}&layer=mapnik&marker=${project.latitude}%2C${project.longitude}`}
-                ></iframe>
-              </div>
-              <div
-                style={{
-                  marginTop: "0.75rem",
-                  color: "var(--text-secondary)",
-                  fontSize: "0.9rem",
-                }}
-              >
-                <a
-                  href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=15/${project.latitude}/${project.longitude}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: "#2563eb" }}
-                >
-                  View on OpenStreetMap
-                </a>
-              </div>
-            </div>
-          )}
-        </aside>
+      <div
+        className=""
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.5fr 1fr",
+          gap: "1rem",
+          marginTop: "1rem",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <WorkOrder
+            project={project}
+            editMode={editMode}
+            setForm={setForm}
+            form={form}
+            getWoStatusColor={getWoStatusColor}
+          />
+          <Installation
+            project={project}
+            editMode={editMode}
+            setForm={setForm}
+            form={form}
+            getWoStatusColor={getWoStatusColor}
+          />
+          <Integration
+            project={project}
+            editMode={editMode}
+            setForm={setForm}
+            form={form}
+            getWoStatusColor={getWoStatusColor}
+          />
+          <Closeout
+            project={project}
+            editMode={editMode}
+            setForm={setForm}
+            form={form}
+            getWoStatusColor={getWoStatusColor}
+          />
+        </div>
+        {project.latitude != null && project.longitude != null && (
+          <MapData project={project} />
+        )}
       </div>
     </div>
   );

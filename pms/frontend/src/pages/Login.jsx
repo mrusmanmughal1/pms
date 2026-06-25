@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,11 +10,14 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuthStore();
+  const queryClient = useQueryClient();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     const success = await login(email, password);
     if (success) {
+      queryClient.clear();
       navigate("/");
     } else {
       setError("Invalid credentials");

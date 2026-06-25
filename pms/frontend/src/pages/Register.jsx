@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
-import axios from "axios";
-import { useRole } from "../hooks/auth";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRegister, useRole } from "../hooks/auth";
 import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
@@ -10,22 +8,22 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState("User");
-  const [error, setError] = useState("");
-  const { register } = useAuthStore();
+  const [role, setRole] = useState("");
   const navigate = useNavigate();
 
   const { data: roles } = useRole();
+  const { mutateAsync: register } = useRegister();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    const success = await register(name, email, password, role);
-    if (success) {
-      navigate("/");
-    } else {
-      setError("Registration failed");
-    }
+    await register(
+      { name, email, password, role },
+      {
+        onSuccess: () => {
+          navigate("/users");
+        },
+      },
+    );
   };
 
   return (
@@ -50,18 +48,6 @@ const Register = () => {
         <div style={{ textAlign: "center", marginBottom: "1rem" }}>
           <h2>Create Account</h2>
         </div>
-
-        {error && (
-          <div
-            style={{
-              color: "#ef4444",
-              marginBottom: "1rem",
-              textAlign: "center",
-            }}
-          >
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -129,6 +115,9 @@ const Register = () => {
               onChange={(e) => setRole(e.target.value)}
               required
             >
+              <option value="" disabled>
+                Select a Role
+              </option>
               {roles?.length > 0 &&
                 roles.map((r) => (
                   <option key={r + 1} value={r}>

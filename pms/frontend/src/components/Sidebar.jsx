@@ -2,16 +2,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderKanban,
-  Lock,
   LogOut,
   Radio,
-  Gauge,
-  ListTodo,
   LineChart,
   UserCog,
 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useCategories } from "../hooks/project";
+import { useQueryClient } from "@tanstack/react-query";
 //working
 export default function Sidebar() {
   const { data: categories = [], isLoading } = useCategories();
@@ -21,8 +19,10 @@ export default function Sidebar() {
     logout,
   } = useAuthStore();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
+    queryClient.clear();
     logout();
     navigate("/login");
   };

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
 import { apiInstance } from "../service";
+import toast from "react-hot-toast";
 
 /**
  * Zustand store for authentication.
@@ -20,7 +21,8 @@ export const useAuthStore = create(
         set({ token });
         if (token) {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-          apiInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          apiInstance.defaults.headers.common["Authorization"] =
+            `Bearer ${token}`;
         } else {
           delete axios.defaults.headers.common["Authorization"];
           delete apiInstance.defaults.headers.common["Authorization"];
@@ -32,7 +34,8 @@ export const useAuthStore = create(
       // Login action
       login: async (email, password) => {
         try {
-          const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
+          const apiBase =
+            import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
           const res = await axios.post(`${apiBase}/auth/login`, {
             email,
             password,
@@ -54,27 +57,6 @@ export const useAuthStore = create(
         }
       },
 
-      // Register action
-      register: async (name, email, password, role = "User") => {
-        try {
-          const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
-          const res = await axios.post(`${apiBase}/auth/register`, {
-            name,
-            email,
-            password,
-            role,
-          });
-
-          return true;
-        } catch (error) {
-          console.error(
-            "Registration failed:",
-            error.response?.data?.message || error.message,
-          );
-          return false;
-        }
-      },
-
       // Logout clears user and tokenss
       logout: () => {
         set({ user: null, token: null });
@@ -82,7 +64,6 @@ export const useAuthStore = create(
         // Persisted storage will be cleared on next reload by persist middleware
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-
       },
     }),
     {

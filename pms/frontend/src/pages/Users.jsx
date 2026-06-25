@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, UserCog } from "lucide-react";
+import { Edit, Pen, Trash2, UserCog } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useUsers, useUpdateUser, useDeleteUser } from "../hooks/user";
 import { formatDate } from "../utils/date";
@@ -87,7 +87,7 @@ export default function Users() {
               textAlign: "left",
             }}
           >
-            <thead>
+            <thead style={{ fontSize: "14px" }}>
               <tr
                 style={{
                   background: "#f8fafc",
@@ -151,7 +151,7 @@ export default function Users() {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody style={{ fontSize: "14px" }}>
               {users.map((u) => (
                 <tr key={u._id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                   <td
@@ -163,7 +163,12 @@ export default function Users() {
                   >
                     {u.name}
                   </td>
-                  <td style={{ padding: "1rem", color: "#64748b" }}>
+                  <td
+                    style={{
+                      padding: "1rem",
+                      color: "#64748b",
+                    }}
+                  >
                     {u.email}
                   </td>
                   <td style={{ padding: "1rem" }}>
@@ -294,12 +299,11 @@ export default function Users() {
                         border: "none",
                         color: "#3b82f6",
                         cursor: "pointer",
-                        padding: "0.4rem",
-                        marginRight: "0.5rem",
+                        padding: "0.2rem",
                       }}
                       title="Edit Role"
                     >
-                      <UserCog size={18} />
+                      <Edit size={18} />
                     </button>
                     <button
                       onClick={() => setUserToDelete(u)}
@@ -309,7 +313,7 @@ export default function Users() {
                         border: "none",
                         color: "#ef4444",
                         cursor: "pointer",
-                        padding: "0.4rem",
+                        padding: "0.2rem",
                       }}
                       title="Delete User"
                     >

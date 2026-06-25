@@ -7,9 +7,9 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 export const useRegister = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ registerData }) =>
+    mutationFn: (...registerData) =>
       apiInstance
-        .post(`${API_BASE}/auth/register`, registerData)
+        .post(`${API_BASE}/auth/register`, ...registerData)
         .then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries(["users"]);
