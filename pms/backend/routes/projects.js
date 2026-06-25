@@ -6,7 +6,6 @@ const { protect, authorize } = require("../middleware/auth");
 
 // Get all projects (role-based)
 router.get("/", protect, async (req, res) => {
-
   try {
     const { role, email } = req.user;
     const fullAccessRoles = ["Admin", "Manager", "PM"];

@@ -21,7 +21,13 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["PM", "Coordinator", "Integration & Support", "Document Controller"],
+      enum: [
+        "PM",
+        "Coordinator",
+        "Integration & Support",
+        "Document Controller",
+        "Closeout",
+      ],
       default: "",
     },
     status: {

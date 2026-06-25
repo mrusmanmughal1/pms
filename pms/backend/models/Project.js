@@ -84,6 +84,74 @@ const ProjectSchema = new mongoose.Schema(
         remarks: { type: String, default: "" }
       },
       generalRemarks: { type: String, default: "" }
+    },
+    installation: {
+      tcnRequest: {
+        tcnNumber: { type: String, default: "" },
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      teamsMaterialsMobilization: {
+        status: { type: String, enum: ["Pending", "In Progress", "Completed", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      tcnApproval: {
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      siteInstallation: {
+        type: { type: String, enum: ["RMS", "Smart Lock", "Smart Meter", "Other"], default: "RMS" },
+        status: { type: String, enum: ["Pending", "In Progress", "Completed", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      generalRemarks: { type: String, default: "" }
+    },
+    integration: {
+      alarmsConfiguration: {
+        status: { type: String, enum: ["Pending", "In Progress", "Completed", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      annexNumber: {
+        number: { type: String, default: "" },
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      tenantsIntegration: {
+        status: { type: String, enum: ["Pending", "In Progress", "Completed", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      generalRemarks: { type: String, default: "" }
+    },
+    closeout: {
+      patTcn: {
+        number: { type: String, default: "" },
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      patStatus: {
+        status: { type: String, enum: ["Pending", "Approved", "Rejected", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      invoicing: {
+        status: { type: String, enum: ["Pending", "In Progress", "Completed", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      capitalisationSheetUpdate: {
+        status: { type: String, enum: ["Pending", "In Progress", "Completed", "N/A"], default: "Pending" },
+        date: { type: Date },
+        remarks: { type: String, default: "" }
+      },
+      generalRemarks: { type: String, default: "" }
     }
   },
   {
