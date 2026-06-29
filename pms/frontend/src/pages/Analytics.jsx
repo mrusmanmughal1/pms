@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useProjectsHook } from "../hooks/project";
+import { NavLink } from "react-router-dom";
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat("en-US", {
@@ -300,8 +301,6 @@ export default function Analytics() {
           <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>Available</div>
         </div>
       </div>
-
-      {/* MIDDLE SECTION: Category Breakdown + Status Distribution */}
       <div
         style={{
           display: "grid",
@@ -346,7 +345,7 @@ export default function Analytics() {
                     border: "1px solid #5a4af4",
                     background: "transparent",
                   }}
-                ></div>{" "}
+                ></div>
                 Allocated
               </div>
               <div
@@ -363,14 +362,21 @@ export default function Analytics() {
                     borderRadius: "2px",
                     background: "#5a4af4",
                   }}
-                ></div>{" "}
+                ></div>
                 Spent
               </div>
             </div>
           </div>
 
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.5rem",
+              overflowY: "auto",
+              maxHeight: "10rem",
+              padding: "0.5rem",
+            }}
           >
             {categoriesData.map((cat) => (
               <div
@@ -385,7 +391,7 @@ export default function Analytics() {
                 <div>
                   <div
                     style={{
-                      fontSize: "0.85rem",
+                      fontSize: "1rem",
                       fontWeight: 600,
                       color: "#1e293b",
                     }}
@@ -393,7 +399,7 @@ export default function Analytics() {
                     {cat.name}
                   </div>
                   <div style={{ fontSize: "0.7rem", color: "#94a3b8" }}>
-                    {cat.count} project{cat.count !== 1 ? "s" : ""} •{" "}
+                    {cat.count} project{cat.count !== 1 ? "s" : ""} •
                     {cat.percentUsed}% used
                   </div>
                 </div>
@@ -680,10 +686,18 @@ export default function Analytics() {
                       style={{
                         fontSize: "1rem",
                         fontWeight: 600,
-                        color: "#1e293b",
                       }}
                     >
-                      {p.title}
+                      <NavLink
+                        to={`/projects/${p._id}`}
+                        style={{
+                          color: "#1e293b",
+                          textDecoration: "none",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {p.title}
+                      </NavLink>
                     </div>
                     <div
                       style={{

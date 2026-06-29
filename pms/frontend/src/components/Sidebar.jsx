@@ -42,6 +42,8 @@ export default function Sidebar() {
           display: "flex",
           flexDirection: "column",
           padding: "5px",
+          overflowY: "auto",
+          scrollbarWidth: "none",
         }}
       >
         {/* Dashboard — all roles */}
@@ -157,8 +159,7 @@ export default function Sidebar() {
         <div
           style={{
             padding: "0.5rem 1.5rem",
-            marginBottom: "0.5rem",
-            fontSize: "0.875rem",
+            fontSize: "0.775rem",
             color: "#94a3b8",
           }}
         >
