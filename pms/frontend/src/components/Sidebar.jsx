@@ -62,6 +62,17 @@ export default function Sidebar() {
           <span>All Projects</span>
         </NavLink>
 
+        {/* Analytics — Admin & PM */}
+        {(user?.role === "Admin" || user?.role === "PM") && (
+          <NavLink
+            to="/analytics"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <LineChart size={20} />
+            <span>Analytics</span>
+          </NavLink>
+        )}
+
         {/* Category links — hidden for Coordinator */}
 
         <>
@@ -134,17 +145,6 @@ export default function Sidebar() {
               <span>Add User</span>
             </NavLink>
           </>
-        )}
-
-        {/* Analytics — Admin & PM */}
-        {(user?.role === "Admin" || user?.role === "PM") && (
-          <NavLink
-            to="/analytics"
-            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-          >
-            <LineChart size={20} />
-            <span>Analytics</span>
-          </NavLink>
         )}
       </nav>
       <div

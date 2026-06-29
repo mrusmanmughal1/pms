@@ -17,6 +17,7 @@ import AllProjects from "./pages/AllProjects";
 import Users from "./pages/Users";
 import ProjectDetails from "./pages/ProjectDetails";
 import Unauthorized from "./pages/Unauthorized";
+import Analytics from "./pages/Analytics";
 
 function Header() {
   const location = useLocation();
@@ -65,6 +66,7 @@ function MainLayout() {
           <Route path="/projects" element={<AllProjects />} />
           <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/category/:categoryName" element={<ProjectList />} />
+          <Route path="/analytics" element={<Analytics />} />
 
           {/* PM and above: can also access register (add user is admin-only but PM may need it) */}
           <Route
