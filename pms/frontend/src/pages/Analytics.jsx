@@ -77,6 +77,7 @@ export default function Analytics() {
           : 0,
     }))
     .sort((a, b) => b.budget - a.budget);
+  // changes
 
   const maxCategoryBudget = Math.max(...categoriesData.map((c) => c.budget), 1);
 
