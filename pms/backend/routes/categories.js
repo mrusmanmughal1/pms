@@ -8,11 +8,17 @@ const { protect, authorize } = require("../middleware/auth");
 router.get("/", protect, async (req, res) => {
   try {
     const { role, email } = req.user;
+    const { search } = req.query;
     const fullAccessRoles = ["Admin", "Manager", "PM"];
+
+    let query = {};
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
 
     let categories;
     if (fullAccessRoles.includes(role)) {
-      categories = await Category.find().sort({ name: 1 });
+      categories = await Category.find(query).sort({ name: 1 });
     } else {
       // Find projects where the user is a team member
       const userProjects = await Project.find({ teamMembers: email }).select(
@@ -21,9 +27,19 @@ router.get("/", protect, async (req, res) => {
       const userCategoryNames = [
         ...new Set(userProjects.map((p) => p.category)),
       ];
-      categories = await Category.find({
-        name: { $in: userCategoryNames },
-      }).sort({ name: 1 });
+
+      if (search) {
+        query = {
+          $and: [
+            { name: { $regex: search, $options: "i" } },
+            { name: { $in: userCategoryNames } },
+          ],
+        };
+      } else {
+        query.name = { $in: userCategoryNames };
+      }
+
+      categories = await Category.find(query).sort({ name: 1 });
     }
 
     res.json(categories);

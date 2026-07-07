@@ -12,7 +12,8 @@ import { FolderOpen } from "lucide-react";
 import ProjectCard from "../components/ProjectCard";
 import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 import toast from "react-hot-toast";
-import { parseCSV } from "../utils/parse";
+import { parseCSV, exportToCSV } from "../utils/parse";
+import { useDebounce } from "../hooks/useDebounce";
 
 const AllProjects = () => {
   const uploadProjectsData = useUploadProjectsBulk();
@@ -20,22 +21,33 @@ const AllProjects = () => {
   const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef(null);
-  const { data: projects = [], isLoading, error } = useProjectsHook();
-  const { data: categories = [] } = useCategories();
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
   const [priorityFilter, setPriorityFilter] = useState("All Priorities");
+  const [regionFilter, setRegionFilter] = useState("");
+  const debouncedRegionFilter = useDebounce(regionFilter, 500);
+  const [cityFilter, setCityFilter] = useState("");
+  const debouncedCityFilter = useDebounce(cityFilter, 500);
 
-  const filteredProjects = projects.filter((proj) => {
-    const matchCat =
-      categoryFilter === "All Categories" || proj.category === categoryFilter;
-    const matchStatus =
-      statusFilter === "All Statuses" || proj.status === statusFilter;
-    const matchPriority =
-      priorityFilter === "All Priorities" || proj.priority === priorityFilter;
-    return matchCat && matchStatus && matchPriority;
+  const {
+    data: projectsData,
+    isLoading,
+    error,
+  } = useProjectsHook({
+    search: debouncedSearchQuery,
+    category: categoryFilter,
+    status: statusFilter,
+    priority: priorityFilter,
+    region: debouncedRegionFilter,
+    city: debouncedCityFilter,
   });
+
+  const projects = projectsData?.data || [];
+  const countOfProjects = projectsData?.meta?.total || 0;
+  const { data: categories = [] } = useCategories();
 
   if (isLoading) {
     return <Spinner size="lg" text="Loading projects..." />;
@@ -59,7 +71,7 @@ const AllProjects = () => {
         }}
       >
         <h1 style={{ fontSize: "1.2rem", marginBottom: "0.25rem" }}>
-          All Projects
+          All Projects ({countOfProjects ?? 0})
         </h1>
         {(user?.role === "Admin" ||
           user?.role === "Manager" ||
@@ -111,6 +123,12 @@ const AllProjects = () => {
                 "Upload CSV"
               )}
             </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => exportToCSV(projects, "projects_export.csv")}
+            >
+              Download CSV
+            </button>
           </div>
         )}
       </div>
@@ -124,6 +142,57 @@ const AllProjects = () => {
           flexWrap: "wrap",
         }}
       >
+        <div style={{ flex: 1, minWidth: "250px" }}>
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.4rem",
+              border: "1px solid #e2e8f0",
+              background: "white",
+              outline: "none",
+            }}
+          />
+        </div>
+
+        <div style={{ flex: 1, minWidth: "150px" }}>
+          <input
+            type="text"
+            placeholder="Filter by Region..."
+            value={regionFilter}
+            onChange={(e) => setRegionFilter(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.4rem",
+              border: "1px solid #e2e8f0",
+              background: "white",
+              outline: "none",
+            }}
+          />
+        </div>
+
+        <div style={{ flex: 1, minWidth: "150px" }}>
+          <input
+            type="text"
+            placeholder="Filter by City..."
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.4rem",
+              border: "1px solid #e2e8f0",
+              background: "white",
+              outline: "none",
+            }}
+          />
+        </div>
+
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
@@ -187,7 +256,7 @@ const AllProjects = () => {
         </select>
       </div>
 
-      {filteredProjects.length === 0 ? (
+      {projects.length === 0 ? (
         <div
           style={{
             textAlign: "center",
@@ -214,7 +283,7 @@ const AllProjects = () => {
             gap: "1.5rem",
           }}
         >
-          {filteredProjects.map((proj, i) => (
+          {projects.map((proj, i) => (
             <ProjectCard
               key={i}
               proj={proj}

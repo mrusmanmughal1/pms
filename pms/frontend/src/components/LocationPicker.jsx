@@ -44,10 +44,39 @@ export default function LocationPicker({
     setMap(null);
   }, []);
 
+  const fetchAddressDetails = (lat, lng) => {
+    if (!window.google || !window.google.maps) {
+      onLocationChange({ latitude: lat.toFixed(6), longitude: lng.toFixed(6) });
+      return;
+    }
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      let city = "";
+      let region = "";
+      if (status === "OK" && results[0]) {
+        for (let component of results[0].address_components) {
+          const types = component.types;
+          if (types.includes("locality") || types.includes("administrative_area_level_2")) {
+            if (!city) city = component.long_name;
+          }
+          if (types.includes("administrative_area_level_1")) {
+            region = component.long_name;
+          }
+        }
+      }
+      onLocationChange({
+        latitude: lat.toFixed(6),
+        longitude: lng.toFixed(6),
+        city,
+        region,
+      });
+    });
+  };
+
   const handleMapClick = (e) => {
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
-    onLocationChange({ latitude: lat.toFixed(6), longitude: lng.toFixed(6) });
+    fetchAddressDetails(lat, lng);
   };
 
   const onLoadAutocomplete = (autocomplete) => {
@@ -60,9 +89,25 @@ export default function LocationPicker({
       if (place.geometry && place.geometry.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
+        let city = "";
+        let region = "";
+        if (place.address_components) {
+          for (let component of place.address_components) {
+            const types = component.types;
+            if (types.includes("locality") || types.includes("administrative_area_level_2")) {
+              if (!city) city = component.long_name;
+            }
+            if (types.includes("administrative_area_level_1")) {
+              region = component.long_name;
+            }
+          }
+        }
+
         onLocationChange({
           latitude: lat.toFixed(6),
           longitude: lng.toFixed(6),
+          city,
+          region,
         });
         if (map) {
           map.panTo({ lat, lng });

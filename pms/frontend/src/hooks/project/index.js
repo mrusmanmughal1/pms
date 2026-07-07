@@ -30,11 +30,22 @@ export const useStats = () => {
 };
 
 // Fetch all projects
-export const useProjectsHook = () => {
+export const useProjectsHook = (filters = {}) => {
+  const { search, category, status, priority, region, city } = filters;
+  const queryParams = new URLSearchParams();
+  if (search) queryParams.append("search", search);
+  if (category) queryParams.append("category", category);
+  if (status) queryParams.append("status", status);
+  if (priority) queryParams.append("priority", priority);
+  if (region) queryParams.append("region", region);
+  if (city) queryParams.append("city", city);
+
+  const queryString = queryParams.toString();
+  const url = `${API_BASE}/projects${queryString ? `?${queryString}` : ""}`;
+
   return useQuery({
-    queryKey: ["projects"],
-    queryFn: () =>
-      apiInstance.get(`${API_BASE}/projects`).then((res) => res.data),
+    queryKey: ["projects", filters],
+    queryFn: () => apiInstance.get(url).then((res) => res.data),
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000,
   });
@@ -104,11 +115,15 @@ export const useProjectById = (id) => {
     enabled: !!id, // Only run the query if id is truthy
   });
 };
-export const useCategories = () => {
+export const useCategories = (searchQuery = "") => {
   return useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", searchQuery],
     queryFn: () =>
-      apiInstance.get(`${API_BASE}/categories`).then((res) => res.data),
+      apiInstance
+        .get(
+          `${API_BASE}/categories${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ""}`,
+        )
+        .then((res) => res.data),
     staleTime: 5 * 60 * 1000,
   });
 };

@@ -12,7 +12,8 @@ const formatCurrency = (value) => {
 };
 
 export default function Analytics() {
-  const { data: projects = [], isLoading } = useProjectsHook();
+  const { data: projectsData, isLoading } = useProjectsHook();
+  const projects = projectsData?.data || [];
   const [filter, setFilter] = useState("All"); // All, Active, Completed
 
   // Filter projects based on toggle

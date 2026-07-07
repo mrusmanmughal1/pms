@@ -30,10 +30,11 @@ import ProjectCard from "../components/ProjectCard";
 
 const Dashboard = () => {
   const {
-    data: projects = [],
+    data: projectsData,
     isLoading: projectsLoading,
     isError: projectsError,
   } = useProjectsHook();
+  const projects = projectsData?.data || [];
   const limitedProjects = projects.slice(0, 6);
   const {
     data: stats,

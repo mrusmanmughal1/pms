@@ -32,6 +32,10 @@ const ProjectForm = ({ isOpen, onClose }) => {
     endDate: "",
     budget: 0,
     spent: 0,
+    siteId: "",
+    tawalId: "",
+    region: "",
+    city: "",
     longitude: "",
     latitude: "",
     teamMembers: [],
@@ -157,6 +161,10 @@ const ProjectForm = ({ isOpen, onClose }) => {
           endDate: "",
           budget: 0,
           spent: 0,
+          siteId: "",
+          tawalId: "",
+          region: "",
+          city: "",
           longitude: "",
           latitude: "",
           teamMembers: [],
@@ -270,21 +278,59 @@ const ProjectForm = ({ isOpen, onClose }) => {
 
               <div style={formStyles.gridRow}>
                 <div>
-                  <label style={formStyles.label}>Status</label>
-                  <select
+                  <label style={formStyles.label}>Site ID</label>
+                  <input
+                    type="text"
                     style={formStyles.input}
-                    value={formData.status}
+                    placeholder="e.g. STC-12345"
+                    value={formData.siteId}
                     onChange={(e) =>
-                      setFormData({ ...formData, status: e.target.value })
+                      setFormData({ ...formData, siteId: e.target.value })
                     }
-                  >
-                    <option value="Planning">Planning</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Testing">Testing</option>
-                    <option value="Completed">Completed</option>
-                    <option value="On Hold">On Hold</option>
-                  </select>
+                  />
                 </div>
+                <div>
+                  <label style={formStyles.label}>Tawal ID</label>
+                  <input
+                    type="text"
+                    style={formStyles.input}
+                    placeholder="e.g. TAW-98765"
+                    value={formData.tawalId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tawalId: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div style={formStyles.gridRow}>
+                <div>
+                  <label style={formStyles.label}>Region</label>
+                  <input
+                    type="text"
+                    style={formStyles.input}
+                    placeholder="e.g. Riyadh Region"
+                    value={formData.region}
+                    onChange={(e) =>
+                      setFormData({ ...formData, region: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label style={formStyles.label}>City</label>
+                  <input
+                    type="text"
+                    style={formStyles.input}
+                    placeholder="e.g. Riyadh"
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "1rem" }}>
                 <div>
                   <label style={formStyles.label}>Priority</label>
                   <select
@@ -412,13 +458,12 @@ const ProjectForm = ({ isOpen, onClose }) => {
                 <LocationPicker
                   latitude={formData.latitude}
                   longitude={formData.longitude}
-                  onLocationChange={(loc) =>
-                    setFormData({
-                      ...formData,
-                      latitude: loc.latitude,
-                      longitude: loc.longitude,
-                    })
-                  }
+                  onLocationChange={({ latitude, longitude, city, region }) => {
+                    const updates = { latitude, longitude };
+                    if (city !== undefined) updates.city = city;
+                    if (region !== undefined) updates.region = region;
+                    setFormData({ ...formData, ...updates });
+                  }}
                 />
               </div>
 

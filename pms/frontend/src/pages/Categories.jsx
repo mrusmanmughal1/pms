@@ -8,10 +8,14 @@ import {
   useUpdateCategory,
 } from "../hooks/project";
 import ConfirmModal from "../components/ConfirmModal";
+import { useDebounce } from "../hooks/useDebounce";
 
 export default function Categories() {
   const { user } = useAuthStore();
-  const { data: categories = [], isLoading } = useCategories();
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const { data: categories = [], isLoading } =
+    useCategories(debouncedSearchQuery);
   const { mutate: createCategory, isLoading: isCreating } = useCreateCategory();
   const { mutate: deleteCategory, isLoading: isDeleting } = useDeleteCategory();
   const { mutate: updateCategory, isLoading: isUpdating } = useUpdateCategory();
@@ -128,6 +132,29 @@ export default function Categories() {
             <Plus size={18} /> Add
           </button>
         </form>
+
+        <div
+          style={{
+            marginBottom: "1rem",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search categories..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.6rem 1rem",
+              border: "1px solid #e2e8f0",
+              borderRadius: "0.5rem",
+              background: "#fff",
+              outline: "none",
+            }}
+          />
+        </div>
 
         <div
           style={{

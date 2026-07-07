@@ -8,17 +8,45 @@ const { protect, authorize } = require("../middleware/auth");
 router.get("/", protect, async (req, res) => {
   try {
     const { role, email } = req.user;
+    const { search, category, status, priority, region, city } = req.query;
     const fullAccessRoles = ["Admin", "Manager", "PM"];
 
     let query = {};
     if (!fullAccessRoles.includes(role)) {
       // Restricted roles: only projects where the user's email is in teamMembersss
-      query = { teamMembers: email };
+      query.teamMembers = email;
+    }
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (category && category !== "All Categories") {
+      query.category = category;
+    }
+    if (status && status !== "All Statuses") {
+      query.status = status;
+    }
+    if (priority && priority !== "All Priorities") {
+      query.priority = priority;
+    }
+    if (region && region.trim() !== "") {
+      query.region = { $regex: region, $options: "i" };
+    }
+    if (city && city.trim() !== "") {
+      query.city = { $regex: city, $options: "i" };
     }
 
     const projects = await Project.find(query).sort({ createdAt: -1 });
-    console.log("Projects fetched:", projects);
-    res.status(200).json(projects);
+    res.status(200).json({
+      meta: {
+        total: projects.length,
+      },
+      data: projects,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

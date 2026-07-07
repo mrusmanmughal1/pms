@@ -50,3 +50,53 @@ export function parseCSVLine(line) {
     result.push(current);
     return result;
 }
+
+// Convert an array of objects to a CSV file and trigger download
+export function exportToCSV(data, filename = "data.csv") {
+    if (!data || !data.length) return;
+
+    // Only export string/number/date fields, skip complex objects like populated user info
+    const headers = [
+        "name", "description", "category", "status", "priority", 
+        "siteId", "tawalId", "region", "city",
+        "budget", "spent", "progress", "startDate", "endDate", 
+        "teamMembers", "tags"
+    ];
+
+    const csvContent = [
+        headers.join(","),
+        ...data.map((row) =>
+            headers.map((header) => {
+                let cell = row[header] === null || row[header] === undefined ? "" : row[header];
+                if (cell instanceof Date) {
+                    cell = cell.toISOString();
+                } else if (Array.isArray(cell)) {
+                    cell = cell.join(";");
+                } else if (typeof cell === "object") {
+                    // For object fields, try to extract name or stringify
+                    cell = cell.name || cell.title || "";
+                }
+
+                const cellString = cell.toString();
+                if (
+                    cellString.includes(",") ||
+                    cellString.includes('"') ||
+                    cellString.includes("\n")
+                ) {
+                    return `"${cellString.replace(/"/g, '""')}"`;
+                }
+                return cellString;
+            }).join(",")
+        ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
