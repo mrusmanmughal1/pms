@@ -17,9 +17,20 @@ import {
   Cell,
 } from "recharts";
 import { useAuthStore } from "../store/authStore";
-import { getCatBadge } from "../utils/helpers";
-import { Calendar, SaudiRiyal, Users2 } from "lucide-react";
-import { getWoStatusColor } from "../utils/statusColor";
+import { getCatBadge, getPriorityBadge } from "../utils/helpers";
+import {
+  BanknoteArrowDown,
+  Boxes,
+  Calendar,
+  ChartColumnIncreasing,
+  ChartNoAxesColumnIncreasing,
+  ClipboardIcon,
+  IdCard,
+  IdCardIcon,
+  SaudiRiyal,
+  Users2,
+} from "lucide-react";
+import { getPriorityColor, getWoStatusColor } from "../utils/statusColor";
 import MapData from "../components/MapData";
 import WorkOrder from "../components/WorkOrder";
 import Installation from "../components/Installation";
@@ -35,7 +46,6 @@ export default function ProjectDetails() {
   const { user } = useAuthStore();
 
   const { data: project, isLoading, isError } = useProjectById(id);
-  console.log(project);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({
     mapping: { woRequest: {}, woIssuance: {}, materialsRequest: {} },
@@ -74,6 +84,8 @@ export default function ProjectDetails() {
         priority: project.priority || "Low",
         progress: project.progress || 0,
         budget: project.budget || 0,
+        siteId: project.siteId || "",
+        tawalId: project.tawalId || "",
         spent: project.spent || 0,
         teamLead: project.teamLead || "",
         startDate: project.startDate
@@ -374,356 +386,417 @@ export default function ProjectDetails() {
 
   return (
     <div className="">
+      <div className="flex-between">
+        <h2
+          style={{
+            margin: 0,
+            fontSize: "1.25rem",
+            textTransform: "capitalize",
+          }}
+        >
+          {/* add project icon  */}
+          {project.title}
+          <span
+            className={`badge ${getCatBadge(project.category)}`}
+            style={{ marginRight: "0.5rem" }}
+          >
+            {project.category}
+          </span>
+        </h2>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          {(user?.role === "Admin" || user?.role === "Manager") && (
+            <>
+              {editMode ? (
+                <>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSave}
+                    disabled={saving}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="btn btn-outline"
+                    onClick={() => {
+                      setEditMode(false);
+                      setForm({
+                        title: project.title || "",
+                        description: project.description || "",
+                        status: project.status || "Planning",
+                        priority: project.priority || "Low",
+                        progress: project.progress || 0,
+                        budget: project.budget || 0,
+                        spent: project.spent || 0,
+                        teamLead: project.teamLead || "",
+                        startDate: project.startDate
+                          ? new Date(project.startDate)
+                              .toISOString()
+                              .slice(0, 10)
+                          : "",
+                        endDate: project.endDate
+                          ? new Date(project.endDate).toISOString().slice(0, 10)
+                          : "",
+                        longitude: project.longitude ?? "",
+                        latitude: project.latitude ?? "",
+                        tags: (project.tags || []).join(", "),
+                        mapping: {
+                          woRequest: {
+                            status:
+                              project.mapping?.woRequest?.status || "Pending",
+                            date: project.mapping?.woRequest?.date
+                              ? new Date(project.mapping.woRequest.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks: project.mapping?.woRequest?.remarks || "",
+                          },
+                          woIssuance: {
+                            status:
+                              project.mapping?.woIssuance?.status || "Pending",
+                            date: project.mapping?.woIssuance?.date
+                              ? new Date(project.mapping.woIssuance.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks: project.mapping?.woIssuance?.remarks || "",
+                          },
+                          materialsRequest: {
+                            status:
+                              project.mapping?.materialsRequest?.status ||
+                              "Pending",
+                            date: project.mapping?.materialsRequest?.date
+                              ? new Date(project.mapping.materialsRequest.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.mapping?.materialsRequest?.remarks || "",
+                          },
+                          generalRemarks: project.mapping?.generalRemarks || "",
+                        },
+                        installation: {
+                          tcnRequest: {
+                            tcnNumber:
+                              project.installation?.tcnRequest?.tcnNumber || "",
+                            status:
+                              project.installation?.tcnRequest?.status ||
+                              "Pending",
+                            date: project.installation?.tcnRequest?.date
+                              ? new Date(project.installation.tcnRequest.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.installation?.tcnRequest?.remarks || "",
+                          },
+                          teamsMaterialsMobilization: {
+                            status:
+                              project.installation?.teamsMaterialsMobilization
+                                ?.status || "Pending",
+                            date: project.installation
+                              ?.teamsMaterialsMobilization?.date
+                              ? new Date(
+                                  project.installation
+                                    .teamsMaterialsMobilization.date,
+                                )
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.installation?.teamsMaterialsMobilization
+                                ?.remarks || "",
+                          },
+                          tcnApproval: {
+                            status:
+                              project.installation?.tcnApproval?.status ||
+                              "Pending",
+                            date: project.installation?.tcnApproval?.date
+                              ? new Date(project.installation.tcnApproval.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.installation?.tcnApproval?.remarks || "",
+                          },
+                          siteInstallation: {
+                            type:
+                              project.installation?.siteInstallation?.type ||
+                              "RMS",
+                            status:
+                              project.installation?.siteInstallation?.status ||
+                              "Pending",
+                            date: project.installation?.siteInstallation?.date
+                              ? new Date(
+                                  project.installation.siteInstallation.date,
+                                )
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.installation?.siteInstallation?.remarks ||
+                              "",
+                          },
+                          generalRemarks:
+                            project.installation?.generalRemarks || "",
+                        },
+                        integration: {
+                          alarmsConfiguration: {
+                            status:
+                              project.integration?.alarmsConfiguration
+                                ?.status || "Pending",
+                            date: project.integration?.alarmsConfiguration?.date
+                              ? new Date(
+                                  project.integration.alarmsConfiguration.date,
+                                )
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.integration?.alarmsConfiguration
+                                ?.remarks || "",
+                          },
+                          annexNumber: {
+                            number:
+                              project.integration?.annexNumber?.number || "",
+                            status:
+                              project.integration?.annexNumber?.status ||
+                              "Pending",
+                            date: project.integration?.annexNumber?.date
+                              ? new Date(project.integration.annexNumber.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.integration?.annexNumber?.remarks || "",
+                          },
+                          tenantsIntegration: {
+                            status:
+                              project.integration?.tenantsIntegration?.status ||
+                              "Pending",
+                            date: project.integration?.tenantsIntegration?.date
+                              ? new Date(
+                                  project.integration.tenantsIntegration.date,
+                                )
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.integration?.tenantsIntegration
+                                ?.remarks || "",
+                          },
+                          generalRemarks:
+                            project.integration?.generalRemarks || "",
+                        },
+                        closeout: {
+                          patTcn: {
+                            number: project.closeout?.patTcn?.number || "",
+                            status:
+                              project.closeout?.patTcn?.status || "Pending",
+                            date: project.closeout?.patTcn?.date
+                              ? new Date(project.closeout.patTcn.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks: project.closeout?.patTcn?.remarks || "",
+                          },
+                          patStatus: {
+                            status:
+                              project.closeout?.patStatus?.status || "Pending",
+                            date: project.closeout?.patStatus?.date
+                              ? new Date(project.closeout.patStatus.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks: project.closeout?.patStatus?.remarks || "",
+                          },
+                          invoicing: {
+                            status:
+                              project.closeout?.invoicing?.status || "Pending",
+                            date: project.closeout?.invoicing?.date
+                              ? new Date(project.closeout.invoicing.date)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks: project.closeout?.invoicing?.remarks || "",
+                          },
+                          capitalisationSheetUpdate: {
+                            status:
+                              project.closeout?.capitalisationSheetUpdate
+                                ?.status || "Pending",
+                            date: project.closeout?.capitalisationSheetUpdate
+                              ?.date
+                              ? new Date(
+                                  project.closeout.capitalisationSheetUpdate
+                                    .date,
+                                )
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : "",
+                            remarks:
+                              project.closeout?.capitalisationSheetUpdate
+                                ?.remarks || "",
+                          },
+                          generalRemarks:
+                            project.closeout?.generalRemarks || "",
+                        },
+                      });
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="btn btn-outline"
+                  onClick={() => setEditMode(true)}
+                >
+                  Edit
+                </button>
+              )}
+            </>
+          )}
+          {user?.role === "Admin" && (
+            <button
+              className="btn btn-danger"
+              onClick={handleDelete}
+              disabled={deleteMutation.isLoading}
+            >
+              Delete
+            </button>
+          )}
+          <ConfirmModal
+            isOpen={confirmOpen}
+            onClose={() => setConfirmOpen(false)}
+            onConfirm={performDelete}
+            title={`Delete project: ${project.title}`}
+            message={`Are you sure you want to permanently delete this project? This action cannot be undone.`}
+            isLoading={deleteMutation.isLoading}
+          />
+        </div>
+      </div>
       <div
         className="glass-panel"
         style={{ padding: "1.25rem 1.5rem", marginBottom: "1rem" }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "1rem",
-          }}
-        >
-          <div style={{ flex: 1 }}>
-            <h2
-              style={{
-                margin: 0,
-                fontSize: "1.25rem",
-                textTransform: "capitalize",
-              }}
-            >
-              {/* add project icon  */}
-              {project.title}{" "}
-              <span
-                className={`badge ${getCatBadge(project.category)}`}
-                style={{ marginRight: "0.5rem" }}
+        <div>
+          <div
+            style={{
+              color: "black",
+              marginTop: "0.35rem",
+              fontSize: "0.9rem",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "1rem",
+              width: "100%",
+            }}
+          >
+            <div className="">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  borderRight: "1px solid #e5e7eb",
+                  paddingRight: "1rem",
+                }}
               >
-                {project.category}
-              </span>
-            </h2>
-            <div
-              style={{
-                color: "black",
-                marginTop: "0.35rem",
-                fontSize: "0.9rem",
-              }}
-            >
-              Allocated Budget : <SaudiRiyal size={12} />{" "}
-              {project.budget?.toLocaleString() ?? 0}
+                <span
+                  style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                >
+                  {" "}
+                  <ChartNoAxesColumnIncreasing width={16} /> Priority:
+                </span>
+                <div className={getPriorityBadge(project.priority)}>
+                  {project.priority}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  borderRight: "1px solid #e5e7eb",
+                  paddingRight: "1rem",
+                }}
+              >
+                <BanknoteArrowDown width={16} />{" "}
+                <div className="">
+                  Allocated Budget :
+                  <SaudiRiyal size={12} />{" "}
+                  {project.budget?.toLocaleString() ?? 0}
+                </div>
+              </div>
             </div>
-            <div
-              style={{
-                color: "var(--text-secondary)",
-                marginTop: "0.35rem",
-                fontSize: "0.875rem",
-              }}
-            >
-              <Calendar size={14} /> Created :{" "}
-              {new Date(project.createdAt).toLocaleDateString()}
-            </div>
-            <div
-              style={{
-                color: "var(--text-secondary)",
-                marginTop: "0.35rem",
-                fontSize: "0.875rem",
-              }}
-            >
-              <Users2 size={14} /> Team Members :{" "}
-              {project.teamMembers.join(", ")}
-            </div>
-          </div>
 
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            {(user?.role === "Admin" || user?.role === "Manager") && (
-              <>
-                {editMode ? (
-                  <>
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleSave}
-                      disabled={saving}
-                    >
-                      Save
-                    </button>
-                    <button
-                      className="btn btn-outline"
-                      onClick={() => {
-                        setEditMode(false);
-                        setForm({
-                          title: project.title || "",
-                          description: project.description || "",
-                          status: project.status || "Planning",
-                          priority: project.priority || "Low",
-                          progress: project.progress || 0,
-                          budget: project.budget || 0,
-                          spent: project.spent || 0,
-                          teamLead: project.teamLead || "",
-                          startDate: project.startDate
-                            ? new Date(project.startDate)
-                                .toISOString()
-                                .slice(0, 10)
-                            : "",
-                          endDate: project.endDate
-                            ? new Date(project.endDate)
-                                .toISOString()
-                                .slice(0, 10)
-                            : "",
-                          longitude: project.longitude ?? "",
-                          latitude: project.latitude ?? "",
-                          tags: (project.tags || []).join(", "),
-                          mapping: {
-                            woRequest: {
-                              status:
-                                project.mapping?.woRequest?.status || "Pending",
-                              date: project.mapping?.woRequest?.date
-                                ? new Date(project.mapping.woRequest.date)
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.mapping?.woRequest?.remarks || "",
-                            },
-                            woIssuance: {
-                              status:
-                                project.mapping?.woIssuance?.status ||
-                                "Pending",
-                              date: project.mapping?.woIssuance?.date
-                                ? new Date(project.mapping.woIssuance.date)
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.mapping?.woIssuance?.remarks || "",
-                            },
-                            materialsRequest: {
-                              status:
-                                project.mapping?.materialsRequest?.status ||
-                                "Pending",
-                              date: project.mapping?.materialsRequest?.date
-                                ? new Date(
-                                    project.mapping.materialsRequest.date,
-                                  )
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.mapping?.materialsRequest?.remarks ||
-                                "",
-                            },
-                            generalRemarks:
-                              project.mapping?.generalRemarks || "",
-                          },
-                          installation: {
-                            tcnRequest: {
-                              tcnNumber:
-                                project.installation?.tcnRequest?.tcnNumber ||
-                                "",
-                              status:
-                                project.installation?.tcnRequest?.status ||
-                                "Pending",
-                              date: project.installation?.tcnRequest?.date
-                                ? new Date(project.installation.tcnRequest.date)
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.installation?.tcnRequest?.remarks || "",
-                            },
-                            teamsMaterialsMobilization: {
-                              status:
-                                project.installation?.teamsMaterialsMobilization
-                                  ?.status || "Pending",
-                              date: project.installation
-                                ?.teamsMaterialsMobilization?.date
-                                ? new Date(
-                                    project.installation
-                                      .teamsMaterialsMobilization.date,
-                                  )
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.installation?.teamsMaterialsMobilization
-                                  ?.remarks || "",
-                            },
-                            tcnApproval: {
-                              status:
-                                project.installation?.tcnApproval?.status ||
-                                "Pending",
-                              date: project.installation?.tcnApproval?.date
-                                ? new Date(
-                                    project.installation.tcnApproval.date,
-                                  )
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.installation?.tcnApproval?.remarks ||
-                                "",
-                            },
-                            siteInstallation: {
-                              type:
-                                project.installation?.siteInstallation?.type ||
-                                "RMS",
-                              status:
-                                project.installation?.siteInstallation
-                                  ?.status || "Pending",
-                              date: project.installation?.siteInstallation?.date
-                                ? new Date(
-                                    project.installation.siteInstallation.date,
-                                  )
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.installation?.siteInstallation
-                                  ?.remarks || "",
-                            },
-                            generalRemarks:
-                              project.installation?.generalRemarks || "",
-                          },
-                          integration: {
-                            alarmsConfiguration: {
-                              status:
-                                project.integration?.alarmsConfiguration
-                                  ?.status || "Pending",
-                              date: project.integration?.alarmsConfiguration
-                                ?.date
-                                ? new Date(
-                                    project.integration.alarmsConfiguration
-                                      .date,
-                                  )
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.integration?.alarmsConfiguration
-                                  ?.remarks || "",
-                            },
-                            annexNumber: {
-                              number:
-                                project.integration?.annexNumber?.number || "",
-                              status:
-                                project.integration?.annexNumber?.status ||
-                                "Pending",
-                              date: project.integration?.annexNumber?.date
-                                ? new Date(project.integration.annexNumber.date)
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.integration?.annexNumber?.remarks || "",
-                            },
-                            tenantsIntegration: {
-                              status:
-                                project.integration?.tenantsIntegration
-                                  ?.status || "Pending",
-                              date: project.integration?.tenantsIntegration
-                                ?.date
-                                ? new Date(
-                                    project.integration.tenantsIntegration.date,
-                                  )
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.integration?.tenantsIntegration
-                                  ?.remarks || "",
-                            },
-                            generalRemarks:
-                              project.integration?.generalRemarks || "",
-                          },
-                          closeout: {
-                            patTcn: {
-                              number: project.closeout?.patTcn?.number || "",
-                              status:
-                                project.closeout?.patTcn?.status || "Pending",
-                              date: project.closeout?.patTcn?.date
-                                ? new Date(project.closeout.patTcn.date)
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks: project.closeout?.patTcn?.remarks || "",
-                            },
-                            patStatus: {
-                              status:
-                                project.closeout?.patStatus?.status ||
-                                "Pending",
-                              date: project.closeout?.patStatus?.date
-                                ? new Date(project.closeout.patStatus.date)
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.closeout?.patStatus?.remarks || "",
-                            },
-                            invoicing: {
-                              status:
-                                project.closeout?.invoicing?.status ||
-                                "Pending",
-                              date: project.closeout?.invoicing?.date
-                                ? new Date(project.closeout.invoicing.date)
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.closeout?.invoicing?.remarks || "",
-                            },
-                            capitalisationSheetUpdate: {
-                              status:
-                                project.closeout?.capitalisationSheetUpdate
-                                  ?.status || "Pending",
-                              date: project.closeout?.capitalisationSheetUpdate
-                                ?.date
-                                ? new Date(
-                                    project.closeout.capitalisationSheetUpdate
-                                      .date,
-                                  )
-                                    .toISOString()
-                                    .slice(0, 10)
-                                : "",
-                              remarks:
-                                project.closeout?.capitalisationSheetUpdate
-                                  ?.remarks || "",
-                            },
-                            generalRemarks:
-                              project.closeout?.generalRemarks || "",
-                          },
-                        });
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => setEditMode(true)}
-                  >
-                    Edit
-                  </button>
-                )}
-              </>
-            )}
-            {user?.role === "Admin" && (
-              <button
-                className="btn btn-danger"
-                onClick={handleDelete}
-                disabled={deleteMutation.isLoading}
+            <div
+              style={{ borderRight: "1px solid #e5e7eb", paddingRight: "1rem" }}
+            >
+              <div
+                style={{
+                  marginTop: "0.35rem",
+                  fontSize: "0.875rem",
+                }}
               >
-                Delete
-              </button>
-            )}
-            <ConfirmModal
-              isOpen={confirmOpen}
-              onClose={() => setConfirmOpen(false)}
-              onConfirm={performDelete}
-              title={`Delete project: ${project.title}`}
-              message={`Are you sure you want to permanently delete this project? This action cannot be undone.`}
-              isLoading={deleteMutation.isLoading}
-            />
+                <Calendar size={14} /> Created :{" "}
+                {new Date(project.createdAt).toLocaleDateString()}
+              </div>
+              <div>
+                <Users2 size={14} /> Team Members :{" "}
+                {project.teamMembers.join(", ")}
+              </div>
+            </div>
+            <div className="">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
+              >
+                <ClipboardIcon width={16} /> Site ID :
+                {editMode ? (
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={form.siteId}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        siteId: Number(e.target.value),
+                      })
+                    }
+                  />
+                ) : (
+                  <>{project.siteId} </>
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
+              >
+                <ClipboardIcon width={16} /> Tawal ID :{" "}
+                {editMode ? (
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={form.tawalId}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        tawalId: e.target.value,
+                      })
+                    }
+                  />
+                ) : (
+                  <>{project.tawalId} </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -819,27 +892,6 @@ export default function ProjectDetails() {
                   <div>{project.teamLead || "—"}</div>
                 )}
               </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <label className="form-label">Tags</label>
-                {editMode ? (
-                  <input
-                    className="form-input"
-                    value={form.tags}
-                    onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                    placeholder="comma, separated, tags"
-                  />
-                ) : (
-                  <div>{(project.tags || []).join(", ") || "—"}</div>
-                )}
-              </div>
             </div>
 
             <div
@@ -902,37 +954,6 @@ export default function ProjectDetails() {
                   </div>
                 )}
               </div>
-            </div>
-            <div
-              className=""
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <label className="form-label">Status</label>
-              {editMode ? (
-                <select
-                  className="form-select"
-                  value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                >
-                  <option>Planning</option>
-                  <option>In Progress</option>
-                  <option>Testing</option>
-                  <option>Completed</option>
-                  <option>On Hold</option>
-                </select>
-              ) : (
-                <div
-                  className={`pill-${project.status.replace(/\s+/g, "").toLowerCase()}`}
-                  style={{ fontSize: "0.7rem" }}
-                >
-                  {project.status}
-                </div>
-              )}
             </div>
 
             <div
@@ -1053,6 +1074,46 @@ export default function ProjectDetails() {
                 style={{ fontSize: "0.7rem", padding: "1px 10px" }}
               >
                 {project.integration?.alarmsConfiguration?.status || "Pending"}
+              </div>
+            </div>
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "0.4rem",
+              }}
+            >
+              <label className="form-label" style={{ fontSize: "0.8rem" }}>
+                Region
+              </label>
+              <div
+                className={`pill-${(project.region || "pending").toLowerCase()}`}
+                style={{ fontSize: "0.7rem", padding: "1px 10px" }}
+              >
+                {project.region || "-"}
+              </div>
+            </div>
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "0.4rem",
+              }}
+            >
+              <label className="form-label" style={{ fontSize: "0.8rem" }}>
+                City
+              </label>
+              <div
+                className={`pill-${(project.region || "pending").toLowerCase()}`}
+                style={{ fontSize: "0.7rem", padding: "1px 10px" }}
+              >
+                {project.city || "-"}
               </div>
             </div>
           </div>

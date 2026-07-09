@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useProjectsHook } from "../hooks/project";
 import { NavLink } from "react-router-dom";
+import { SaudiRiyal } from "lucide-react";
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat("en-US", {
@@ -697,7 +698,11 @@ export default function Analytics() {
                           textTransform: "capitalize",
                         }}
                       >
-                        {p.title}
+                        {p.title.length > 15 ? (
+                          <> {p.title.slice(0, 15)}...</>
+                        ) : (
+                          p.title
+                        )}
                       </NavLink>
                     </div>
                     <div

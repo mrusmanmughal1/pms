@@ -7,10 +7,10 @@ export default function ProjectCard({ proj, i }) {
   const now = new Date();
   const endDate = proj.endDate ? new Date(proj.endDate) : null;
   const isCompleted = proj.status === "Completed";
-  
+
   let isOverdue = false;
   let isApproachingDeadline = false;
-  
+
   if (endDate && !isCompleted) {
     if (now > endDate) {
       isOverdue = true;
@@ -22,11 +22,12 @@ export default function ProjectCard({ proj, i }) {
     }
   }
 
-  const isCriticalPriority = (proj.priority === "Critical" || proj.priority === "High") && !isCompleted;
+  const isCriticalPriority =
+    (proj.priority === "Critical" || proj.priority === "High") && !isCompleted;
   const isReadyForReview = proj.progress >= 90 && !isCompleted;
 
   let borderColor = "transparent";
-  let boxShadow = "none";
+  let boxShadow = "0 0 8px rgba(10, 10, 10, 0.1)";
   if (isOverdue) {
     borderColor = "#ef4444";
     boxShadow = "0 0 8px rgba(239, 68, 68, 0.5)";
@@ -42,12 +43,12 @@ export default function ProjectCard({ proj, i }) {
     <div
       key={i}
       className="glass-panel"
-      style={{ 
-        display: "flex", 
+      style={{
+        display: "flex",
         flexDirection: "column",
         border: `1px solid ${borderColor}`,
         boxShadow: boxShadow,
-        transition: "all 0.3s ease"
+        transition: "all 0.3s ease",
       }}
     >
       <div
@@ -70,30 +71,73 @@ export default function ProjectCard({ proj, i }) {
             to={`/projects/${proj._id}`}
             style={{ color: "inherit", textDecoration: "none" }}
           >
-            {proj.title}
+            {proj.title.length > 20
+              ? proj.title.slice(0, 20) + "..."
+              : proj.title}
           </Link>
         </h3>
-        
+
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {/* Alarms */}
           {isOverdue && (
-            <div title="Overdue!" style={{ color: "#ef4444", display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.75rem", fontWeight: "600" }}>
+            <div
+              title="Overdue!"
+              style={{
+                color: "#ef4444",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                fontSize: "0.7rem",
+
+                fontWeight: "600",
+              }}
+            >
               <Clock size={14} />
               <span>{formatDate(proj.endDate)}</span>
             </div>
           )}
           {isApproachingDeadline && !isOverdue && (
-            <div title="Approaching Deadline" style={{ color: "#f59e0b", display: "flex", alignItems: "center" }}>
-              <Clock size={16} />
+            <div
+              title="Approaching Deadline"
+              style={{
+                color: "#f59e0b",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Clock size={16} />{" "}
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  margin: "5px",
+                  fontWeight: "600",
+                }}
+              >
+                {formatDate(proj.endDate)}
+              </span>
             </div>
           )}
           {isCriticalPriority && (
-            <div title="High/Critical Priority" style={{ color: "#f97316", display: "flex", alignItems: "center" }}>
+            <div
+              title="High/Critical Priority"
+              style={{
+                color: "#f97316",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <AlertTriangle size={16} />
             </div>
           )}
           {isReadyForReview && (
-            <div title="Ready for Review" style={{ color: "#10b981", display: "flex", alignItems: "center" }}>
+            <div
+              title="Ready for Review"
+              style={{
+                color: "#10b981",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <CheckCircle size={16} />
             </div>
           )}

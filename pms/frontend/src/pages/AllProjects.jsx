@@ -8,7 +8,7 @@ import {
 import ProjectForm from "../components/ProjectForm";
 import Spinner from "../components/Spinner";
 import { formatDate } from "../utils/date";
-import { FolderOpen } from "lucide-react";
+import { CloudUpload, Download, FolderOpen } from "lucide-react";
 import ProjectCard from "../components/ProjectCard";
 import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 import toast from "react-hot-toast";
@@ -31,6 +31,13 @@ const AllProjects = () => {
   const debouncedRegionFilter = useDebounce(regionFilter, 500);
   const [cityFilter, setCityFilter] = useState("");
   const debouncedCityFilter = useDebounce(cityFilter, 500);
+  const [page, setPage] = useState(1);
+
+  // Reset to page 1 whenever any filter changes
+  const handleFilterChange = (setter) => (val) => {
+    setter(val);
+    setPage(1);
+  };
 
   const {
     data: projectsData,
@@ -43,10 +50,13 @@ const AllProjects = () => {
     priority: priorityFilter,
     region: debouncedRegionFilter,
     city: debouncedCityFilter,
+    page,
+    limit: 20,
   });
 
   const projects = projectsData?.data || [];
   const countOfProjects = projectsData?.meta?.total || 0;
+  const totalPages = projectsData?.meta?.totalPages || 1;
   const { data: categories = [] } = useCategories();
 
   if (isLoading) {
@@ -120,14 +130,16 @@ const AllProjects = () => {
               {uploadProjectsData.isLoading ? (
                 <Spinner size="sm" />
               ) : (
-                "Upload CSV"
+                <>
+                  <CloudUpload width={14} /> Upload CSV
+                </>
               )}
             </button>
             <button
               className="btn btn-secondary"
               onClick={() => exportToCSV(projects, "projects_export.csv")}
             >
-              Download CSV
+              <Download width={14} /> Download CSV
             </button>
           </div>
         )}
@@ -147,7 +159,7 @@ const AllProjects = () => {
             type="text"
             placeholder="Search projects..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleFilterChange(setSearchQuery)(e.target.value)}
             style={{
               width: "100%",
               padding: "0.5rem 1rem",
@@ -195,7 +207,9 @@ const AllProjects = () => {
 
         <select
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={(e) =>
+            handleFilterChange(setCategoryFilter)(e.target.value)
+          }
           style={{
             padding: "0.5rem 1rem",
             borderRadius: "0.4rem",
@@ -216,7 +230,7 @@ const AllProjects = () => {
 
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => handleFilterChange(setStatusFilter)(e.target.value)}
           style={{
             padding: "0.5rem 1rem",
             borderRadius: "0.4rem",
@@ -237,7 +251,9 @@ const AllProjects = () => {
 
         <select
           value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
+          onChange={(e) =>
+            handleFilterChange(setPriorityFilter)(e.target.value)
+          }
           style={{
             padding: "0.5rem 1rem",
             borderRadius: "0.4rem",
@@ -296,6 +312,47 @@ const AllProjects = () => {
       )}
 
       <ProjectForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "1rem",
+            marginTop: "2rem",
+            paddingTop: "1rem",
+            borderTop: "1px solid var(--surface-border)",
+          }}
+        >
+          <button
+            className="btn btn-outline"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            style={{ padding: "0.4rem 1rem", fontSize: "0.875rem" }}
+          >
+            ← Previous
+          </button>
+          <span
+            style={{
+              fontSize: "0.875rem",
+              color: "var(--text-secondary)",
+              fontWeight: "600",
+            }}
+          >
+            Page {page} of {totalPages}
+          </span>
+          <button
+            className="btn btn-outline"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            style={{ padding: "0.4rem 1rem", fontSize: "0.875rem" }}
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 };

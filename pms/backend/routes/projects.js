@@ -8,7 +8,8 @@ const { protect, authorize } = require("../middleware/auth");
 router.get("/", protect, async (req, res) => {
   try {
     const { role, email } = req.user;
-    const { search, category, status, priority, region, city } = req.query;
+    const { search, category, status, priority, region, city, page, limit } =
+      req.query;
     const fullAccessRoles = ["Admin", "Manager", "PM"];
 
     let query = {};
@@ -40,10 +41,22 @@ router.get("/", protect, async (req, res) => {
       query.city = { $regex: city, $options: "i" };
     }
 
-    const projects = await Project.find(query).sort({ createdAt: -1 });
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await Project.countDocuments(query);
+    const projects = await Project.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
     res.status(200).json({
       meta: {
-        total: projects.length,
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
       },
       data: projects,
     });
@@ -56,6 +69,7 @@ router.get("/", protect, async (req, res) => {
 router.get("/category/:category", protect, async (req, res) => {
   try {
     const { role, email } = req.user;
+    const { page, limit } = req.query;
     const fullAccessRoles = ["Admin", "Manager", "PM"];
 
     let query = { category: req.params.category };
@@ -63,8 +77,25 @@ router.get("/category/:category", protect, async (req, res) => {
       query.teamMembers = email;
     }
 
-    const projects = await Project.find(query).sort({ createdAt: -1 });
-    res.status(200).json(projects);
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await Project.countDocuments(query);
+    const projects = await Project.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    res.status(200).json({
+      meta: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
+      },
+      data: projects,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -7,11 +7,19 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
 // get project by category
 export const useProjectsByCategory = (categoryName, options = {}) => {
+  const { page, limit } = options;
+  const queryParams = new URLSearchParams();
+  if (page) queryParams.append("page", page);
+  if (limit) queryParams.append("limit", limit);
+  const queryString = queryParams.toString();
+
   return useQuery({
-    queryKey: ["projects", categoryName],
+    queryKey: ["projects", categoryName, page, limit],
     queryFn: () =>
       apiInstance
-        .get(`${API_BASE}/projects/category/${categoryName}`)
+        .get(
+          `${API_BASE}/projects/category/${categoryName}${queryString ? `?${queryString}` : ""}`,
+        )
         .then((res) => res.data),
     enabled: !!categoryName,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -31,7 +39,8 @@ export const useStats = () => {
 
 // Fetch all projects
 export const useProjectsHook = (filters = {}) => {
-  const { search, category, status, priority, region, city } = filters;
+  const { search, category, status, priority, region, city, page, limit } =
+    filters;
   const queryParams = new URLSearchParams();
   if (search) queryParams.append("search", search);
   if (category) queryParams.append("category", category);
@@ -39,6 +48,8 @@ export const useProjectsHook = (filters = {}) => {
   if (priority) queryParams.append("priority", priority);
   if (region) queryParams.append("region", region);
   if (city) queryParams.append("city", city);
+  if (page) queryParams.append("page", page);
+  if (limit) queryParams.append("limit", limit);
 
   const queryString = queryParams.toString();
   const url = `${API_BASE}/projects${queryString ? `?${queryString}` : ""}`;

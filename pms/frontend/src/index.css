@@ -90,6 +90,12 @@ p {
     0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
 /* Buttons */
 .btn {
   display: inline-flex;

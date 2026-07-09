@@ -56,12 +56,13 @@ const ProjectForm = ({ isOpen, onClose }) => {
 
   const categoryBudget = selectedCategory?.budget || 0;
 
-  const { data: categoryProjects = [] } = useProjectsByCategory(
+  const { data: categoryProjectsResponse } = useProjectsByCategory(
     formData.category,
     {
       enabled: !!formData.category,
     },
   );
+  const categoryProjects = categoryProjectsResponse?.data || categoryProjectsResponse || [];
 
   const existingCategoryAllocated = useMemo(
     () =>
