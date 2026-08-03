@@ -1,15 +1,9 @@
 import { useState, useMemo } from "react";
 import { useProjectsHook } from "../hooks/project";
 import { NavLink } from "react-router-dom";
-import { SaudiRiyal } from "lucide-react";
 
 const formatCurrency = (value) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value || 0);
+  return `﷼ ${Number(value || 0).toLocaleString("en-US")}`;
 };
 
 export default function Analytics() {

@@ -27,6 +27,7 @@ import { useProjectsHook } from "../hooks/project";
 import { formatDate } from "../utils/date";
 import { getCatBadge } from "../utils/helpers";
 import ProjectCard from "../components/ProjectCard";
+import { NavLink } from "react-router-dom";
 
 const Dashboard = () => {
   const {
@@ -328,7 +329,8 @@ const Dashboard = () => {
         }}
       >
         <h2 style={{ fontSize: "1.1rem" }}>Recent Projects</h2>
-        <div
+        <NavLink
+          to="/projects"
           style={{
             display: "flex",
             alignItems: "center",
@@ -340,7 +342,7 @@ const Dashboard = () => {
           }}
         >
           View All <ArrowRight size={16} />
-        </div>
+        </NavLink>
       </div>
 
       {/* Recent Projects Grid */}

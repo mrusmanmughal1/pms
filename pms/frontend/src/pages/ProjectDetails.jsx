@@ -744,7 +744,10 @@ export default function ProjectDetails() {
               </div>
               <div>
                 <Users2 size={14} /> Team Members :{" "}
-                {project.teamMembers.join(", ")}
+                <span style={{ fontSize: "12px" }}>
+                  {" "}
+                  {project.teamMembers.join(", ")}
+                </span>
               </div>
             </div>
             <div className="">

@@ -62,7 +62,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
       enabled: !!formData.category,
     },
   );
-  const categoryProjects = categoryProjectsResponse?.data || categoryProjectsResponse || [];
+  const categoryProjects =
+    categoryProjectsResponse?.data || categoryProjectsResponse || [];
 
   const existingCategoryAllocated = useMemo(
     () =>
@@ -304,33 +305,6 @@ const ProjectForm = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              <div style={formStyles.gridRow}>
-                <div>
-                  <label style={formStyles.label}>Region</label>
-                  <input
-                    type="text"
-                    style={formStyles.input}
-                    placeholder="e.g. Riyadh Region"
-                    value={formData.region}
-                    onChange={(e) =>
-                      setFormData({ ...formData, region: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label style={formStyles.label}>City</label>
-                  <input
-                    type="text"
-                    style={formStyles.input}
-                    placeholder="e.g. Riyadh"
-                    value={formData.city}
-                    onChange={(e) =>
-                      setFormData({ ...formData, city: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
               <div style={{ marginBottom: "1rem" }}>
                 <div>
                   <label style={formStyles.label}>Priority</label>
@@ -425,6 +399,45 @@ const ProjectForm = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={formStyles.label}>Pick Location on Map</label>
+                <LocationPicker
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  onLocationChange={({ latitude, longitude, city, region }) => {
+                    const updates = { latitude, longitude };
+                    if (city !== undefined) updates.city = city;
+                    if (region !== undefined) updates.region = region;
+                    setFormData({ ...formData, ...updates });
+                  }}
+                />
+              </div>
+              <div style={formStyles.gridRow}>
+                <div>
+                  <label style={formStyles.label}>Region</label>
+                  <input
+                    type="text"
+                    style={formStyles.input}
+                    placeholder="e.g. Riyadh Region"
+                    value={formData.region}
+                    onChange={(e) =>
+                      setFormData({ ...formData, region: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label style={formStyles.label}>City</label>
+                  <input
+                    type="text"
+                    style={formStyles.input}
+                    placeholder="e.g. Riyadh"
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
               <div style={formStyles.gridRow}>
                 <div>
                   <label style={formStyles.label}>Latitude</label>
@@ -453,21 +466,6 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   />
                 </div>
               </div>
-
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={formStyles.label}>Pick Location on Map</label>
-                <LocationPicker
-                  latitude={formData.latitude}
-                  longitude={formData.longitude}
-                  onLocationChange={({ latitude, longitude, city, region }) => {
-                    const updates = { latitude, longitude };
-                    if (city !== undefined) updates.city = city;
-                    if (region !== undefined) updates.region = region;
-                    setFormData({ ...formData, ...updates });
-                  }}
-                />
-              </div>
-
               <div className="">
                 {selectedCategory && formData.budget > 0 && (
                   <div
