@@ -384,6 +384,17 @@ export default function ProjectDetails() {
     user.role === "Document Controller" ||
     user.role === "Closeout";
 
+  // Full editor: can edit project-level details (Admin or PM)
+  const isFullEditor = user.role === "Admin" || user.role === "PM";
+
+  // Any user who has access to at least one module can see the Edit button
+  const canEdit =
+    isFullEditor ||
+    AllowMapping ||
+    AllowInstallation ||
+    AllowIntegration ||
+    AllowCloseout;
+
   return (
     <div className="">
       <div className="flex-between">
@@ -404,7 +415,7 @@ export default function ProjectDetails() {
           </span>
         </h2>
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          {(user?.role === "Admin" || user?.role === "Manager") && (
+          {canEdit && (
             <>
               {editMode ? (
                 <>
@@ -759,7 +770,7 @@ export default function ProjectDetails() {
                 }}
               >
                 <ClipboardIcon width={16} /> Site ID :
-                {editMode ? (
+                {editMode && isFullEditor ? (
                   <input
                     type="number"
                     className="form-input"
@@ -783,7 +794,7 @@ export default function ProjectDetails() {
                 }}
               >
                 <ClipboardIcon width={16} /> Tawal ID :{" "}
-                {editMode ? (
+                {editMode && isFullEditor ? (
                   <input
                     type="text"
                     className="form-input"
@@ -818,7 +829,7 @@ export default function ProjectDetails() {
           >
             Description
           </label>
-          {editMode ? (
+          {editMode && isFullEditor ? (
             <textarea
               className="form-textarea"
               rows={20}
@@ -868,7 +879,7 @@ export default function ProjectDetails() {
                 }}
               >
                 <label className="form-label">Team Lead</label>
-                {editMode ? (
+                {editMode && isFullEditor ? (
                   <>
                     {usersLoading ? (
                       <select className="form-select" disabled>
@@ -913,7 +924,7 @@ export default function ProjectDetails() {
                 }}
               >
                 <label className="form-label">Start Date</label>
-                {editMode ? (
+                {editMode && isFullEditor ? (
                   <input
                     type="date"
                     className="form-input"
@@ -940,7 +951,7 @@ export default function ProjectDetails() {
                 }}
               >
                 <label className="form-label">End Date</label>
-                {editMode ? (
+                {editMode && isFullEditor ? (
                   <input
                     type="date"
                     className="form-input"
@@ -971,7 +982,7 @@ export default function ProjectDetails() {
               <label className="form-label" style={{ fontSize: "0.8rem" }}>
                 Priority
               </label>
-              {editMode ? (
+              {editMode && isFullEditor ? (
                 <select
                   className="form-select"
                   value={form.priority}
@@ -1146,7 +1157,7 @@ export default function ProjectDetails() {
 
               return (
                 <div>
-                  {editMode && (
+                  {editMode && isFullEditor && (
                     <div
                       style={{
                         display: "grid",
