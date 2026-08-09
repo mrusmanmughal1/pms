@@ -21,7 +21,7 @@ export const useRegister = () => {
   });
 };
 
-// hook to get  for roles
+// hook to get  for roles ok
 export const useRole = () => {
   return useQuery({
     queryKey: ["roles"],
