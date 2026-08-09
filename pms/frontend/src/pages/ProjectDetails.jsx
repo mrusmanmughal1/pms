@@ -768,7 +768,7 @@ export default function ProjectDetails() {
                 <ClipboardIcon width={16} /> Site ID :
                 {editMode && isFullEditor ? (
                   <input
-                    type="number"
+                    type="text"
                     className="form-input"
                     value={form.siteId}
                     onChange={(e) =>
