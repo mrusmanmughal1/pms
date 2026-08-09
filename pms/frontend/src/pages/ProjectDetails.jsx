@@ -92,6 +92,7 @@ export default function ProjectDetails() {
           : "",
         longitude: project.longitude ?? "",
         latitude: project.latitude ?? "",
+        teamMembers: project.teamMembers || [],
         tags: (project.tags || []).join(", "),
         mapping: {
           woRequest: {
@@ -445,6 +446,7 @@ export default function ProjectDetails() {
                           : "",
                         longitude: project.longitude ?? "",
                         latitude: project.latitude ?? "",
+                        teamMembers: project.teamMembers || [],
                         tags: (project.tags || []).join(", "),
                         mapping: {
                           woRequest: {
@@ -751,10 +753,77 @@ export default function ProjectDetails() {
               </div>
               <div>
                 <Users2 size={14} /> Team Members :{" "}
-                <span style={{ fontSize: "12px" }}>
-                  {" "}
-                  {project.teamMembers.join(", ")}
-                </span>
+                {editMode && isFullEditor ? (
+                  <div
+                    style={{
+                      maxHeight: "130px",
+                      overflowY: "auto",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "0.5rem",
+                      padding: "0.5rem",
+                      marginTop: "0.3rem",
+                      background: "#ffffff",
+                    }}
+                  >
+                    {usersLoading ? (
+                      <div style={{ fontSize: "0.8rem", color: "#64748b" }}>
+                        Loading users...
+                      </div>
+                    ) : (
+                      users.map((u) => {
+                        const userIdentifier = u.email || u.name;
+                        const isChecked = (form.teamMembers || []).includes(
+                          userIdentifier,
+                        );
+                        return (
+                          <label
+                            key={u._id}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                              fontSize: "0.8rem",
+                              marginBottom: "0.25rem",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                const currentMembers = form.teamMembers || [];
+                                if (e.target.checked) {
+                                  setForm({
+                                    ...form,
+                                    teamMembers: [
+                                      ...currentMembers,
+                                      userIdentifier,
+                                    ],
+                                  });
+                                } else {
+                                  setForm({
+                                    ...form,
+                                    teamMembers: currentMembers.filter(
+                                      (m) => m !== userIdentifier,
+                                    ),
+                                  });
+                                }
+                              }}
+                            />
+                            <span>
+                              {u.name} {u.email ? `(${u.email})` : ""}
+                            </span>
+                          </label>
+                        );
+                      })
+                    )}
+                  </div>
+                ) : (
+                  <span style={{ fontSize: "12px" }}>
+                    {" "}
+                    {(project.teamMembers || []).join(", ") || "—"}
+                  </span>
+                )}
               </div>
             </div>
             <div className="">
