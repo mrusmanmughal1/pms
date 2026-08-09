@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Project = require("../models/Project");
 const Category = require("../models/Category");
+const User = require("../models/User");
 const { protect, authorize } = require("../middleware/auth");
 
 // Get all projects (role-based)
@@ -115,7 +116,7 @@ router.get("/stats", protect, async (req, res) => {
     const totalProjects = await Project.countDocuments(baseFilter);
     const inProgressCount = await Project.countDocuments({
       ...baseFilter,
-      status: "In Progress",
+      status: { $in: ["Mapping", "Installation", "Integration"] },
     });
     const completedCount = await Project.countDocuments({
       ...baseFilter,
@@ -192,39 +193,72 @@ router.post(
 
       const validatedProjects = [];
 
+      // Fetch all existing user emails once for fast validation
+      const existingUserEmails = new Set(
+        (await User.find().select("email").lean()).map((u) =>
+          u.email.toLowerCase(),
+        ),
+      );
+
       // Validate each project
       for (let i = 0; i < projects.length; i++) {
         const projectData = projects[i];
-        const { category, budget = 0, spent = 0 } = projectData;
+        const {
+          category,
+          budget = 0,
+          spent = 0,
+          teamMembers = [],
+        } = projectData;
 
         if (!projectData.title) {
-          next({
-            status: 400,
-            message: "Project title is required",
-          });
+          return next(
+            new ErrorResponse(`Project at index ${i} requires a title`, 400),
+          );
+        }
+
+        // Validate teamMembers emails exist in database
+        if (Array.isArray(teamMembers) && teamMembers.length > 0) {
+          const invalidEmails = teamMembers.filter(
+            (email) =>
+              !existingUserEmails.has(String(email).trim().toLowerCase()),
+          );
+          if (invalidEmails.length > 0) {
+            return next(
+              new ErrorResponse(
+                `Project "${projectData.title}" contains invalid user email(s): ${invalidEmails.join(", ")}`,
+                400,
+              ),
+            );
+          }
         }
 
         if (category) {
           const cat = await Category.findOne({ name: category });
           if (!cat) {
-            next({
-              status: 400,
-              message: "Category does not exist ",
-            });
+            return next(
+              new ErrorResponse(
+                `Category "${category}" does not exist for project "${projectData.title}"`,
+                400,
+              ),
+            );
           }
 
           if (budget > cat.budget) {
-            return next({
-              status: 400,
-              message: "the Project budget cannot exceed category budget",
-            });
+            return next(
+              new ErrorResponse(
+                `Project "${projectData.title}" budget (${budget}) cannot exceed category budget (${cat.budget})`,
+                400,
+              ),
+            );
           }
 
           if (spent > cat.budget) {
-            return next({
-              status: 400,
-              message: "the Project spent cannot exceed category budget",
-            });
+            return next(
+              new ErrorResponse(
+                `Project "${projectData.title}" spent (${spent}) cannot exceed category budget (${cat.budget})`,
+                400,
+              ),
+            );
           }
 
           projectData.categoryBudget = cat.budget;
@@ -304,11 +338,12 @@ router.put("/:id", protect, authorize("Admin", "Manager"), async (req, res) => {
       req.body.categoryBudget = cat.budget;
     }
 
-    const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ message: "Project not found" });
+
+    Object.assign(project, req.body);
+    await project.save();
+
     res.status(200).json(project);
   } catch (error) {
     res.status(400).json({ message: error.message });

@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const projectRoutes = require("./routes/projects");
 const authRoutes = require("./routes/auth");
+const reportRoutes = require("./routes/reports");
 const errorHandler = require("./middleware/error");
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,6 +25,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", require("./routes/categories"));
 app.use("/api/users", require("./routes/users"));
+app.use("/api/reports", reportRoutes);
 
 // Root Endpoint
 app.get("/", (req, res) => {

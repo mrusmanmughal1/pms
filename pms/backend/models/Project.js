@@ -22,8 +22,15 @@ const ProjectSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Planning", "In Progress", "Testing", "Completed", "On Hold"],
-      default: "Planning",
+      enum: [
+        "Initiation",
+        "Mapping",
+        "Installation",
+        "Integration",
+        "Closeout",
+        "Completed",
+      ],
+      default: "Initiation",
     },
     priority: {
       type: String,
@@ -231,4 +238,18 @@ const ProjectSchema = new mongoose.Schema(
   },
 );
 
-module.exports = mongoose.model("Project", ProjectSchema);
+ProjectSchema.pre("save", function () {
+  // Automatic status progression logic based on completed milestones
+  if (this.closeout?.capitalisationSheetUpdate?.status === "Completed") {
+    this.status = "Completed";
+  } else if (this.integration?.tenantsIntegration?.status === "Completed") {
+    this.status = "Closeout";
+  } else if (this.installation?.siteInstallation?.status === "Completed") {
+    this.status = "Integration";
+  } else if (this.mapping?.woRequest?.status === "Approved") {
+    this.status = "Installation";
+  }
+});
+
+module.exports =
+  mongoose.models.Project || mongoose.model("Project", ProjectSchema);
