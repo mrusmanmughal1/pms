@@ -27,7 +27,7 @@ export default function ProjectCard({ proj, i }) {
   const isReadyForReview = proj.progress >= 90 && !isCompleted;
 
   let borderColor = "transparent";
-  let boxShadow = "0 0 8px rgba(10, 10, 10, 0.1)";
+  let boxShadow = "0 0 8px rgba(10, 10, 10, 0.2)";
   if (isOverdue) {
     borderColor = "#ef4444";
     boxShadow = "0 0 8px rgba(239, 68, 68, 0.5)";
@@ -163,58 +163,71 @@ export default function ProjectCard({ proj, i }) {
         {proj.description.slice(0, 100) || "\u00A0"}
       </p>
 
-      <div style={{ marginBottom: "1.5rem" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            fontSize: "0.75rem",
-            fontWeight: "600",
-            color: "var(--text-secondary)",
-          }}
-        >
-          <span>Progress</span>
-          <span>{proj.progress}%</span>
-        </div>
-        <div className="progress-bg">
-          <div
-            className="progress-fill progress-bar-color"
-            style={{
-              width: `${proj.progress}%`,
-              // background:
-              //   proj.category === "Smart Meter"
-              //     ? "#10b981"
-              //     : proj.category === "RMS"
-              //       ? "#3b82f6"
-              //       : "#8b5cf6",
-            }}
-          ></div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-              background: "#f8fafc",
-              padding: "0.1rem 0.5rem",
-              borderRadius: "9999px",
-              fontSize: "0.7rem",
-              fontWeight: "500",
-              color: "#475569",
-            }}
-          >
-            {proj.status}
+      {(() => {
+        const statusProgressMap = {
+          Initiation: 0,
+          Mapping: 20,
+          Installation: 40,
+          Integration: 65,
+          Closeout: 85,
+          Completed: 100,
+        };
+        const computedProgress =
+          statusProgressMap[proj.status] !== undefined
+            ? statusProgressMap[proj.status]
+            : proj.progress || 0;
+
+        return (
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: "0.75rem",
+                fontWeight: "600",
+                color: "var(--text-secondary)",
+              }}
+            >
+              <span>Progress</span>
+              <span>{computedProgress}%</span>
+            </div>
+            <div className="progress-bg">
+              <div
+                className="progress-fill progress-bar-color"
+                style={{
+                  width: `${computedProgress}%`,
+                }}
+              ></div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  background: "#f8fafc",
+                  padding: "0.1rem 0.5rem",
+                  borderRadius: "9999px",
+                  fontSize: "0.7rem",
+                  fontWeight: "500",
+                  color: "#475569",
+                }}
+              >
+                {proj.status}
+              </div>
+              <div className={getPriorityBadge(proj.priority)}>
+                {proj.priority}
+              </div>
+            </div>
           </div>
-          <div className={getPriorityBadge(proj.priority)}>{proj.priority}</div>
-        </div>
-      </div>
+        );
+      })()}
 
       <div
         style={{

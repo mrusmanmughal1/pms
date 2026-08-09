@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -112,8 +113,9 @@ function MainLayout() {
             }
           />
 
-          {/* Unauthorized fallback */}
+          {/* Unauthorized & 404 Catch-all */}
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>

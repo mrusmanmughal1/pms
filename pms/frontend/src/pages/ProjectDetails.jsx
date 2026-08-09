@@ -23,6 +23,7 @@ import {
   Calendar,
   ChartNoAxesColumnIncreasing,
   ClipboardIcon,
+  IdCard,
   SaudiRiyal,
   Users2,
 } from "lucide-react";
@@ -834,7 +835,7 @@ export default function ProjectDetails() {
                   gap: "0.5rem",
                 }}
               >
-                <ClipboardIcon width={16} /> Site ID :
+                <IdCard width={16} /> Site ID :
                 {editMode && isFullEditor ? (
                   <input
                     type="text"
@@ -858,7 +859,7 @@ export default function ProjectDetails() {
                   gap: "0.5rem",
                 }}
               >
-                <ClipboardIcon width={16} /> Tawal ID :{" "}
+                <IdCard width={16} /> Tawal ID :{" "}
                 {editMode && isFullEditor ? (
                   <input
                     type="text"
@@ -1280,7 +1281,7 @@ export default function ProjectDetails() {
                             <Cell
                               key={`cell-${idx}`}
                               fill={
-                                entry.name === "Spent" ? "#10b981" : "#3b82f6"
+                                entry.name === "Spent" ? "#10b981" : "#1269f5ff"
                               }
                             />
                           ))}
@@ -1348,7 +1349,7 @@ export default function ProjectDetails() {
         className=""
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "1fr auto",
           gap: "1rem",
         }}
       >
