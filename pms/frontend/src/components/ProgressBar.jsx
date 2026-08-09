@@ -4,52 +4,28 @@ export default function ProgressBar({ project, editMode, form }) {
       {/* ── Dynamic Phase Progress Bar ── */}
       {(() => {
         const phases = [
-          { key: "mapping", label: "Mapping", statusMatch: "Planning" },
+          { key: "initiation", label: "Initiation", statusMatch: "Initiation" },
+          { key: "mapping", label: "Mapping", statusMatch: "Mapping" },
           {
             key: "installation",
             label: "Installation",
-            statusMatch: "In Progress",
+            statusMatch: "Installation",
           },
           {
             key: "integration",
             label: "Integration",
-            statusMatch: "Testing",
+            statusMatch: "Integration",
           },
-          {
-            key: "closeout",
-            label: "Closeout",
-            statusMatch: "Completed",
-          },
+          { key: "closeout", label: "Closeout", statusMatch: "Closeout" },
+          { key: "completed", label: "Completed", statusMatch: "Completed" },
         ];
         const sourceData = editMode ? form : project;
-        const currentStatus = sourceData?.status || "Planning";
+        const currentStatus = sourceData?.status || "Initiation";
 
-        const woIssuanceStatus =
-          sourceData?.mapping?.woIssuance?.status || "Pending";
-        const siteInstallStatus =
-          sourceData?.installation?.siteInstallation?.status || "Pending";
-        const tenantsIntegrationStatus =
-          sourceData?.integration?.tenantsIntegration?.status || "Pending";
-
-        let calculatedPhaseIdx = 0; // Default to Mapping
-
-        if (woIssuanceStatus === "Approved") {
-          calculatedPhaseIdx = 1; // Installation
-        }
-        if (calculatedPhaseIdx === 1 && siteInstallStatus === "Completed") {
-          calculatedPhaseIdx = 2; // Integration
-        }
-        if (
-          calculatedPhaseIdx === 2 &&
-          tenantsIntegrationStatus === "Completed"
-        ) {
-          calculatedPhaseIdx = 3; // Closeout
-        }
-
-        // On Hold is treated as the last active phase before hold
-        const activePhaseIdx =
-          currentStatus === "On Hold" ? -1 : calculatedPhaseIdx;
-        const progressVal = editMode ? form.progress : project.progress;
+        // Derive the active phase index directly from the status
+        const activePhaseIdx = phases.findIndex(
+          (p) => p.statusMatch === currentStatus,
+        );
 
         return (
           <div style={{ marginBottom: "1rem" }}>
@@ -75,20 +51,6 @@ export default function ProgressBar({ project, editMode, form }) {
               >
                 <h4 style={{ margin: "0", fontSize: "1rem" }}>Progress</h4>
               </div>
-              {currentStatus === "On Hold" && (
-                <span
-                  style={{
-                    fontSize: "0.7rem",
-                    fontWeight: 600,
-                    color: "#f59e0b",
-                    background: "rgba(245,158,11,0.12)",
-                    padding: "2px 8px",
-                    borderRadius: "999px",
-                  }}
-                >
-                  On Hold
-                </span>
-              )}
             </div>
 
             {/* Stepper track */}
@@ -113,14 +75,14 @@ export default function ProgressBar({ project, editMode, form }) {
                   top: "14px",
                   left: "12px",
                   width:
-                    activePhaseIdx >= 3
+                    activePhaseIdx >= phases.length - 1
                       ? "calc(100% - 24px)"
                       : activePhaseIdx < 0
                         ? "0%"
                         : `calc(${(activePhaseIdx / (phases.length - 1)) * 100}% * (1 - 24px / 100%) + 0px)`,
                   height: "4px",
                   background:
-                    activePhaseIdx >= 3
+                    activePhaseIdx >= phases.length - 1
                       ? "linear-gradient(90deg, #10b981, #059669)"
                       : "linear-gradient(90deg, #31df42ff, #6366f1)",
                   borderRadius: "2px",
@@ -224,7 +186,7 @@ export default function ProgressBar({ project, editMode, form }) {
                       {/* Label */}
                       <span
                         style={{
-                          fontSize: "0.65rem",
+                          fontSize: "0.5rem",
                           fontWeight: labelWeight,
                           color: labelColor,
                           textAlign: "center",

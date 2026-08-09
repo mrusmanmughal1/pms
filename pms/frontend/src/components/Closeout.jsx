@@ -71,7 +71,6 @@ export default function Closeout({
                 <option>Pending</option>
                 <option>Approved</option>
                 <option>Rejected</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div
@@ -158,7 +157,6 @@ export default function Closeout({
                 <option>Pending</option>
                 <option>Approved</option>
                 <option>Rejected</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div
@@ -247,7 +245,6 @@ export default function Closeout({
                 <option>Pending</option>
                 <option>In Progress</option>
                 <option>Completed</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div
@@ -338,7 +335,6 @@ export default function Closeout({
                 <option>Pending</option>
                 <option>In Progress</option>
                 <option>Completed</option>
-                <option>N/A</option>
               </select>
             ) : (
               <div

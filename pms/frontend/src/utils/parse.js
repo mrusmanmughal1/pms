@@ -78,6 +78,7 @@ export function exportToCSV(data, filename = "data.csv") {
     "tawalId",
     "region",
     "city",
+    "teamLead",
     "budget",
     "spent",
     "progress",

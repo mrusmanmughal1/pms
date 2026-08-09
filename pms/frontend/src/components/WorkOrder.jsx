@@ -41,8 +41,8 @@ export default function WorkOrder({
                   })
                 }
               >
-                <option>Pending</option>
-                <option>Done</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Done</option>
               </select>
             ) : (
               <div
@@ -217,7 +217,6 @@ export default function WorkOrder({
               >
                 <option>Pending</option>
                 <option>Approved</option>
-                <option>Rejected</option>
               </select>
             ) : (
               <div

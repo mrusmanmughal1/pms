@@ -108,7 +108,7 @@ const AllProjects = () => {
                     toast.error("No projects found in CSV");
                     return;
                   }
-                  await uploadProjectsData.mutate({ projects: parsed });
+                  await uploadProjectsData.mutateAsync({ projects: parsed });
                 } catch (err) {
                   const msg =
                     err?.response?.data?.message ||
@@ -242,11 +242,12 @@ const AllProjects = () => {
           }}
         >
           <option value="All Statuses">All Statuses</option>
-          <option value="Planning">Planning</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Testing">Testing</option>
+          <option value="Initiation">Initiation</option>
+          <option value="Mapping">Mapping</option>
+          <option value="Installation">Installation</option>
+          <option value="Integration">Integration</option>
+          <option value="Closeout">Closeout</option>
           <option value="Completed">Completed</option>
-          <option value="On Hold">On Hold</option>
         </select>
 
         <select

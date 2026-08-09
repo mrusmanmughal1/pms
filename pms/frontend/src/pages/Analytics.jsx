@@ -18,7 +18,7 @@ export default function Analytics() {
       return projects.filter((p) => p.status === "Completed");
     if (filter === "Active")
       return projects.filter(
-        (p) => p.status !== "Completed" && p.status !== "On Hold",
+        (p) => p.status !== "Completed" && p.status !== "Closeout",
       );
     return projects;
   }, [projects, filter]);
@@ -39,11 +39,12 @@ export default function Analytics() {
 
   // Status Distribution
   const statusCounts = {
-    Planning: 0,
-    "In Progress": 0,
-    Testing: 0,
+    Initiation: 0,
+    Mapping: 0,
+    Installation: 0,
+    Integration: 0,
+    Closeout: 0,
     Completed: 0,
-    "On Hold": 0,
   };
 
   filteredProjects.forEach((p) => {
@@ -80,16 +81,18 @@ export default function Analytics() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Planning":
+      case "Initiation":
         return "#94a3b8"; // Gray
-      case "In Progress":
-        return "#5a4af4"; // Purple
-      case "Testing":
-        return "#0ea5e9"; // Cyan
+      case "Mapping":
+        return "#3b82f6"; // Blue
+      case "Installation":
+        return "#f59e0b"; // Amber
+      case "Integration":
+        return "#8b5cf6"; // Purple
+      case "Closeout":
+        return "#f97316"; // Orange
       case "Completed":
         return "#10b981"; // Green
-      case "On Hold":
-        return "#f59e0b"; // Orange
       default:
         return "#94a3b8";
     }

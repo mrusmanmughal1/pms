@@ -18,6 +18,7 @@ import Users from "./pages/Users";
 import ProjectDetails from "./pages/ProjectDetails";
 import Unauthorized from "./pages/Unauthorized";
 import Analytics from "./pages/Analytics";
+import Reports from "./pages/Reports";
 
 function Header() {
   const location = useLocation();
@@ -67,6 +68,14 @@ function MainLayout() {
           <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/category/:categoryName" element={<ProjectList />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute allowedRoles={["Admin", "PM"]}>
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
 
           {/* PM and above: can also access register (add user is admin-only but PM may need it) */}
           <Route

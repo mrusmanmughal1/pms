@@ -24,7 +24,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
     title: "",
     category: SelectCategoryFroMParams || "",
     description: "",
-    status: "Planning",
+    status: "Initiation",
     priority: "Low",
     progress: 0,
     teamLead: "",
@@ -155,7 +155,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
           title: "",
           category: "",
           description: "",
-          status: "Planning",
+          status: "Initiation",
           priority: "Low",
           progress: 0,
           teamLead: "",
@@ -398,6 +398,33 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   />
                 </div>
               </div>
+              <div className="">
+                {selectedCategory && formData.budget > 0 && (
+                  <div
+                    style={{
+                      marginTop: "0.5rem",
+                      color: "#cc3300",
+                      fontSize: "0.9rem",
+                      background: "#ffcc00",
+                      padding: "0.5rem",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    <b>Category budget:</b> &#x20C1;{" "}
+                    {categoryBudget.toLocaleString()}.
+                    <span>
+                      {" "}
+                      <b>Allocated:</b>&#x20C1;{" "}
+                      {categoryAllocated.toLocaleString()}.
+                    </span>
+                    <span>
+                      {" "}
+                      <b>Remaining:</b> &#x20C1;
+                      {remainingCategoryBudget.toLocaleString()}
+                    </span>
+                  </div>
+                )}
+              </div>
 
               <div style={{ marginBottom: "1rem" }}>
                 <label style={formStyles.label}>Pick Location on Map</label>
@@ -466,33 +493,6 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   />
                 </div>
               </div>
-              <div className="">
-                {selectedCategory && formData.budget > 0 && (
-                  <div
-                    style={{
-                      marginTop: "0.5rem",
-                      color: "#cc3300",
-                      fontSize: "0.9rem",
-                      background: "#ffcc00",
-                      padding: "0.5rem",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    <b>Category budget:</b> &#x20C1;{" "}
-                    {categoryBudget.toLocaleString()}.
-                    <span>
-                      {" "}
-                      <b>Allocated:</b>&#x20C1;{" "}
-                      {categoryAllocated.toLocaleString()}.
-                    </span>
-                    <span>
-                      {" "}
-                      <b>Remaining:</b> &#x20C1;
-                      {remainingCategoryBudget.toLocaleString()}
-                    </span>
-                  </div>
-                )}
-              </div>
 
               <div style={{ marginBottom: "1rem" }}>
                 <label style={formStyles.label}>
@@ -530,12 +530,14 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     setFormData({ ...formData, tags: e.target.value })
                   }
                 />
-                .
               </div>
               <div className="">
                 {error && (
                   <div style={{ color: "#ef4444", marginBottom: "0.5rem" }}>
-                    *{error}
+                    *
+                    {error.response?.data?.message ||
+                      error.message ||
+                      String(error)}
                   </div>
                 )}
                 {validationError && (

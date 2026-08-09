@@ -10,7 +10,7 @@
   --text-primary: #050505;
   --text-secondary: #64748b;
 
-  --primary-color: #3b82f6;
+  --primary-color: #0f56c9;
   --primary-hover: #2563eb;
 
   /* Category Colors from image */
@@ -19,10 +19,17 @@
   --cat-smartlock: #8b5cf6;
 
   /* Status Colors */
-  --status-planning: #94a3b8;
-  --status-inprogress: #3b82f6;
-  --status-testing: #f59e0b;
+  --status-initiation: #94a3b8;
+  --status-mapping: #0d4297;
+  --status-installation: #f59e0b;
+  --status-integration: #8b5cf6;
+  --status-closeout: #f97316;
   --status-completed: #10b981;
+
+  /* Keep legacy aliases for WO status colors */
+  --status-planning: #94a3b8;
+  --status-inprogress: #0f56c9;
+  --status-testing: #f59e0b;
   --status-onhold: #ef4444;
 
   --transition-speed: 0.2s;
@@ -76,7 +83,7 @@ p {
 .glass-panel {
   background: var(--surface-color);
   border: 1px solid var(--surface-border);
-  border-radius: 0.2rem;
+  border-radius: 0.8rem;
   padding: 1.5rem;
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.05),
@@ -202,6 +209,31 @@ p {
   color: #6d28d9;
 }
 
+.pill-initiation {
+  background: #f1f5f9;
+  color: #475569;
+}
+.pill-mapping {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.pill-installation {
+  background: #fef3c7;
+  color: #b45309;
+}
+.pill-integration {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+.pill-closeout {
+  background: #ffedd5;
+  color: #c2410c;
+}
+.pill-completed {
+  background: #d1fae5;
+  color: #059669;
+}
+/* Legacy pill classes kept for WO sub-statuses */
 .pill-planning {
   background: #f1f5f9;
   color: #475569;
@@ -210,15 +242,25 @@ p {
   background: #dbeafe;
   color: #2563eb;
 }
-.pill-completed {
-  background: #d1fae5;
-  color: #059669;
-}
 .pill-testing {
   background: #fef3c7;
   color: #d97706;
 }
 .pill-onhold {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* WO / module sub-status pill classes */
+.pill-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+.pill-approved {
+  background: #d1fae5;
+  color: #059669;
+}
+.pill-rejected {
   background: #fee2e2;
   color: #dc2626;
 }

@@ -200,6 +200,7 @@ export const useUploadProjectsBulk = () => {
     onSuccess: () => {
       toast.success("Projects uploaded successfully");
       queryClient.invalidateQueries(["projects"]);
+      queryClient.invalidateQueries(["stats"]);
     },
     onError: (error) => {
       console.log(error);

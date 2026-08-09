@@ -20,17 +20,13 @@ import { useAuthStore } from "../store/authStore";
 import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 import {
   BanknoteArrowDown,
-  Boxes,
   Calendar,
-  ChartColumnIncreasing,
   ChartNoAxesColumnIncreasing,
   ClipboardIcon,
-  IdCard,
-  IdCardIcon,
   SaudiRiyal,
   Users2,
 } from "lucide-react";
-import { getPriorityColor, getWoStatusColor } from "../utils/statusColor";
+import { getWoStatusColor } from "../utils/statusColor";
 import MapData from "../components/MapData";
 import WorkOrder from "../components/WorkOrder";
 import Installation from "../components/Installation";
@@ -80,7 +76,7 @@ export default function ProjectDetails() {
       setForm({
         title: project.title || "",
         description: project.description || "",
-        status: project.status || "Planning",
+        status: project.status || "Initiation",
         priority: project.priority || "Low",
         progress: project.progress || 0,
         budget: project.budget || 0,
@@ -433,7 +429,7 @@ export default function ProjectDetails() {
                       setForm({
                         title: project.title || "",
                         description: project.description || "",
-                        status: project.status || "Planning",
+                        status: project.status || "Initiation",
                         priority: project.priority || "Low",
                         progress: project.progress || 0,
                         budget: project.budget || 0,

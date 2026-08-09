@@ -6,6 +6,7 @@ import {
   Radio,
   LineChart,
   UserCog,
+  FileBarChart2,
 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useCategories } from "../hooks/project";
@@ -72,6 +73,17 @@ export default function Sidebar() {
           >
             <LineChart size={20} />
             <span>Analytics</span>
+          </NavLink>
+        )}
+
+        {/* Reports — Admin & PM */}
+        {(user?.role === "Admin" || user?.role === "PM") && (
+          <NavLink
+            to="/reports"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <FileBarChart2 size={20} />
+            <span>Reports</span>
           </NavLink>
         )}
 
