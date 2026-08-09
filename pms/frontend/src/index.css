@@ -129,7 +129,7 @@ p {
 }
 
 .btn-outline {
-  background: transparent;
+  background: white;
   color: var(--text-primary);
   border: 1px solid var(--surface-border);
 }
