@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiInstance } from "../service/index";
 import { useAuthStore } from "../store/authStore";
@@ -32,7 +32,7 @@ import {
   Globe,
 } from "lucide-react";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 // ─── Colour palettes ──────────────────────────────────────────────────────────
 const STATUS_COLORS = {
@@ -1296,7 +1296,7 @@ export default function Reports() {
 
   return (
     <div>
-      {/* Page header */}
+      {/* Page header updates */}
       <div
         style={{
           display: "flex",
