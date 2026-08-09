@@ -97,7 +97,7 @@ const CustomTooltip = ({ active, payload, label, isCurrency }) => {
           {entry.name}:{" "}
           <strong>
             {isCurrency
-              ? `SAR ${Number(entry.value).toLocaleString()}`
+              ? `⃁ ${Number(entry.value).toLocaleString()}`
               : entry.value}
           </strong>
         </p>
@@ -583,20 +583,20 @@ export default function Reports() {
           icon={SaudiRiyal}
           label="Total Budget"
           color="#f59e0b"
-          value={`SAR ${(summary?.totalBudget ?? 0).toLocaleString()}`}
+          value={`⃁ ${(summary?.totalBudget ?? 0).toLocaleString()}`}
         />
         <StatCard
           icon={TrendingUp}
           label="Total Spent"
           color="#8b5cf6"
-          value={`SAR ${(summary?.totalSpent ?? 0).toLocaleString()}`}
+          value={`⃁ ${(summary?.totalSpent ?? 0).toLocaleString()}`}
         />
         <StatCard
           icon={FileBarChart2}
           label="Budget Utilization"
           color="#06b6d4"
           value={`${summary?.budgetUtilization ?? 0}%`}
-          sub={`SAR ${((summary?.totalBudget || 0) - (summary?.totalSpent || 0)).toLocaleString()} remaining`}
+          sub={`⃁ ${((summary?.totalBudget || 0) - (summary?.totalSpent || 0)).toLocaleString()} remaining`}
         />
       </div>
 
@@ -841,13 +841,13 @@ export default function Reports() {
           icon={SaudiRiyal}
           label="Total Budget Allocated"
           color="#3b82f6"
-          value={`SAR ${(summary?.totalBudget ?? 0).toLocaleString()}`}
+          value={`⃁ ${(summary?.totalBudget ?? 0).toLocaleString()}`}
         />
         <StatCard
           icon={TrendingUp}
           label="Total Spent"
           color="#10b981"
-          value={`SAR ${(summary?.totalSpent ?? 0).toLocaleString()}`}
+          value={`⃁ ${(summary?.totalSpent ?? 0).toLocaleString()}`}
         />
         <div
           style={{
@@ -976,8 +976,8 @@ export default function Reports() {
                     "Project",
                     "Category",
                     "Status",
-                    "Budget (SAR)",
-                    "Spent (SAR)",
+                    "Budget (⃁)",
+                    "Spent (⃁)",
                     "Utilization",
                     "Variance",
                   ].map((h) => (
