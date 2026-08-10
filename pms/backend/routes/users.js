@@ -4,14 +4,21 @@ const User = require("../models/User");
 const { protect, authorize } = require("../middleware/auth");
 
 // Get all users (accessible by Admin and Manager)
-router.get("/", protect, authorize("Admin", "Manager"), async (req, res) => {
-  try {
-    const users = await User.find({ role: { $ne: "Admin" } }).select("-password");
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get(
+  "/",
+  protect,
+  authorize("Admin", "Manager"),
+  async (req, res) => {
+    try {
+      const users = await User.find({ role: { $ne: "Admin" } }).select(
+        "-password",
+      );
+      res.json(users);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
+);
 
 // Update user (Admin only)
 router.put("/:id", protect, authorize("Admin"), async (req, res) => {

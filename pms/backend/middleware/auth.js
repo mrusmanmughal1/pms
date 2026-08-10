@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 // Protect routes
 exports.protect = async (req, res, next) => {
@@ -7,13 +7,15 @@ exports.protect = async (req, res, next) => {
 
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(" ")[1];
   }
 
   if (!token) {
-    return res.status(401).json({ message: 'Not authorized to access this route' });
+    return res
+      .status(401)
+      .json({ message: "Not authorized to access this route" });
   }
 
   try {
@@ -23,7 +25,7 @@ exports.protect = async (req, res, next) => {
     // Fetch user from DB (for up-to-date data), then override with token claims
     const dbUser = await User.findById(decoded.id);
     if (!dbUser) {
-      return res.status(401).json({ message: 'User not found' });
+      return res.status(401).json({ message: "User not found" });
     }
 
     // Attach user to request — prefer token claims for email & role
@@ -35,7 +37,9 @@ exports.protect = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Not authorized to access this route' });
+    return res
+      .status(401)
+      .json({ message: "Not authorized to access this route" });
   }
 };
 
@@ -44,7 +48,7 @@ exports.authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
-        message: `User role ${req.user.role} is not authorized to access this route`
+        message: `User role ${req.user.role} is not authorized to access this route`,
       });
     }
     next();

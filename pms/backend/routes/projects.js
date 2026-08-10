@@ -315,8 +315,21 @@ router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
   }
 });
 
-// Update a project (Admin, Manager only)
-router.put("/:id", protect, authorize("Admin", "Manager"), async (req, res) => {
+// Update a project (roles that can edit at least one module — aligned with frontend)
+router.put(
+  "/:id",
+  protect,
+  authorize(
+    "Admin",
+    "Manager",
+    "PM",
+    "Logistics",
+    "Coordinator",
+    "Integration & Support",
+    "Document Controller",
+    "Closeout",
+  ),
+  async (req, res, next) => {
   try {
     const { category, budget = 0, spent = 0 } = req.body;
     if (category) {

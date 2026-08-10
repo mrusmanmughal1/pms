@@ -27,6 +27,7 @@ const UserSchema = new mongoose.Schema(
         "Integration & Support",
         "Document Controller",
         "Closeout",
+        "Logistics",
       ],
       default: "",
     },
