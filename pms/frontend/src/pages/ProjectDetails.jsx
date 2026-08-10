@@ -27,7 +27,11 @@ import {
   SaudiRiyal,
   Users2,
 } from "lucide-react";
-import { getWoStatusColor } from "../utils/statusColor";
+import {
+  getMaterialsStatusColor,
+  getStatusColor,
+  getWoStatusColor,
+} from "../utils/statusColor";
 import MapData from "../components/MapData";
 import WorkOrder from "../components/WorkOrder";
 import Installation from "../components/Installation";
@@ -67,9 +71,11 @@ export default function ProjectDetails() {
   const [saving, setSaving] = useState(false);
   const deleteMutation = useDeleteProject();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const canViewUsersList = user?.role === "Admin" || user?.role === "PM";
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ["users"],
     queryFn: () => apiInstance.get(`${API_BASE}/users`).then((r) => r.data),
+    enabled: canViewUsersList,
   });
   const updateMutation = useUpdateProject();
   React.useEffect(() => {
@@ -365,22 +371,31 @@ export default function ProjectDetails() {
       <div style={{ padding: "2rem", color: "red" }}>Project not found.</div>
     );
 
-  const AllowMapping =
+  // Role-based access (without status gate)
+  const canAccessMapping =
     user.role === "Admin" || user.role === "PM" || user.role === "Logistics";
-
-  const AllowInstallation =
+  const canAccessInstallation =
     user.role === "Admin" || user.role === "PM" || user.role === "Coordinator";
-
-  const AllowIntegration =
+  const canAccessIntegration =
     user.role === "Admin" ||
     user.role === "PM" ||
     user.role === "Integration & Support";
-
-  const AllowCloseout =
+  const canAccessCloseout =
     user.role === "Admin" ||
     user.role === "PM" ||
     user.role === "Document Controller" ||
     user.role === "Closeout";
+
+  // Status-gated permissions (role + matching project status)
+  const AllowMapping = canAccessMapping && project.status === "Initiation";
+
+  const AllowInstallation =
+    canAccessInstallation && project.status === "Installation";
+
+  const AllowIntegration =
+    canAccessIntegration && project.status === "Integration";
+
+  const AllowCloseout = canAccessCloseout && project.status === "Closeout";
 
   // Full editor: can edit project-level details (Admin or PM)
   const isFullEditor = user.role === "Admin" || user.role === "PM";
@@ -388,10 +403,10 @@ export default function ProjectDetails() {
   // Any user who has access to at least one module can see the Edit button
   const canEdit =
     isFullEditor ||
-    AllowMapping ||
-    AllowInstallation ||
-    AllowIntegration ||
-    AllowCloseout;
+    canAccessMapping ||
+    canAccessInstallation ||
+    canAccessIntegration ||
+    canAccessCloseout;
 
   return (
     <div className="">
@@ -716,10 +731,18 @@ export default function ProjectDetails() {
                   style={{ display: "flex", alignItems: "center", gap: "4px" }}
                 >
                   {" "}
-                  <ChartNoAxesColumnIncreasing width={16} /> Priority:
+                  <ChartNoAxesColumnIncreasing width={16} /> Status:
                 </span>
-                <div className={getPriorityBadge(project.priority)}>
-                  {project.priority}
+                <div
+                  style={{
+                    background: getStatusColor(project.status),
+                    padding: "2px 10px",
+                    color: "white",
+                    fontWeight: "600",
+                    borderRadius: "5px",
+                  }}
+                >
+                  {project.status}
                 </div>
               </div>
               <div
@@ -1353,45 +1376,134 @@ export default function ProjectDetails() {
           gap: "1rem",
         }}
       >
-        {AllowMapping && (
-          <WorkOrder
-            project={project}
-            editMode={editMode}
-            setForm={setForm}
-            form={form}
-            getWoStatusColor={getWoStatusColor}
-          />
-        )}
+        {canAccessMapping ? (
+          AllowMapping ? (
+            <WorkOrder
+              project={project}
+              editMode={editMode}
+              setForm={setForm}
+              form={form}
+              getWoStatusColor={getWoStatusColor}
+            />
+          ) : editMode ? (
+            <div
+              style={{
+                background: "#fff7ed",
+                border: "1px solid #fed7aa",
+                borderRadius: 12,
+                padding: "1.5rem",
+                textAlign: "center",
+                color: "#9a3412",
+                fontSize: "0.85rem",
+              }}
+            >
+              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
+                ⏳ Work Order locked
+              </p>
+              <p style={{ margin: 0, fontSize: "0.78rem" }}>
+                Project is currently in <strong>{project.status}</strong> phase.
+                Complete the Initiation phase to access Work Order.
+              </p>
+            </div>
+          ) : null
+        ) : null}
 
         {/* admin pm and Coordinator  */}
-        {AllowInstallation && (
-          <Installation
-            project={project}
-            editMode={editMode}
-            setForm={setForm}
-            form={form}
-            getWoStatusColor={getWoStatusColor}
-          />
-        )}
+        {canAccessInstallation ? (
+          AllowInstallation ? (
+            <Installation
+              project={project}
+              editMode={editMode}
+              setForm={setForm}
+              form={form}
+              getWoStatusColor={getWoStatusColor}
+            />
+          ) : editMode ? (
+            <div
+              style={{
+                background: "#fff7ed",
+                border: "1px solid #fed7aa",
+                borderRadius: 12,
+                padding: "1.5rem",
+                textAlign: "center",
+                color: "#9a3412",
+                fontSize: "0.85rem",
+              }}
+            >
+              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
+                ⏳ Installation locked
+              </p>
+              <p style={{ margin: 0, fontSize: "0.78rem" }}>
+                Project is currently in <strong>{project.status}</strong> phase.
+                Complete the Installation phase to access Installation details.
+              </p>
+            </div>
+          ) : null
+        ) : null}
 
-        {AllowIntegration && (
-          <Integration
-            project={project}
-            editMode={editMode}
-            setForm={setForm}
-            form={form}
-            getWoStatusColor={getWoStatusColor}
-          />
-        )}
-        {AllowCloseout && (
-          <Closeout
-            project={project}
-            editMode={editMode}
-            setForm={setForm}
-            form={form}
-            getWoStatusColor={getWoStatusColor}
-          />
-        )}
+        {canAccessIntegration ? (
+          AllowIntegration ? (
+            <Integration
+              project={project}
+              editMode={editMode}
+              setForm={setForm}
+              form={form}
+              getWoStatusColor={getWoStatusColor}
+            />
+          ) : editMode ? (
+            <div
+              style={{
+                background: "#fff7ed",
+                border: "1px solid #fed7aa",
+                borderRadius: 12,
+                padding: "1.5rem",
+                textAlign: "center",
+                color: "#9a3412",
+                fontSize: "0.85rem",
+              }}
+            >
+              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
+                ⏳ Integration locked
+              </p>
+              <p style={{ margin: 0, fontSize: "0.78rem" }}>
+                Project is currently in <strong>{project.status}</strong> phase.
+                Complete the Integration phase to access Integration details.
+              </p>
+            </div>
+          ) : null
+        ) : null}
+
+        {canAccessCloseout ? (
+          AllowCloseout ? (
+            <Closeout
+              project={project}
+              editMode={editMode}
+              setForm={setForm}
+              form={form}
+              getWoStatusColor={getWoStatusColor}
+            />
+          ) : editMode ? (
+            <div
+              style={{
+                background: "#fff7ed",
+                border: "1px solid #fed7aa",
+                borderRadius: 12,
+                padding: "1.5rem",
+                textAlign: "center",
+                color: "#9a3412",
+                fontSize: "0.85rem",
+              }}
+            >
+              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
+                ⏳ Closeout locked
+              </p>
+              <p style={{ margin: 0, fontSize: "0.78rem" }}>
+                Project is currently in <strong>{project.status}</strong> phase.
+                Complete the Closeout phase to access Closeout details.
+              </p>
+            </div>
+          ) : null
+        ) : null}
       </div>
     </div>
   );

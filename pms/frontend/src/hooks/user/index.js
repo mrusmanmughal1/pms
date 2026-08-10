@@ -4,11 +4,12 @@ import toast from "react-hot-toast";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
-export const useUsers = () => {
+export const useUsers = (enabled = true) => {
   return useQuery({
     queryKey: ["users"],
     queryFn: () => apiInstance.get(`${API_BASE}/users`).then((res) => res.data),
     staleTime: 5 * 60 * 1000,
+    enabled,
   });
 };
 

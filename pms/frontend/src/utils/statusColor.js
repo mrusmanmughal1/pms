@@ -2,17 +2,17 @@
 export const getStatusColor = (status) => {
   switch (status) {
     case "Initiation":
-      return "var(--status-planning)";
+      return "#b5b4b9ff";
     case "Mapping":
-      return "var(--status-inprogress)";
+      return "#4c49eeff";
     case "Installation":
-      return "var(--status-testing)";
+      return "#4ebcf0ff";
     case "Integration":
       return "#8b5cf6";
     case "Closeout":
-      return "#f97316";
+      return "#dfe22bff";
     case "Completed":
-      return "var(--status-completed)";
+      return "#1fd41fff";
     default:
       return "var(--text-secondary)";
   }

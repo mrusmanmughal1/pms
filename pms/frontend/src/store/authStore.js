@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
 import { apiInstance } from "../service";
-import toast from "react-hot-toast";
 
 /**
  * Zustand store for authentication.

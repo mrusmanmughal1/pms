@@ -42,7 +42,6 @@ export default function Integration({
                 }
               >
                 <option>Pending</option>
-                <option>In Progress</option>
                 <option>Completed</option>
               </select>
             ) : (
@@ -161,7 +160,6 @@ export default function Integration({
               >
                 <option>Pending</option>
                 <option>Approved</option>
-                <option>Rejected</option>
               </select>
             ) : (
               <div
@@ -250,7 +248,6 @@ export default function Integration({
                 }
               >
                 <option>Pending</option>
-                <option>In Progress</option>
                 <option>Completed</option>
               </select>
             ) : (

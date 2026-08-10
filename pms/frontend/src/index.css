@@ -1,6 +1,6 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 /* use poppins font */
 
 :root {
@@ -122,6 +122,7 @@ p {
 .btn-primary {
   background-color: var(--primary-color);
   color: white;
+  padding: 10px 20px;
 }
 
 .btn-primary:hover {
@@ -132,6 +133,7 @@ p {
   background: white;
   color: var(--text-primary);
   border: 1px solid var(--surface-border);
+  padding: 10px 30px;
 }
 
 .btn-outline:hover {
@@ -139,13 +141,14 @@ p {
 }
 
 .btn-danger {
-  background-color: #fef2f2;
-  color: #ef4444;
+  background-color: #f70808;
+  color: white;
   border: 1px solid #fee2e2;
+  padding: 10px 20px;
 }
 
 .btn-danger:hover {
-  background-color: #fee2e2;
+  background-color: #e43c3c;
 }
 
 /* Forms */

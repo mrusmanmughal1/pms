@@ -160,9 +160,7 @@ export default function Installation({
                   }
                 >
                   <option>Pending</option>
-                  <option>In Progress</option>
                   <option>Completed</option>
-                  <option>N/A</option>
                 </select>
               ) : (
                 <div
@@ -285,7 +283,6 @@ export default function Installation({
                 }
               >
                 <option>Pending</option>
-                <option>In Progress</option>
                 <option>Completed</option>
               </select>
             ) : (

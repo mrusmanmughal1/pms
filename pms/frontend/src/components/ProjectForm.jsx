@@ -18,7 +18,11 @@ const ProjectForm = ({ isOpen, onClose }) => {
   const { mutate, isLoading, error } = useCreateProject();
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useCategories();
-  const { data: users = [], isLoading: isUsersLoading } = useUsers();
+  const canCreateProject =
+    user?.role === "Admin" || user?.role === "Manager";
+  const { data: users = [], isLoading: isUsersLoading } = useUsers(
+    isOpen && canCreateProject,
+  );
   const [validationError, setValidationError] = useState("");
   const [formData, setFormData] = useState({
     title: "",
