@@ -72,10 +72,7 @@ export default function Installation({
                 <option>Approved</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.installation?.tcnRequest?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -163,10 +160,7 @@ export default function Installation({
                   <option>Completed</option>
                 </select>
               ) : (
-                <div
-                  className={`pill-${(project.installation?.teamsMaterialsMobilization?.status || "pending").toLowerCase()}`}
-                  style={{ fontSize: "0.8rem", display: "inline-block" }}
-                >
+                <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                   <span
                     className="badge"
                     style={{

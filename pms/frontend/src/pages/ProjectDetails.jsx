@@ -33,6 +33,7 @@ import Integration from "../components/Integration";
 import Closeout from "../components/Closeout";
 import ProgressBar from "../components/ProgressBar";
 import TeamMembers from "../components/TeamMembers";
+import Budget_Spent from "../components/Budget_Spent";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
@@ -391,12 +392,7 @@ export default function ProjectDetails() {
     canAccessCloseout && (isFullEditor || project.status === "Closeout");
 
   // Any user who has access to at least one module can see the Edit button
-  const canEdit =
-    isFullEditor ||
-    canAccessMapping ||
-    canAccessInstallation ||
-    canAccessIntegration ||
-    canAccessCloseout;
+  const canEdit = isFullEditor;
 
   return (
     <div className="">
@@ -1174,138 +1170,12 @@ export default function ProjectDetails() {
             project={project}
             setForm={setForm}
           />
-          <div className="  glass-panel">
-            <h3 style={{ margin: "0 0 0.5rem 0" }}>Budget & Spent</h3>
-
-            {/* Budget vs Spent chart */}
-            {(() => {
-              const displayBudget = editMode
-                ? Number(form.budget || 0)
-                : Number(project.budget || 0);
-              const displaySpent = editMode
-                ? Number(form.spent || 0)
-                : Number(project.spent || 0);
-              const chartData = [
-                { name: "Budget", value: displayBudget },
-                { name: "Spent", value: displaySpent },
-              ];
-
-              return (
-                <div>
-                  {editMode && isFullEditor && (
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "0.5rem",
-                        marginBottom: "0.5rem",
-                      }}
-                    >
-                      <div>
-                        <label className="form-label">Budget</label>
-                        <input
-                          type="number"
-                          className="form-input"
-                          value={form.budget}
-                          onChange={(e) =>
-                            setForm({
-                              ...form,
-                              budget: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <label className="form-label">Spent</label>
-                        <input
-                          type="number"
-                          className="form-input"
-                          value={form.spent}
-                          onChange={(e) =>
-                            setForm({
-                              ...form,
-                              spent: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div style={{ height: 140, marginBottom: "0.5rem" }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={chartData}
-                        margin={{ top: 8, right: 8, left: 0, bottom: 8 }}
-                      >
-                        <XAxis
-                          dataKey="name"
-                          tick={{ fill: "var(--text-secondary)" }}
-                        />
-                        <Tooltip
-                          formatter={(val) => `${Number(val).toLocaleString()}`}
-                        />
-                        <Bar dataKey="value" radius={[6, 6, 6, 6]}>
-                          {chartData.map((entry, idx) => (
-                            <Cell
-                              key={`cell-${idx}`}
-                              fill={
-                                entry.name === "Spent" ? "#10b981" : "#1269f5ff"
-                              }
-                            />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    <div>
-                      <div
-                        style={{
-                          fontSize: "0.75rem",
-                          color: "var(--text-secondary)",
-                        }}
-                      >
-                        Budget
-                      </div>
-                      <div style={{ fontWeight: 700 }}>
-                        <SaudiRiyal size={12} />{" "}
-                        {displayBudget.toLocaleString()}
-                      </div>
-                    </div>
-                    <div>
-                      <div
-                        style={{
-                          fontSize: "0.75rem",
-                          color: "var(--text-secondary)",
-                        }}
-                      >
-                        Spent
-                      </div>
-                      <div
-                        style={{
-                          fontWeight: 700,
-                          color:
-                            displaySpent > displayBudget
-                              ? "#dc2626"
-                              : "#10b981",
-                        }}
-                      >
-                        <SaudiRiyal size={12} /> {displaySpent.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
+          <Budget_Spent
+            editMode={editMode}
+            form={form}
+            project={project}
+            setForm={setForm}
+          />
         </div>
       </div>
       <div className="" style={{ margin: "10px 0" }}>
@@ -1318,138 +1188,43 @@ export default function ProjectDetails() {
         className=""
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr auto",
+          gridTemplateColumns: "1fr 1fr",
           gap: "1rem",
         }}
       >
-        {canAccessMapping ? (
-          AllowMapping ? (
-            <WorkOrder
-              project={project}
-              editMode={editMode}
-              setForm={setForm}
-              form={form}
-              getWoStatusColor={getWoStatusColor}
-            />
-          ) : editMode ? (
-            <div
-              style={{
-                background: "#fff7ed",
-                border: "1px solid #fed7aa",
-                borderRadius: 12,
-                padding: "1.5rem",
-                textAlign: "center",
-                color: "#9a3412",
-                fontSize: "0.85rem",
-              }}
-            >
-              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
-                ⏳ Work Order locked
-              </p>
-              <p style={{ margin: 0, fontSize: "0.78rem" }}>
-                Project is currently in <strong>{project.status}</strong> phase.
-                Complete the Initiation phase to access Work Order.
-              </p>
-            </div>
-          ) : null
-        ) : null}
+        <WorkOrder
+          project={project}
+          editMode={editMode}
+          setForm={setForm}
+          form={form}
+          getWoStatusColor={getWoStatusColor}
+        />
 
         {/* admin pm and Coordinator  */}
-        {canAccessInstallation ? (
-          AllowInstallation ? (
-            <Installation
-              project={project}
-              editMode={editMode}
-              setForm={setForm}
-              form={form}
-              getWoStatusColor={getWoStatusColor}
-            />
-          ) : editMode ? (
-            <div
-              style={{
-                background: "#fff7ed",
-                border: "1px solid #fed7aa",
-                borderRadius: 12,
-                padding: "1.5rem",
-                textAlign: "center",
-                color: "#9a3412",
-                fontSize: "0.85rem",
-              }}
-            >
-              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
-                ⏳ Installation locked
-              </p>
-              <p style={{ margin: 0, fontSize: "0.78rem" }}>
-                Project is currently in <strong>{project.status}</strong> phase.
-                Complete the Installation phase to access Installation details.
-              </p>
-            </div>
-          ) : null
-        ) : null}
 
-        {canAccessIntegration ? (
-          AllowIntegration ? (
-            <Integration
-              project={project}
-              editMode={editMode}
-              setForm={setForm}
-              form={form}
-              getWoStatusColor={getWoStatusColor}
-            />
-          ) : editMode ? (
-            <div
-              style={{
-                background: "#fff7ed",
-                border: "1px solid #fed7aa",
-                borderRadius: 12,
-                padding: "1.5rem",
-                textAlign: "center",
-                color: "#9a3412",
-                fontSize: "0.85rem",
-              }}
-            >
-              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
-                ⏳ Integration locked
-              </p>
-              <p style={{ margin: 0, fontSize: "0.78rem" }}>
-                Project is currently in <strong>{project.status}</strong> phase.
-                Complete the Integration phase to access Integration details.
-              </p>
-            </div>
-          ) : null
-        ) : null}
+        <Installation
+          project={project}
+          editMode={editMode}
+          setForm={setForm}
+          form={form}
+          getWoStatusColor={getWoStatusColor}
+        />
 
-        {canAccessCloseout ? (
-          AllowCloseout ? (
-            <Closeout
-              project={project}
-              editMode={editMode}
-              setForm={setForm}
-              form={form}
-              getWoStatusColor={getWoStatusColor}
-            />
-          ) : editMode ? (
-            <div
-              style={{
-                background: "#fff7ed",
-                border: "1px solid #fed7aa",
-                borderRadius: 12,
-                padding: "1.5rem",
-                textAlign: "center",
-                color: "#9a3412",
-                fontSize: "0.85rem",
-              }}
-            >
-              <p style={{ margin: 0, fontWeight: 600, marginBottom: 4 }}>
-                ⏳ Closeout locked
-              </p>
-              <p style={{ margin: 0, fontSize: "0.78rem" }}>
-                Project is currently in <strong>{project.status}</strong> phase.
-                Complete the Closeout phase to access Closeout details.
-              </p>
-            </div>
-          ) : null
-        ) : null}
+        <Integration
+          project={project}
+          editMode={editMode}
+          setForm={setForm}
+          form={form}
+          getWoStatusColor={getWoStatusColor}
+        />
+
+        <Closeout
+          project={project}
+          editMode={editMode}
+          setForm={setForm}
+          form={form}
+          getWoStatusColor={getWoStatusColor}
+        />
       </div>
     </div>
   );

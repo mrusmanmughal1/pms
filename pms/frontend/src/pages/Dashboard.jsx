@@ -73,7 +73,9 @@ const Dashboard = () => {
   };
   const statusData = (stats?.statusData || []).map((s, idx) => ({
     ...s,
-    fill: statusColorMap[s.name] || ["#4f46e5", "#10b981", "#f59e0b", "#8b5cf6"][idx % 4],
+    fill:
+      statusColorMap[s.name] ||
+      ["#4f46e5", "#10b981", "#f59e0b", "#8b5cf6"][idx % 4],
   }));
   const budgetData = (stats?.budgetData || []).map((p) => ({
     name: p.title?.substring(0, 15) + "...",

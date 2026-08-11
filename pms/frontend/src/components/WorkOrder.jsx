@@ -45,10 +45,7 @@ export default function WorkOrder({
                 <option value="Approved">Done</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.mapping?.woRequest?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -132,10 +129,7 @@ export default function WorkOrder({
                 <option>Approved</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.mapping?.woIssuance?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -219,10 +213,7 @@ export default function WorkOrder({
                 <option>Approved</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.mapping?.materialsRequest?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{

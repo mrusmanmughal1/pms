@@ -114,14 +114,16 @@ function buildInitialForm(module, project) {
           siteInstallation: {
             type: project.installation?.siteInstallation?.type || "RMS",
             status: project.installation?.siteInstallation?.status || "Pending",
-            date: toDateInputValue(project.installation?.siteInstallation?.date),
+            date: toDateInputValue(
+              project.installation?.siteInstallation?.date,
+            ),
             remarks: project.installation?.siteInstallation?.remarks || "",
           },
           generalRemarks: project.installation?.generalRemarks || "",
         },
       };
 
-case "integration":
+    case "integration":
       return {
         integration: {
           alarmsConfiguration: {
@@ -130,8 +132,7 @@ case "integration":
             date: toDateInputValue(
               project.integration?.alarmsConfiguration?.date,
             ),
-            remarks:
-              project.integration?.alarmsConfiguration?.remarks || "",
+            remarks: project.integration?.alarmsConfiguration?.remarks || "",
           },
           annexNumber: {
             number: project.integration?.annexNumber?.number || "",
@@ -145,8 +146,7 @@ case "integration":
             date: toDateInputValue(
               project.integration?.tenantsIntegration?.date,
             ),
-            remarks:
-              project.integration?.tenantsIntegration?.remarks || "",
+            remarks: project.integration?.tenantsIntegration?.remarks || "",
           },
           generalRemarks: project.integration?.generalRemarks || "",
         },
@@ -176,8 +176,7 @@ case "integration":
             date: toDateInputValue(
               project.closeout?.capitalisationSheetUpdate?.date,
             ),
-            remarks:
-              project.closeout?.capitalisationSheetUpdate?.remarks || "",
+            remarks: project.closeout?.capitalisationSheetUpdate?.remarks || "",
           },
           generalRemarks: project.closeout?.generalRemarks || "",
         },
@@ -289,10 +288,11 @@ function TaskItem({ task }) {
     <div className="glass-panel" style={{ marginBottom: "1rem" }}>
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "1rem",
           alignItems: "center",
-          padding: "1rem 1.5rem",
+          padding: "0rem 1.5rem",
           cursor: "pointer",
         }}
         onClick={() => setExpanded((v) => !v)}
@@ -314,11 +314,16 @@ function TaskItem({ task }) {
             · {meta.label}
           </div>
         </div>
+        <div style={{ fontSize: "12px" }}>
+          <p>Site ID: {project.siteId}</p>
+          <p>Tawal ID: {project.tawalId}</p>
+        </div>
         <div
           style={{
             display: "flex",
             alignItems: "center",
             gap: "0.75rem",
+            justifyContent: "flex-end",
           }}
         >
           <span
@@ -338,7 +343,7 @@ function TaskItem({ task }) {
       </div>
 
       {expanded && (
-        <div style={{ padding: "0 1.5rem 1.5rem" }}>
+        <div style={{ padding: " 1.5rem 1.5rem" }}>
           <Component
             project={project}
             editMode
@@ -380,7 +385,11 @@ function TaskItem({ task }) {
 
 export default function Tasks() {
   const { user } = useAuthStore();
-  const { data: projectsData, isLoading, error } = useProjectsHook({
+  const {
+    data: projectsData,
+    isLoading,
+    error,
+  } = useProjectsHook({
     page: 1,
     limit: 500,
   });

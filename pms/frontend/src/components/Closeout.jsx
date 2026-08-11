@@ -72,10 +72,7 @@ export default function Closeout({
                 <option>Approved</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.closeout?.patTcn?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -157,10 +154,7 @@ export default function Closeout({
                 <option>Approved</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.closeout?.patStatus?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -244,10 +238,7 @@ export default function Closeout({
                 <option>Completed</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.closeout?.invoicing?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -333,10 +324,7 @@ export default function Closeout({
                 <option>Completed</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.closeout?.capitalisationSheetUpdate?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{

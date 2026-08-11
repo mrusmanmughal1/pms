@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Calendar, Clock, AlertTriangle, CheckCircle } from "lucide-react";
 import { formatDate } from "../utils/date";
 import { getCatBadge, getPriorityBadge } from "../utils/helpers";
+import { getStatusColor } from "../utils/statusColor";
 
 export default function ProjectCard({ proj, i }) {
   const now = new Date();
@@ -211,12 +212,12 @@ export default function ProjectCard({ proj, i }) {
                   display: "flex",
                   alignItems: "center",
                   gap: "0.25rem",
-                  background: "#f8fafc",
+                  background: getStatusColor(proj.status),
                   padding: "0.1rem 0.5rem",
                   borderRadius: "9999px",
                   fontSize: "0.7rem",
                   fontWeight: "500",
-                  color: "#475569",
+                  color: "white",
                 }}
               >
                 {proj.status}

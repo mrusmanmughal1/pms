@@ -10,7 +10,7 @@ export const getStatusColor = (status) => {
     case "Integration":
       return "#8b5cf6";
     case "Closeout":
-      return "#dfe22bff";
+      return "#d3d60dff";
     case "Completed":
       return "#1fd41fff";
     default:

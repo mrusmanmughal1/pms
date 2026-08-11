@@ -45,10 +45,7 @@ export default function Integration({
                 <option>Completed</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.integration?.alarmsConfiguration?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -162,10 +159,7 @@ export default function Integration({
                 <option>Approved</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.integration?.annexNumber?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{
@@ -251,10 +245,7 @@ export default function Integration({
                 <option>Completed</option>
               </select>
             ) : (
-              <div
-                className={`pill-${(project.integration?.tenantsIntegration?.status || "pending").toLowerCase()}`}
-                style={{ fontSize: "0.8rem", display: "inline-block" }}
-              >
+              <div style={{ fontSize: "0.8rem", display: "inline-block" }}>
                 <span
                   className="badge"
                   style={{

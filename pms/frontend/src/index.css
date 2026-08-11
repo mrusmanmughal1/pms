@@ -4,7 +4,7 @@
   /* Surfaces & text */
   --bg-color: #f5f6fb;
   --surface-color: #ffffff;
-  --surface-border: #e5e7eb;
+  --surface-border: #e5e6e7;
   --text-primary: #0f172a;
   --text-secondary: #64748b;
 
@@ -48,7 +48,7 @@
 }
 
 body {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   background-color: var(--bg-color);
   color: var(--text-primary);
   min-height: 100vh;
