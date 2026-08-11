@@ -121,7 +121,7 @@ export default function Categories() {
               alignItems: "center",
               gap: "0.5rem",
               padding: "0.6rem 1.2rem",
-              background: "#5b4fe8",
+              background: "#4f46e5",
               color: "white",
               border: "none",
               borderRadius: "0.5rem",

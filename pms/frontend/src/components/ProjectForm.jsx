@@ -588,7 +588,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     gap: "0.5rem",
                     padding: "0.6rem 1.2rem",
                     border: "none",
-                    background: "#5b4fe8",
+                    background: "#4f46e5",
                     color: "white",
                     borderRadius: "0.4rem",
                     fontWeight: "600",

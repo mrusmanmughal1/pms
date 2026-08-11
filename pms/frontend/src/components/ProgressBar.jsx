@@ -84,7 +84,7 @@ export default function ProgressBar({ project, editMode, form }) {
                   background:
                     activePhaseIdx >= phases.length - 1
                       ? "linear-gradient(90deg, #10b981, #059669)"
-                      : "linear-gradient(90deg, #31df42ff, #6366f1)",
+                      : "linear-gradient(90deg, #6366f1, #4f46e5)",
                   borderRadius: "2px",
                   transition: "width 0.5s ease",
                   zIndex: 1,
@@ -117,10 +117,10 @@ export default function ProgressBar({ project, editMode, form }) {
                     labelColor = "#10b981";
                     labelWeight = 600;
                   } else if (isActive) {
-                    dotBg = "#3b82f6";
-                    dotBorder = "#3b82f6";
-                    dotShadow = "0 0 0 4px rgba(59,130,246,0.2)";
-                    labelColor = "#3b82f6";
+                    dotBg = "#4f46e5";
+                    dotBorder = "#4f46e5";
+                    dotShadow = "0 0 0 4px rgba(79,70,229,0.2)";
+                    labelColor = "#4f46e5";
                     labelWeight = 700;
                   }
 

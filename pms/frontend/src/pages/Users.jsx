@@ -208,7 +208,7 @@ export default function Users() {
                           type="submit"
                           disabled={isUpdating}
                           style={{
-                            background: "#5b4fe8",
+                            background: "#4f46e5",
                             color: "#fff",
                             border: "none",
                             borderRadius: "0.3rem",
@@ -297,7 +297,7 @@ export default function Users() {
                       style={{
                         background: "transparent",
                         border: "none",
-                        color: "#3b82f6",
+                        color: "#4f46e5",
                         cursor: "pointer",
                         padding: "0.2rem",
                       }}

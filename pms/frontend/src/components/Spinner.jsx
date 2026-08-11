@@ -23,7 +23,7 @@ export default function Spinner({ size = "md", text = "Loading..." }) {
           width: dims.spinner,
           height: dims.spinner,
           border: "4px solid #e2e8f0",
-          borderTop: "4px solid #5b4fe8",
+          borderTop: "4px solid #4f46e5",
           borderRadius: "50%",
           animation: "spin 0.8s linear infinite",
         }}

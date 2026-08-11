@@ -17,27 +17,22 @@ import {
   Cell,
 } from "recharts";
 import { useAuthStore } from "../store/authStore";
-import { getCatBadge, getPriorityBadge } from "../utils/helpers";
+import { getCatBadge } from "../utils/helpers";
 import {
   BanknoteArrowDown,
   Calendar,
   ChartNoAxesColumnIncreasing,
-  ClipboardIcon,
-  IdCard,
   SaudiRiyal,
   Users2,
 } from "lucide-react";
-import {
-  getMaterialsStatusColor,
-  getStatusColor,
-  getWoStatusColor,
-} from "../utils/statusColor";
+import { getStatusColor, getWoStatusColor } from "../utils/statusColor";
 import MapData from "../components/MapData";
 import WorkOrder from "../components/WorkOrder";
 import Installation from "../components/Installation";
 import Integration from "../components/Integration";
 import Closeout from "../components/Closeout";
 import ProgressBar from "../components/ProgressBar";
+import TeamMembers from "../components/TeamMembers";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
@@ -372,33 +367,28 @@ export default function ProjectDetails() {
     );
 
   // Role-based access (without status gate)
-  const canAccessMapping =
-    user.role === "Admin" || user.role === "PM" || user.role === "Logistics";
-  const canAccessInstallation =
-    user.role === "Admin" || user.role === "PM" || user.role === "Coordinator";
-  const canAccessIntegration =
-    user.role === "Admin" ||
-    user.role === "PM" ||
-    user.role === "Integration & Support";
-  const canAccessCloseout =
-    user.role === "Admin" ||
-    user.role === "PM" ||
-    user.role === "Document Controller" ||
-    user.role === "Closeout";
-
-  // Status-gated permissions (role + matching project status)
-  const AllowMapping = canAccessMapping && project.status === "Initiation";
-
-  const AllowInstallation =
-    canAccessInstallation && project.status === "Installation";
-
-  const AllowIntegration =
-    canAccessIntegration && project.status === "Integration";
-
-  const AllowCloseout = canAccessCloseout && project.status === "Closeout";
+  const canAccessMapping = user.role === "Admin" || user.role === "PM";
+  const canAccessInstallation = user.role === "Admin" || user.role === "PM";
+  const canAccessIntegration = user.role === "Admin" || user.role === "PM";
+  const canAccessCloseout = user.role === "Admin" || user.role === "PM";
 
   // Full editor: can edit project-level details (Admin or PM)
   const isFullEditor = user.role === "Admin" || user.role === "PM";
+
+  // Status-gated permissions (role + matching project status)
+  // Admin & PM (full editors) bypass the status gate — they see & edit everything
+  const AllowMapping =
+    canAccessMapping && (isFullEditor || project.status === "Initiation");
+
+  const AllowInstallation =
+    canAccessInstallation &&
+    (isFullEditor || project.status === "Installation");
+
+  const AllowIntegration =
+    canAccessIntegration && (isFullEditor || project.status === "Integration");
+
+  const AllowCloseout =
+    canAccessCloseout && (isFullEditor || project.status === "Closeout");
 
   // Any user who has access to at least one module can see the Edit button
   const canEdit =
@@ -418,7 +408,6 @@ export default function ProjectDetails() {
             textTransform: "capitalize",
           }}
         >
-          {/* add project icon  */}
           {project.title}
           <span
             className={`badge ${getCatBadge(project.category)}`}
@@ -850,56 +839,13 @@ export default function ProjectDetails() {
                 )}
               </div>
             </div>
-            <div className="">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}
-              >
-                <IdCard width={16} /> Site ID :
-                {editMode && isFullEditor ? (
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={form.siteId}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        siteId: Number(e.target.value),
-                      })
-                    }
-                  />
-                ) : (
-                  <>{project.siteId} </>
-                )}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}
-              >
-                <IdCard width={16} /> Tawal ID :{" "}
-                {editMode && isFullEditor ? (
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={form.tawalId}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        tawalId: e.target.value,
-                      })
-                    }
-                  />
-                ) : (
-                  <>{project.tawalId} </>
-                )}
-              </div>
-            </div>
+            <TeamMembers
+              project={project}
+              editMode={editMode}
+              isFullEditor={isFullEditor}
+              form={form}
+              setForm={setForm}
+            />
           </div>
         </div>
       </div>

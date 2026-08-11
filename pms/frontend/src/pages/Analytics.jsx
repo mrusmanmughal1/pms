@@ -84,7 +84,7 @@ export default function Analytics() {
       case "Initiation":
         return "#94a3b8"; // Gray
       case "Mapping":
-        return "#3b82f6"; // Blue
+        return "#4f46e5"; // Indigo
       case "Installation":
         return "#f59e0b"; // Amber
       case "Integration":
@@ -164,7 +164,7 @@ export default function Analytics() {
               key={f}
               onClick={() => setFilter(f)}
               style={{
-                background: filter === f ? "#5a4af4" : "transparent",
+                background: filter === f ? "#4f46e5" : "transparent",
                 color: filter === f ? "#fff" : "#64748b",
                 border: "none",
                 borderRadius: "1.5rem",
@@ -341,7 +341,7 @@ export default function Analytics() {
                     width: "10px",
                     height: "10px",
                     borderRadius: "2px",
-                    border: "1px solid #5a4af4",
+                    border: "1px solid #4f46e5",
                     background: "transparent",
                   }}
                 ></div>
@@ -359,7 +359,7 @@ export default function Analytics() {
                     width: "10px",
                     height: "10px",
                     borderRadius: "2px",
-                    background: "#5a4af4",
+                    background: "#4f46e5",
                   }}
                 ></div>
                 Spent
@@ -432,7 +432,7 @@ export default function Analytics() {
                       top: 0,
                       bottom: 0,
                       width: `${(cat.spent / maxCategoryBudget) * 100}%`,
-                      background: "#5a4af4",
+                      background: "#4f46e5",
                       borderRadius: "4px",
                     }}
                   ></div>
@@ -768,7 +768,7 @@ export default function Analytics() {
                           top: 0,
                           bottom: 0,
                           width: `${p.progress || 0}%`,
-                          backgroundColor: "#5a4af4",
+                          backgroundColor: "#4f46e5",
                           borderRadius: "3px",
                         }}
                       ></div>

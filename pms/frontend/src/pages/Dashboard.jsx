@@ -63,9 +63,17 @@ const Dashboard = () => {
     ...c,
     color: ["#f59e0b", "#10b981", "#8b5cf6"][idx % 3],
   }));
+  const statusColorMap = {
+    Initiation: "#94a3b8",
+    Mapping: "#4f46e5",
+    Installation: "#f59e0b",
+    Integration: "#8b5cf6",
+    Closeout: "#f97316",
+    Completed: "#10b981",
+  };
   const statusData = (stats?.statusData || []).map((s, idx) => ({
     ...s,
-    fill: ["#f59e0b", "#10b981", "#8b5cf6", "#ef4444"][idx % 4],
+    fill: statusColorMap[s.name] || ["#4f46e5", "#10b981", "#f59e0b", "#8b5cf6"][idx % 4],
   }));
   const budgetData = (stats?.budgetData || []).map((p) => ({
     name: p.title?.substring(0, 15) + "...",
@@ -78,8 +86,8 @@ const Dashboard = () => {
     {
       title: "Total Projects",
       value: String(totalProjects),
-      icon: <Folder size={20} color="#3b82f6" />,
-      bg: "#eff6ff",
+      icon: <Folder size={20} color="#4f46e5" />,
+      bg: "#eef2ff",
     },
     {
       title: "In Progress",
@@ -303,7 +311,7 @@ const Dashboard = () => {
                 />
                 <Bar
                   dataKey="Budget"
-                  fill="#c7d2fe"
+                  fill="#a5b4fc"
                   radius={[4, 4, 0, 0]}
                   maxBarSize={20}
                 />

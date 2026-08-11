@@ -7,18 +7,15 @@ import {
   LineChart,
   UserCog,
   FileBarChart2,
+  ClipboardList,
 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useCategories } from "../hooks/project";
 import { useQueryClient } from "@tanstack/react-query";
-//working
+
 export default function Sidebar() {
   const { data: categories = [], isLoading } = useCategories();
-  const {
-    user,
-
-    logout,
-  } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -63,6 +60,15 @@ export default function Sidebar() {
         >
           <FolderKanban size={20} />
           <span>All Projects</span>
+        </NavLink>
+
+        {/* My Tasks — all roles */}
+        <NavLink
+          to="/tasks"
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+        >
+          <ClipboardList size={20} />
+          <span>My Tasks</span>
         </NavLink>
 
         {/* Analytics — Admin & PM */}

@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Categories from "./pages/Categories";
 import Sidebar from "./components/Sidebar";
 import AllProjects from "./pages/AllProjects";
+import Tasks from "./pages/Tasks";
 import Users from "./pages/Users";
 import ProjectDetails from "./pages/ProjectDetails";
 import Unauthorized from "./pages/Unauthorized";
@@ -67,6 +68,7 @@ function MainLayout() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/projects" element={<AllProjects />} />
           <Route path="/projects/:id" element={<ProjectDetails />} />
+          <Route path="/tasks" element={<Tasks />} />
           <Route path="/category/:categoryName" element={<ProjectList />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route

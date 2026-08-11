@@ -37,7 +37,7 @@ const API_BASE = import.meta.env.VITE_API_BASE;
 // ─── Colour palettes ──────────────────────────────────────────────────────────
 const STATUS_COLORS = {
   Initiation: "#94a3b8",
-  Mapping: "#3b82f6",
+  Mapping: "#4f46e5",
   Installation: "#f59e0b",
   Integration: "#8b5cf6",
   Closeout: "#f97316",
@@ -58,7 +58,7 @@ const PIPELINE_STATUS_COLORS = {
   "N/A": "#94a3b8",
 };
 const CHART_PALETTE = [
-  "#5b4fe8",
+  "#4f46e5",
   "#3b82f6",
   "#10b981",
   "#f59e0b",
@@ -107,7 +107,7 @@ const CustomTooltip = ({ active, payload, label, isCurrency }) => {
 };
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ icon: Icon, label, value, sub, color = "#5b4fe8", trend }) {
+function StatCard({ icon: Icon, label, value, sub, color = "#4f46e5", trend }) {
   return (
     <div
       style={{
@@ -360,7 +360,7 @@ function TabBtn({ active, onClick, icon: Icon, label }) {
         fontSize: "0.82rem",
         fontWeight: 600,
         transition: "all 0.18s",
-        background: active ? "#5b4fe8" : "transparent",
+        background: active ? "#4f46e5" : "transparent",
         color: active ? "#fff" : "#64748b",
       }}
     >
@@ -430,7 +430,7 @@ function SectionHeading({ children }) {
         letterSpacing: "0.06em",
         marginBottom: "0.75rem",
         paddingBottom: "0.4rem",
-        borderBottom: "2px solid #5b4fe8",
+        borderBottom: "2px solid #4f46e5",
         display: "inline-block",
       }}
     >
@@ -548,7 +548,7 @@ export default function Reports() {
           icon={Layers}
           label="Total Projects"
           value={summary?.totalProjects ?? "—"}
-          color="#5b4fe8"
+          color="#4f46e5"
         />
         <StatCard
           icon={Activity}
@@ -723,7 +723,7 @@ export default function Reports() {
     const modules = [
       {
         label: "Mapping & Approval",
-        color: "#5b4fe8",
+        color: "#4f46e5",
         steps: [
           { name: "WO Request", data: pipeline?.mapping?.woRequest },
           { name: "WO Issuance", data: pipeline?.mapping?.woIssuance },
@@ -1126,8 +1126,8 @@ export default function Reports() {
             >
               <defs>
                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#5b4fe8" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#5b4fe8" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -1138,10 +1138,10 @@ export default function Reports() {
                 type="monotone"
                 dataKey="count"
                 name="Projects"
-                stroke="#5b4fe8"
+                stroke="#4f46e5"
                 strokeWidth={2}
                 fill="url(#colorCount)"
-                dot={{ r: 4, fill: "#5b4fe8" }}
+                dot={{ r: 4, fill: "#4f46e5" }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -1339,7 +1339,7 @@ export default function Reports() {
               alignItems: "center",
               gap: "0.4rem",
               padding: "0.5rem 1.1rem",
-              background: exportLoading ? "#e2e8f0" : "#5b4fe8",
+              background: exportLoading ? "#e2e8f0" : "#4f46e5",
               color: exportLoading ? "#94a3b8" : "#fff",
               border: "none",
               borderRadius: 8,
@@ -1418,7 +1418,7 @@ export default function Reports() {
               width: 36,
               height: 36,
               border: "3px solid #e2e8f0",
-              borderTopColor: "#5b4fe8",
+              borderTopColor: "#4f46e5",
               borderRadius: "50%",
               animation: "spin 0.8s linear infinite",
             }}

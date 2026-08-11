@@ -31,7 +31,7 @@ export default function MapData({ project }) {
           href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=15/${project.latitude}/${project.longitude}`}
           target="_blank"
           rel="noreferrer"
-          style={{ color: "#2563eb" }}
+          style={{ color: "#4f46e5" }}
         >
           View on OpenStreetMap
         </a>
