@@ -28,7 +28,7 @@ export default function ProjectCard({ proj, i }) {
   const isReadyForReview = proj.progress >= 90 && !isCompleted;
 
   let borderColor = "transparent";
-  let boxShadow = "0 0 8px rgba(10, 10, 10, 0.2)";
+  let boxShadow = "0 0 8px rgba(10, 10, 10, 0.1)";
   if (isOverdue) {
     borderColor = "#ef4444";
     boxShadow = "0 0 8px rgba(239, 68, 68, 0.5)";
@@ -186,11 +186,10 @@ export default function ProjectCard({ proj, i }) {
                 justifyContent: "space-between",
                 fontSize: "0.75rem",
                 fontWeight: "600",
-                color: "var(--text-secondary)",
               }}
             >
-              <span>Progress</span>
-              <span>{computedProgress}%</span>
+              <span style={{ color: "black" }}>Progress</span>
+              <span style={{ color: "black" }}>{computedProgress}%</span>
             </div>
             <div className="progress-bg">
               <div
