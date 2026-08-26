@@ -66,6 +66,67 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
+// Handler: Get all projects without authentication (public access)
+const getPublicProjects = async (req, res) => {
+  try {
+    const { search, category, status, priority, region, city, page, limit } =
+      req.query;
+
+    let query = {};
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { siteId: { $regex: search, $options: "i" } },
+        { tawalId: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (category && category !== "All Categories") {
+      query.category = category;
+    }
+    if (status && status !== "All Statuses") {
+      query.status = status;
+    }
+    if (priority && priority !== "All Priorities") {
+      query.priority = priority;
+    }
+    if (region && region.trim() !== "") {
+      query.region = { $regex: region, $options: "i" };
+    }
+    if (city && city.trim() !== "") {
+      query.city = { $regex: city, $options: "i" };
+    }
+
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await Project.countDocuments(query);
+    const projects = await Project.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    res.status(200).json({
+      meta: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
+      },
+      data: projects,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+router.get("/public/projects", getPublicProjects);
+router.get("/public", getPublicProjects);
+
 // Get projects by category (role-based)
 router.get("/category/:category", protect, async (req, res) => {
   try {
@@ -208,12 +269,26 @@ router.post(
           budget = 0,
           spent = 0,
           teamMembers = [],
+          teamLead,
         } = projectData;
 
         if (!projectData.title) {
           return next(
             new ErrorResponse(`Project at index ${i} requires a title`, 400),
           );
+        }
+
+        // Validate teamLead email exists in database
+        if (typeof teamLead === "string" && teamLead.trim() !== "") {
+          const teamLeadEmail = teamLead.trim().toLowerCase();
+          if (!existingUserEmails.has(teamLeadEmail)) {
+            return next(
+              new ErrorResponse(
+                `Project "${projectData.title}" has a team lead with an invalid user email: ${teamLead}`,
+                400,
+              ),
+            );
+          }
         }
 
         // Validate teamMembers emails exist in database
@@ -330,38 +405,40 @@ router.put(
     "Closeout",
   ),
   async (req, res, next) => {
-  try {
-    const { category, budget = 0, spent = 0 } = req.body;
-    if (category) {
-      const cat = await Category.findOne({ name: category });
-      if (!cat)
-        return res
-          .status(400)
-          .json({ message: "Selected category does not exist" });
-      if (budget > cat.budget) {
-        return res
-          .status(400)
-          .json({ message: "Project budget cannot exceed category budget" });
+    try {
+      const { category, budget = 0, spent = 0 } = req.body;
+      if (category) {
+        const cat = await Category.findOne({ name: category });
+        if (!cat)
+          return res
+            .status(400)
+            .json({ message: "Selected category does not exist" });
+        if (budget > cat.budget) {
+          return res
+            .status(400)
+            .json({ message: "Project budget cannot exceed category budget" });
+        }
+        if (spent > cat.budget) {
+          return res
+            .status(400)
+            .json({ message: "Project spent cannot exceed category budget" });
+        }
+        req.body.categoryBudget = cat.budget;
       }
-      if (spent > cat.budget) {
-        return res
-          .status(400)
-          .json({ message: "Project spent cannot exceed category budget" });
-      }
-      req.body.categoryBudget = cat.budget;
+
+      const project = await Project.findById(req.params.id);
+      if (!project)
+        return res.status(404).json({ message: "Project not found" });
+
+      Object.assign(project, req.body);
+      await project.save();
+
+      res.status(200).json(project);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
-
-    const project = await Project.findById(req.params.id);
-    if (!project) return res.status(404).json({ message: "Project not found" });
-
-    Object.assign(project, req.body);
-    await project.save();
-
-    res.status(200).json(project);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+  },
+);
 
 // Delete a project (Admin only)
 router.delete("/:id", protect, authorize("Admin"), async (req, res) => {

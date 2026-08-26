@@ -97,6 +97,7 @@ const ProjectSchema = new mongoose.Schema(
         remarks: { type: String, default: "" },
       },
       woIssuance: {
+        woNumber: { type: String, default: "" },
         status: {
           type: String,
           enum: ["Pending", "Approved", "Rejected", "N/A"],
@@ -240,13 +241,33 @@ const ProjectSchema = new mongoose.Schema(
 
 ProjectSchema.pre("save", function () {
   // Automatic status progression logic based on completed milestones
-  if (this.closeout?.capitalisationSheetUpdate?.status === "Completed") {
+  const isCloseoutDone =
+    ["Completed", "N/A"].includes(
+      this.closeout?.capitalisationSheetUpdate?.status,
+    ) &&
+    ["Approved", "N/A"].includes(this.closeout?.patTcn?.status) &&
+    ["Approved", "N/A"].includes(this.closeout?.patStatus?.status) &&
+    ["Completed", "N/A"].includes(this.closeout?.invoicing?.status);
+
+  const isIntegrationDone = ["Completed", "N/A"].includes(
+    this.integration?.tenantsIntegration?.status,
+  );
+
+  const isInstallationDone = ["Completed", "N/A"].includes(
+    this.installation?.siteInstallation?.status,
+  );
+
+  const isMappingDone =
+    ["Approved", "N/A"].includes(this.mapping?.woRequest?.status) &&
+    ["Approved", "N/A"].includes(this.mapping?.woIssuance?.status);
+
+  if (isCloseoutDone) {
     this.status = "Completed";
-  } else if (this.integration?.tenantsIntegration?.status === "Completed") {
+  } else if (isIntegrationDone) {
     this.status = "Closeout";
-  } else if (this.installation?.siteInstallation?.status === "Completed") {
+  } else if (isInstallationDone) {
     this.status = "Integration";
-  } else if (this.mapping?.woRequest?.status === "Approved") {
+  } else if (isMappingDone) {
     this.status = "Installation";
   }
 });
