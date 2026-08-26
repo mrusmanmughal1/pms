@@ -69,8 +69,7 @@ router.get("/", protect, async (req, res) => {
 // Handler: Get all projects without authentication (public access)
 const getPublicProjects = async (req, res) => {
   try {
-    const { search, category, status, priority, region, city, page, limit } =
-      req.query;
+    const { search, category, status, priority, region, city } = req.query;
 
     let query = {};
 
@@ -100,22 +99,11 @@ const getPublicProjects = async (req, res) => {
       query.city = { $regex: city, $options: "i" };
     }
 
-    const pageNum = parseInt(page) || 1;
-    const limitNum = parseInt(limit) || 500;
-    const skip = (pageNum - 1) * limitNum;
-
-    const total = await Project.countDocuments(query);
-    const projects = await Project.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum);
+    const projects = await Project.find(query).sort({ createdAt: -1 });
 
     res.status(200).json({
       meta: {
-        total,
-        page: pageNum,
-        limit: limitNum,
-        totalPages: Math.ceil(total / limitNum),
+        total: projects.length,
       },
       data: projects,
     });
