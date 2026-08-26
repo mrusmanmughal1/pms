@@ -101,7 +101,7 @@ const getPublicProjects = async (req, res) => {
     }
 
     const pageNum = parseInt(page) || 1;
-    const limitNum = parseInt(limit) || 20;
+    const limitNum = parseInt(limit) || 500;
     const skip = (pageNum - 1) * limitNum;
 
     const total = await Project.countDocuments(query);
