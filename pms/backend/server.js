@@ -6,6 +6,8 @@ const projectRoutes = require("./routes/projects");
 const authRoutes = require("./routes/auth");
 const reportRoutes = require("./routes/reports");
 const errorHandler = require("./middleware/error");
+const path = require("path");
+const uploadRoutes = require("./routes/upload");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -19,6 +21,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/projects", projectRoutes);
@@ -26,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/categories", require("./routes/categories"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/reports", reportRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Root Endpoint
 app.get("/", (req, res) => {

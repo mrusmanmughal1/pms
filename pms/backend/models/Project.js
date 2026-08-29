@@ -90,11 +90,13 @@ const ProjectSchema = new mongoose.Schema(
       woRequest: {
         status: {
           type: String,
-          enum: ["Pending", "Approved", "Rejected", "N/A"],
+          enum: ["Pending", "Requested", "Rejected", "N/A"],
           default: "Pending",
         },
         date: { type: Date },
         remarks: { type: String, default: "" },
+        fileUrl: { type: String, default: "" },
+        fileName: { type: String, default: "" },
       },
       woIssuance: {
         woNumber: { type: String, default: "" },

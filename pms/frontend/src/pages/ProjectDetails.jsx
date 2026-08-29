@@ -106,8 +106,11 @@ export default function ProjectDetails() {
                   .slice(0, 10)
               : "",
             remarks: project.mapping?.woRequest?.remarks || "",
+            fileUrl: project.mapping?.woRequest?.fileUrl || "",
+            fileName: project.mapping?.woRequest?.fileName || "",
           },
           woIssuance: {
+            woNumber: project.mapping?.woIssuance?.woNumber || "",
             status: project.mapping?.woIssuance?.status || "Pending",
             date: project.mapping?.woIssuance?.date
               ? new Date(project.mapping.woIssuance.date)
@@ -375,21 +378,6 @@ export default function ProjectDetails() {
 
   // Full editor: can edit project-level details (Admin or PM)
   const isFullEditor = user.role === "Admin" || user.role === "PM";
-
-  // Status-gated permissions (role + matching project status)
-  // Admin & PM (full editors) bypass the status gate — they see & edit everything
-  const AllowMapping =
-    canAccessMapping && (isFullEditor || project.status === "Initiation");
-
-  const AllowInstallation =
-    canAccessInstallation &&
-    (isFullEditor || project.status === "Installation");
-
-  const AllowIntegration =
-    canAccessIntegration && (isFullEditor || project.status === "Integration");
-
-  const AllowCloseout =
-    canAccessCloseout && (isFullEditor || project.status === "Closeout");
 
   // Any user who has access to at least one module can see the Edit button
   const canEdit = isFullEditor;
