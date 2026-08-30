@@ -4,6 +4,7 @@ import {
   useProjectsHook,
   useCategories,
   useUploadProjectsBulk,
+  useProjectFilters,
 } from "../hooks/project";
 import ProjectForm from "../components/ProjectForm";
 import Spinner from "../components/Spinner";
@@ -28,9 +29,7 @@ const AllProjects = () => {
   const [statusFilter, setStatusFilter] = useState("All Statuses");
   const [priorityFilter, setPriorityFilter] = useState("All Priorities");
   const [regionFilter, setRegionFilter] = useState("");
-  const debouncedRegionFilter = useDebounce(regionFilter, 500);
   const [cityFilter, setCityFilter] = useState("");
-  const debouncedCityFilter = useDebounce(cityFilter, 500);
   const [page, setPage] = useState(1);
 
   // Reset to page 1 whenever any filter changes
@@ -48,8 +47,8 @@ const AllProjects = () => {
     category: categoryFilter,
     status: statusFilter,
     priority: priorityFilter,
-    region: debouncedRegionFilter,
-    city: debouncedCityFilter,
+    region: regionFilter,
+    city: cityFilter,
     page,
     limit: 20,
   });
@@ -58,6 +57,9 @@ const AllProjects = () => {
   const countOfProjects = projectsData?.meta?.total || 0;
   const totalPages = projectsData?.meta?.totalPages || 1;
   const { data: categories = [] } = useCategories();
+  const { data: filters } = useProjectFilters();
+  const regions = filters?.regions || [];
+  const cities = filters?.cities || [];
 
   if (isLoading) {
     return <Spinner size="lg" text="Loading projects..." />;
@@ -171,39 +173,49 @@ const AllProjects = () => {
           />
         </div>
 
-        <div style={{ flex: 1, minWidth: "150px" }}>
-          <input
-            type="text"
-            placeholder="Filter by Region..."
-            value={regionFilter}
-            onChange={(e) => setRegionFilter(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.5rem 1rem",
-              borderRadius: "0.4rem",
-              border: "1px solid #e2e8f0",
-              background: "white",
-              outline: "none",
-            }}
-          />
-        </div>
+        <select
+          value={regionFilter}
+          onChange={(e) => handleFilterChange(setRegionFilter)(e.target.value)}
+          style={{
+            padding: "0.5rem 1rem",
+            borderRadius: "0.4rem",
+            border: "1px solid #e2e8f0",
+            background: "white",
+            outline: "none",
+            cursor: "pointer",
+            minWidth: "150px",
+            color: regionFilter === "" ? "#94a3b8" : "inherit",
+          }}
+        >
+          <option value="">All Regions</option>
+          {regions.map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </select>
 
-        <div style={{ flex: 1, minWidth: "150px" }}>
-          <input
-            type="text"
-            placeholder="Filter by City..."
-            value={cityFilter}
-            onChange={(e) => setCityFilter(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.5rem 1rem",
-              borderRadius: "0.4rem",
-              border: "1px solid #e2e8f0",
-              background: "white",
-              outline: "none",
-            }}
-          />
-        </div>
+        <select
+          value={cityFilter}
+          onChange={(e) => handleFilterChange(setCityFilter)(e.target.value)}
+          style={{
+            padding: "0.5rem 1rem",
+            borderRadius: "0.4rem",
+            border: "1px solid #e2e8f0",
+            background: "white",
+            outline: "none",
+            cursor: "pointer",
+            minWidth: "150px",
+            color: cityFilter === "" ? "#94a3b8" : "inherit",
+          }}
+        >
+          <option value="">All Cities</option>
+          {cities.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
 
         <select
           value={categoryFilter}

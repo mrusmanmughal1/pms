@@ -61,7 +61,14 @@ const Dashboard = () => {
   // Use stats arrays for charts
   const categoryData = (stats?.categoryData || []).map((c, idx) => ({
     ...c,
-    color: ["#f59e0b", "#10b981", "#8b5cf6"][idx % 3],
+    color: [
+      "#f59e0b",
+      "#10b981",
+      "#8b5cf6",
+      "#c144e7ff",
+      "#c8327aff",
+      "#49424dff",
+    ][idx % 6],
   }));
   const statusColorMap = {
     Initiation: "#94a3b8",

@@ -21,8 +21,10 @@ router.get("/", protect, async (req, res) => {
 
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: "i" } },
+        { title: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
+        { siteId: { $regex: search, $options: "i" } },
+        { tawalId: { $regex: search, $options: "i" } },
       ];
     }
 
@@ -36,10 +38,10 @@ router.get("/", protect, async (req, res) => {
       query.priority = priority;
     }
     if (region && region.trim() !== "") {
-      query.region = { $regex: region, $options: "i" };
+      query.region = region.trim();
     }
     if (city && city.trim() !== "") {
-      query.city = { $regex: city, $options: "i" };
+      query.city = city.trim();
     }
 
     const pageNum = parseInt(page) || 1;
@@ -210,6 +212,32 @@ router.get("/stats", protect, async (req, res) => {
   }
 });
 
+// Filters endpoint: distinct regions & cities (must be before /:id route)
+router.get("/filters", protect, async (req, res) => {
+  try {
+    const { role, email } = req.user;
+    const fullAccessRoles = ["Admin", "Manager", "PM"];
+    const baseFilter = fullAccessRoles.includes(role)
+      ? {}
+      : { teamMembers: email };
+
+    const [regions, cities] = await Promise.all([
+      Project.distinct("region", {
+        ...baseFilter,
+        region: { $nin: [null, ""] },
+      }),
+      Project.distinct("city", { ...baseFilter, city: { $nin: [null, ""] } }),
+    ]);
+
+    res.status(200).json({
+      regions: regions.filter(Boolean).sort(),
+      cities: cities.filter(Boolean).sort(),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get a single project
 router.get("/:id", protect, async (req, res) => {
   try {
@@ -249,9 +277,64 @@ router.post(
         ),
       );
 
+      // Check for duplicate titles within the uploaded batch
+      const batchTitles = projects
+        .map((p) => (p.title || p.name || "").trim())
+        .filter(Boolean);
+
+      const seenTitles = new Set();
+      const duplicateInBatch = new Set();
+      for (const t of batchTitles) {
+        const lower = t.toLowerCase();
+        if (seenTitles.has(lower)) {
+          duplicateInBatch.add(t);
+        } else {
+          seenTitles.add(lower);
+        }
+      }
+
+      if (duplicateInBatch.size > 0) {
+        return next(
+          new ErrorResponse(
+            `Duplicate project title(s) found in the uploaded file: "${[...duplicateInBatch].join('", "')}"`,
+            400,
+          ),
+        );
+      }
+
+      // Check for titles that already exist in the database (case-insensitive)
+      const existingProjects = await Project.find({
+        title: {
+          $in: batchTitles.map(
+            (t) =>
+              new RegExp(
+                `^${t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+                "i",
+              ),
+          ),
+        },
+      })
+        .select("title")
+        .lean();
+
+      if (existingProjects.length > 0) {
+        const existingTitles = existingProjects
+          .map((p) => `"${p.title}"`)
+          .join(", ");
+        return next(
+          new ErrorResponse(
+            `The following project title(s) already exist in the system: ${existingTitles}`,
+            400,
+          ),
+        );
+      }
+
       // Validate each project
       for (let i = 0; i < projects.length; i++) {
         const projectData = projects[i];
+        if (projectData.name && !projectData.title) {
+          projectData.title = projectData.name;
+        }
         const {
           category,
           budget = 0,

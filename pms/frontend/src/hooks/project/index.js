@@ -119,6 +119,18 @@ export const useDeleteProject = () => {
     },
   });
 };
+// Fetch distinct regions & cities for filter dropdowns
+export const useProjectFilters = () => {
+  return useQuery({
+    queryKey: ["projectFilters"],
+    queryFn: () =>
+      apiInstance
+        .get(`${API_BASE}/projects/filters`)
+        .then((res) => res.data),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 // get single project by id
 export const useProjectById = (id) => {
   return useQuery({
