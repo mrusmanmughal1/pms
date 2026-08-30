@@ -91,7 +91,7 @@ export default function Budget_Spent({
                     {chartData.map((entry, idx) => (
                       <Cell
                         key={`cell-${idx}`}
-                        fill={entry.name === "Spent" ? "#10b981" : "#1269f5ff"}
+                        fill={entry.name === "Spent" ? "#10b981" : "#4f46e5"}
                       />
                     ))}
                   </Bar>

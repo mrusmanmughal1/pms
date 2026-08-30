@@ -12,7 +12,7 @@ import {
 import { useAuthStore } from "../store/authStore";
 import { useCategories } from "../hooks/project";
 import { useQueryClient } from "@tanstack/react-query";
-
+import logo from "../assets/logo.png";
 export default function Sidebar() {
   const { data: categories = [], isLoading } = useCategories();
   const { user, logout } = useAuthStore();
@@ -28,11 +28,7 @@ export default function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebar-logo">
-        <img
-          src="https://smart-life.sa/wp-content/uploads/2023/04/w-logo.png"
-          alt="Smart life"
-          width={120}
-        />
+        <img src={logo} alt="Smart life" width={120} />
       </div>
       <nav
         style={{
@@ -171,7 +167,9 @@ export default function Sidebar() {
         style={{
           marginTop: "auto",
           paddingTop: "1rem",
-          borderTop: "1px solid #1e293b",
+          borderTopColor: "oklab(0.999994 0.0000455678 0.0000200868 / 0.1)",
+          borderTopStyle: "solid",
+          borderTopWidth: "0.8px",
         }}
       >
         <div

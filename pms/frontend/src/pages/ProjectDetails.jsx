@@ -17,6 +17,7 @@ import {
   Cell,
 } from "recharts";
 import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 import { getCatBadge } from "../utils/helpers";
 import {
   BanknoteArrowDown,
@@ -252,6 +253,25 @@ export default function ProjectDetails() {
   }, [project]);
 
   const handleSave = async () => {
+    // Validation checks
+    if (
+      form.mapping?.woRequest?.status === "Requested" &&
+      (!form.mapping?.woRequest?.fileUrl ||
+        !form.mapping?.woRequest?.fileUrl.trim())
+    ) {
+      toast.error("Please upload a Mapping File when WO Request is Requested");
+      return;
+    }
+
+    if (
+      form.mapping?.woIssuance?.status === "Approved" &&
+      (!form.mapping?.woIssuance?.woNumber ||
+        !form.mapping?.woIssuance?.woNumber.trim())
+    ) {
+      toast.error("Please enter a WO Number when WO Issuance is Approved");
+      return;
+    }
+
     try {
       setSaving(true);
       // Ensure tags are sent as an array and dates are preserved

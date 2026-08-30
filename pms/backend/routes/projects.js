@@ -414,6 +414,26 @@ router.put(
         req.body.categoryBudget = cat.budget;
       }
 
+      if (
+        req.body.mapping?.woRequest?.status === "Requested" &&
+        (!req.body.mapping?.woRequest?.fileUrl ||
+          !req.body.mapping?.woRequest?.fileUrl.trim())
+      ) {
+        return res.status(400).json({
+          message: "Mapping file is required when WO Request is Requested",
+        });
+      }
+
+      if (
+        req.body.mapping?.woIssuance?.status === "Approved" &&
+        (!req.body.mapping?.woIssuance?.woNumber ||
+          !req.body.mapping?.woIssuance?.woNumber.trim())
+      ) {
+        return res.status(400).json({
+          message: "WO Number is required when WO Issuance is Approved",
+        });
+      }
+
       const project = await Project.findById(req.params.id);
       if (!project)
         return res.status(404).json({ message: "Project not found" });

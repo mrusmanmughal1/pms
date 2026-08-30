@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { apiInstance } from "../service";
 import toast from "react-hot-toast";
 import {
@@ -8,7 +8,6 @@ import {
   Trash2,
   Loader2,
   Paperclip,
-  CheckCircle2,
 } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
@@ -407,6 +406,19 @@ export default function WorkOrder({
                     >
                       Supports PDF, Excel, Word, CAD, Images, CSV (up to 50MB)
                     </span>
+                    {!currentFileUrl && (
+                      <span
+                        style={{
+                          fontSize: "0.72rem",
+                          color: "#ef4444",
+                          display: "block",
+                          marginTop: "0.3rem",
+                          fontWeight: 500,
+                        }}
+                      >
+                        * Mapping file is required when WO Request is Requested
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -519,27 +531,48 @@ export default function WorkOrder({
               {isApproved && (
                 <div>
                   <label className="form-label" style={{ fontWeight: 600 }}>
-                    WO Number
+                    WO Number{" "}
+                    {editMode && <span style={{ color: "#ef4444" }}>*</span>}
                   </label>
                   {editMode ? (
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="WO Number"
-                      value={form.mapping?.woIssuance?.woNumber || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          mapping: {
-                            ...form.mapping,
-                            woIssuance: {
-                              ...form.mapping?.woIssuance,
-                              woNumber: e.target.value,
+                    <div>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Enter WO Number"
+                        value={form.mapping?.woIssuance?.woNumber || ""}
+                        style={{
+                          borderColor:
+                            !form.mapping?.woIssuance?.woNumber?.trim()
+                              ? "#fca5a5"
+                              : undefined,
+                        }}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            mapping: {
+                              ...form.mapping,
+                              woIssuance: {
+                                ...form.mapping?.woIssuance,
+                                woNumber: e.target.value,
+                              },
                             },
-                          },
-                        })
-                      }
-                    />
+                          })
+                        }
+                      />
+                      {!form.mapping?.woIssuance?.woNumber?.trim() && (
+                        <span
+                          style={{
+                            fontSize: "0.72rem",
+                            color: "#ef4444",
+                            display: "block",
+                            marginTop: "0.2rem",
+                          }}
+                        >
+                          WO Number is required when Approved
+                        </span>
+                      )}
+                    </div>
                   ) : (
                     <div style={{ fontSize: "0.9rem" }}>
                       {project.mapping?.woIssuance?.woNumber || "—"}
