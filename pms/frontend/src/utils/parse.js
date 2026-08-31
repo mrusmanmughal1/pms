@@ -14,7 +14,10 @@ function normalizeProjectRow(rawRow) {
   const getVal = (...aliases) => {
     for (const alias of aliases) {
       const lower = alias.toLowerCase();
-      if (normalizedKeys[lower] !== undefined && normalizedKeys[lower] !== null) {
+      if (
+        normalizedKeys[lower] !== undefined &&
+        normalizedKeys[lower] !== null
+      ) {
         return normalizedKeys[lower];
       }
     }
@@ -87,7 +90,8 @@ function normalizeProjectRow(rawRow) {
   // Array fields (e.g. semicolon or comma separated)
   const parseArray = (val) => {
     if (!val) return [];
-    if (Array.isArray(val)) return val.map((s) => String(s).trim()).filter(Boolean);
+    if (Array.isArray(val))
+      return val.map((s) => String(s).trim()).filter(Boolean);
     const str = String(val).trim();
     if (!str) return [];
     const delimiter = str.includes(";") ? ";" : ",";
@@ -97,7 +101,12 @@ function normalizeProjectRow(rawRow) {
       .filter(Boolean);
   };
 
-  const teamMembers = getVal("teamMembers", "team_members", "team members", "members");
+  const teamMembers = getVal(
+    "teamMembers",
+    "team_members",
+    "team members",
+    "members",
+  );
   if (teamMembers !== undefined) obj.teamMembers = parseArray(teamMembers);
 
   const tags = getVal("tags", "tag");
@@ -190,9 +199,7 @@ export async function parseExcel(fileOrBuffer) {
   const worksheet = workbook.Sheets[sheetName];
   const rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-  return rawRows
-    .map((row) => normalizeProjectRow(row))
-    .filter((p) => p.title);
+  return rawRows.map((row) => normalizeProjectRow(row)).filter((p) => p.title);
 }
 
 // Unified parser for both CSV and Excel (.xlsx, .xls)
@@ -270,7 +277,10 @@ export function exportToExcel(data, filename = "projects_export.xlsx") {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Projects");
 
-  XLSX.writeFile(workbook, filename.endsWith(".xlsx") ? filename : `${filename}.xlsx`);
+  XLSX.writeFile(
+    workbook,
+    filename.endsWith(".xlsx") ? filename : `${filename}.xlsx`,
+  );
 }
 
 // Convert an array of objects to a CSV file and trigger download

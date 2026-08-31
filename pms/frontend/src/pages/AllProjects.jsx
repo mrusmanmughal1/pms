@@ -62,6 +62,7 @@ const AllProjects = () => {
   const [regionFilter, setRegionFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
 
   // Sync viewMode preference to localStorage
   const handleViewModeChange = (mode) => {
@@ -72,6 +73,12 @@ const AllProjects = () => {
   // Reset page and selection when any filter changes
   const handleFilterChange = (setter) => (val) => {
     setter(val);
+    setPage(1);
+    setSelectedIds([]);
+  };
+
+  const handleLimitChange = (val) => {
+    setLimit(val === "All" ? "All" : Number(val));
     setPage(1);
     setSelectedIds([]);
   };
@@ -88,7 +95,7 @@ const AllProjects = () => {
     region: regionFilter,
     city: cityFilter,
     page,
-    limit: 20,
+    limit,
   });
 
   const projects = projectsData?.data || [];
@@ -872,44 +879,92 @@ const AllProjects = () => {
         isLoading={bulkDeleteMutation.isPending}
       />
 
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
+      {/* Pagination & Limit Controls */}
+      {countOfProjects > 0 && (
         <div
           style={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-between",
             alignItems: "center",
+            flexWrap: "wrap",
             gap: "1rem",
             marginTop: "2rem",
-            paddingTop: "1rem",
+            paddingTop: "1.25rem",
             borderTop: "1px solid var(--surface-border)",
           }}
         >
-          <button
-            className="btn btn-outline"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            style={{ padding: "0.4rem 1rem", fontSize: "0.875rem" }}
-          >
-            ← Previous
-          </button>
-          <span
-            style={{
-              fontSize: "0.875rem",
-              color: "var(--text-secondary)",
-              fontWeight: "600",
-            }}
-          >
-            Page {page} of {totalPages}
-          </span>
-          <button
-            className="btn btn-outline"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            style={{ padding: "0.4rem 1rem", fontSize: "0.875rem" }}
-          >
-            Next →
-          </button>
+          {/* Left: Limit selector */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span
+              style={{
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "500",
+              }}
+            >
+              Show per page:
+            </span>
+            <select
+              value={limit}
+              onChange={(e) => handleLimitChange(e.target.value)}
+              style={{
+                padding: "0.35rem 0.65rem",
+                borderRadius: "0.4rem",
+                border: "1px solid #cbd5e1",
+                backgroundColor: "#ffffff",
+                fontSize: "0.85rem",
+                fontWeight: "600",
+                color: "#1e293b",
+                cursor: "pointer",
+                outline: "none",
+              }}
+            >
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value="All">All</option>
+            </select>
+            <span
+              style={{
+                fontSize: "0.82rem",
+                color: "#64748b",
+                marginLeft: "0.25rem",
+              }}
+            >
+              (Total {countOfProjects} projects)
+            </span>
+          </div>
+
+          {/* Right: Page navigation (shown when not viewing All and totalPages > 1) */}
+          {limit !== "All" && totalPages > 1 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <button
+                className="btn btn-outline"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                style={{ padding: "0.35rem 0.85rem", fontSize: "0.85rem" }}
+              >
+                ← Previous
+              </button>
+              <span
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--text-secondary)",
+                  fontWeight: "600",
+                }}
+              >
+                Page {page} of {totalPages}
+              </span>
+              <button
+                className="btn btn-outline"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                style={{ padding: "0.35rem 0.85rem", fontSize: "0.85rem" }}
+              >
+                Next →
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

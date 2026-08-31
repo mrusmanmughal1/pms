@@ -44,22 +44,24 @@ router.get("/", protect, async (req, res) => {
       query.city = city.trim();
     }
 
-    const pageNum = parseInt(page) || 1;
-    const limitNum = parseInt(limit) || 20;
-    const skip = (pageNum - 1) * limitNum;
+    const isAll = String(limit).toLowerCase() === "all";
+    const pageNum = isAll ? 1 : parseInt(page) || 1;
+    const limitNum = isAll ? 0 : parseInt(limit) || 20;
+    const skip = limitNum > 0 ? (pageNum - 1) * limitNum : 0;
 
     const total = await Project.countDocuments(query);
-    const projects = await Project.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum);
+    let projectsQuery = Project.find(query).sort({ createdAt: -1 });
+    if (limitNum > 0) {
+      projectsQuery = projectsQuery.skip(skip).limit(limitNum);
+    }
+    const projects = await projectsQuery;
 
     res.status(200).json({
       meta: {
         total,
         page: pageNum,
-        limit: limitNum,
-        totalPages: Math.ceil(total / limitNum),
+        limit: limitNum > 0 ? limitNum : total,
+        totalPages: limitNum > 0 ? Math.ceil(total / limitNum) || 1 : 1,
       },
       data: projects,
     });

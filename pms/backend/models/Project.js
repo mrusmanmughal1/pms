@@ -214,6 +214,8 @@ const ProjectSchema = new mongoose.Schema(
         },
         date: { type: Date },
         remarks: { type: String, default: "" },
+        fileUrl: { type: String, default: "" },
+        fileName: { type: String, default: "" },
       },
       invoicing: {
         status: {

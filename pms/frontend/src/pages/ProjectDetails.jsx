@@ -227,6 +227,8 @@ export default function ProjectDetails() {
                   .slice(0, 10)
               : "",
             remarks: project.closeout?.patStatus?.remarks || "",
+            fileUrl: project.closeout?.patStatus?.fileUrl || "",
+            fileName: project.closeout?.patStatus?.fileName || "",
           },
           invoicing: {
             status: project.closeout?.invoicing?.status || "Pending",
@@ -346,6 +348,8 @@ export default function ProjectDetails() {
           patStatus: {
             ...form.closeout?.patStatus,
             date: form.closeout?.patStatus?.date || null,
+            fileUrl: form.closeout?.patStatus?.fileUrl || "",
+            fileName: form.closeout?.patStatus?.fileName || "",
           },
           invoicing: {
             ...form.closeout?.invoicing,
