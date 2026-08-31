@@ -25,12 +25,14 @@ import {
   MapPin,
   AlertTriangle,
   CheckCircle,
+  FileSpreadsheet,
+  FileText,
 } from "lucide-react";
 import ProjectCard from "../components/ProjectCard";
 import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 import { getStatusColor } from "../utils/statusColor";
 import toast from "react-hot-toast";
-import { parseCSV, exportToCSV } from "../utils/parse";
+import { parseProjectsFile, exportToExcel, exportToCSV } from "../utils/parse";
 import { useDebounce } from "../hooks/useDebounce";
 
 const AllProjects = () => {
@@ -123,11 +125,9 @@ const AllProjects = () => {
   };
 
   const isAllSelected =
-    projects.length > 0 &&
-    projects.every((p) => selectedIds.includes(p._id));
+    projects.length > 0 && projects.every((p) => selectedIds.includes(p._id));
 
-  const isIndeterminate =
-    selectedIds.length > 0 && !isAllSelected;
+  const isIndeterminate = selectedIds.length > 0 && !isAllSelected;
 
   const handleConfirmBulkDelete = async () => {
     if (selectedIds.length === 0) return;
@@ -233,7 +233,14 @@ const AllProjects = () => {
 
         {/* Action Buttons */}
         {canManageProjects && (
-          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             <button
               className="btn btn-primary"
               onClick={() => setIsModalOpen(true)}
@@ -243,16 +250,15 @@ const AllProjects = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".csv"
+              accept=".xlsx,.xls,.csv"
               style={{ display: "none" }}
               onChange={async (e) => {
                 const file = e.target.files && e.target.files[0];
                 if (!file) return;
                 try {
-                  const text = await file.text();
-                  const parsed = parseCSV(text);
+                  const parsed = await parseProjectsFile(file);
                   if (!parsed || parsed.length === 0) {
-                    toast.error("No projects found in CSV");
+                    toast.error("No valid projects found in the uploaded file");
                     return;
                   }
                   await uploadProjectsData.mutateAsync({ projects: parsed });
@@ -260,7 +266,7 @@ const AllProjects = () => {
                   const msg =
                     err?.response?.data?.message ||
                     err.message ||
-                    "Failed to upload CSV";
+                    "Failed to process or upload file";
                   toast.error(msg);
                 } finally {
                   e.target.value = "";
@@ -273,25 +279,33 @@ const AllProjects = () => {
                 fileInputRef.current && fileInputRef.current.click()
               }
               disabled={uploadProjectsData.isPending}
+              title="Upload Excel (.xlsx, .xls) or CSV (.csv)"
             >
               {uploadProjectsData.isPending ? (
                 <Spinner size="sm" />
               ) : (
                 <>
-                  <CloudUpload size={15} /> Upload CSV
+                  <FileSpreadsheet size={15} /> Upload Excel / CSV
                 </>
               )}
             </button>
             <button
               className="btn btn-secondary"
-              onClick={() => exportToCSV(projects, "projects_export.csv")}
+              onClick={() => exportToExcel(projects, "projects_export.xlsx")}
+              title="Download as Excel (.xlsx)"
             >
-              <Download size={15} /> Download CSV
+              <FileSpreadsheet size={15} /> Export Excel
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => exportToCSV(projects, "projects_export.csv")}
+              title="Download as CSV (.csv)"
+            >
+              <Download size={15} /> Export CSV
             </button>
           </div>
         )}
       </div>
-
       {/* Bulk Action Toolbar (When 1 or more projects are selected) */}
       {selectedIds.length > 0 && (
         <div
@@ -315,7 +329,8 @@ const AllProjects = () => {
                 color: "#3730a3",
               }}
             >
-              {selectedIds.length} project{selectedIds.length > 1 ? "s" : ""} selected
+              {selectedIds.length} project{selectedIds.length > 1 ? "s" : ""}{" "}
+              selected
             </span>
             <button
               type="button"
@@ -564,7 +579,13 @@ const AllProjects = () => {
                 }}
               >
                 {canDeleteProjects && (
-                  <th style={{ padding: "0.85rem 1rem", width: "40px", textAlign: "center" }}>
+                  <th
+                    style={{
+                      padding: "0.85rem 1rem",
+                      width: "40px",
+                      textAlign: "center",
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={isAllSelected}
@@ -590,7 +611,9 @@ const AllProjects = () => {
                 <th style={{ padding: "0.85rem 1rem" }}>Location</th>
                 <th style={{ padding: "0.85rem 1rem" }}>Team Lead</th>
                 <th style={{ padding: "0.85rem 1rem" }}>End Date</th>
-                <th style={{ padding: "0.85rem 1rem", textAlign: "right" }}>Actions</th>
+                <th style={{ padding: "0.85rem 1rem", textAlign: "right" }}>
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -611,7 +634,8 @@ const AllProjects = () => {
 
                 const isCompleted = proj.status === "Completed";
                 const endDate = proj.endDate ? new Date(proj.endDate) : null;
-                const isOverdue = endDate && !isCompleted && new Date() > endDate;
+                const isOverdue =
+                  endDate && !isCompleted && new Date() > endDate;
 
                 return (
                   <tr
@@ -622,14 +646,18 @@ const AllProjects = () => {
                       transition: "background-color 0.15s ease",
                     }}
                     onMouseOver={(e) => {
-                      if (!isSelected) e.currentTarget.style.backgroundColor = "#fcfcfd";
+                      if (!isSelected)
+                        e.currentTarget.style.backgroundColor = "#fcfcfd";
                     }}
                     onMouseOut={(e) => {
-                      if (!isSelected) e.currentTarget.style.backgroundColor = "#ffffff";
+                      if (!isSelected)
+                        e.currentTarget.style.backgroundColor = "#ffffff";
                     }}
                   >
                     {canDeleteProjects && (
-                      <td style={{ padding: "0.85rem 1rem", textAlign: "center" }}>
+                      <td
+                        style={{ padding: "0.85rem 1rem", textAlign: "center" }}
+                      >
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -656,7 +684,13 @@ const AllProjects = () => {
                         {proj.title}
                       </Link>
                       {(proj.siteId || proj.tawalId) && (
-                        <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "2px" }}>
+                        <div
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "#64748b",
+                            marginTop: "2px",
+                          }}
+                        >
                           {proj.siteId && <span>Site: {proj.siteId} </span>}
                           {proj.tawalId && <span>• Tawal: {proj.tawalId}</span>}
                         </div>
@@ -688,7 +722,13 @@ const AllProjects = () => {
                       </span>
                     </td>
                     <td style={{ padding: "0.85rem 1rem", minWidth: "120px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                      >
                         <div
                           style={{
                             flex: 1,
@@ -707,16 +747,32 @@ const AllProjects = () => {
                             }}
                           />
                         </div>
-                        <span style={{ fontSize: "0.75rem", fontWeight: "600", color: "#475569" }}>
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            fontWeight: "600",
+                            color: "#475569",
+                          }}
+                        >
                           {computedProgress}%
                         </span>
                       </div>
                     </td>
                     <td style={{ padding: "0.85rem 1rem", color: "#475569" }}>
                       {proj.region || proj.city ? (
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.3rem",
+                          }}
+                        >
                           <MapPin size={13} color="#94a3b8" />
-                          <span>{[proj.region, proj.city].filter(Boolean).join(", ")}</span>
+                          <span>
+                            {[proj.region, proj.city]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </span>
                         </div>
                       ) : (
                         "—"
@@ -724,7 +780,13 @@ const AllProjects = () => {
                     </td>
                     <td style={{ padding: "0.85rem 1rem", color: "#475569" }}>
                       {proj.teamLead ? (
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.4rem",
+                          }}
+                        >
                           <span
                             style={{
                               width: "22px",
@@ -741,7 +803,14 @@ const AllProjects = () => {
                           >
                             {proj.teamLead.charAt(0).toUpperCase()}
                           </span>
-                          <span style={{ maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <span
+                            style={{
+                              maxWidth: "120px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
                             {proj.teamLead}
                           </span>
                         </div>

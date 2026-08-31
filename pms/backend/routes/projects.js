@@ -562,9 +562,9 @@ router.post(
         (Array.isArray(req.body) ? req.body : []);
 
       if (!Array.isArray(ids) || ids.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Please provide an array of project IDs to delete" });
+        return res.status(400).json({
+          message: "Please provide an array of project IDs to delete",
+        });
       }
 
       const result = await Project.deleteMany({ _id: { $in: ids } });
@@ -590,9 +590,9 @@ router.delete(
         (Array.isArray(req.body) ? req.body : []);
 
       if (!Array.isArray(ids) || ids.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Please provide an array of project IDs to delete" });
+        return res.status(400).json({
+          message: "Please provide an array of project IDs to delete",
+        });
       }
 
       const result = await Project.deleteMany({ _id: { $in: ids } });
@@ -607,15 +607,21 @@ router.delete(
 );
 
 // Delete a project (Admin, Manager)
-router.delete("/:id", protect, authorize("Admin", "Manager"), async (req, res) => {
-  try {
-    const project = await Project.findById(req.params.id);
-    if (!project) return res.status(404).json({ message: "Project not found" });
-    await project.deleteOne();
-    res.status(200).json({ message: "Project deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+router.delete(
+  "/:id",
+  protect,
+  authorize("Admin", "Manager"),
+  async (req, res) => {
+    try {
+      const project = await Project.findById(req.params.id);
+      if (!project)
+        return res.status(404).json({ message: "Project not found" });
+      await project.deleteOne();
+      res.status(200).json({ message: "Project deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+);
 
 module.exports = router;
