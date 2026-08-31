@@ -119,6 +119,27 @@ export const useDeleteProject = () => {
     },
   });
 };
+
+// Bulk delete projects
+export const useBulkDeleteProjects = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (ids) =>
+      apiInstance
+        .post(`${API_BASE}/projects/bulk-delete`, { ids })
+        .then((res) => res.data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["projects"]);
+      queryClient.invalidateQueries(["project"]);
+      queryClient.invalidateQueries(["stats"]);
+      queryClient.invalidateQueries(["projectFilters"]);
+      toast.success(data?.message || "Projects deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to delete projects");
+    },
+  });
+};
 // Fetch distinct regions & cities for filter dropdowns
 export const useProjectFilters = () => {
   return useQuery({
@@ -228,6 +249,8 @@ export default {
   useCreateProject,
   useUpdateProject,
   useDeleteProject,
+  useBulkDeleteProjects,
+  useProjectFilters,
   useCategories,
   useCreateCategory,
   useDeleteCategory,

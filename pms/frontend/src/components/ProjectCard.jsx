@@ -4,7 +4,13 @@ import { formatDate } from "../utils/date";
 import { getCatBadge, getPriorityBadge } from "../utils/helpers";
 import { getStatusColor } from "../utils/statusColor";
 
-export default function ProjectCard({ proj, i }) {
+export default function ProjectCard({
+  proj,
+  i,
+  selectable = false,
+  isSelected = false,
+  onToggleSelect,
+}) {
   const now = new Date();
   const endDate = proj.endDate ? new Date(proj.endDate) : null;
   const isCompleted = proj.status === "Completed";
@@ -27,17 +33,22 @@ export default function ProjectCard({ proj, i }) {
     (proj.priority === "Critical" || proj.priority === "High") && !isCompleted;
   const isReadyForReview = proj.progress >= 90 && !isCompleted;
 
-  let borderColor = "transparent";
-  let boxShadow = "0 0 8px rgba(10, 10, 10, 0.1)";
-  if (isOverdue) {
-    borderColor = "#ef4444";
-    boxShadow = "0 0 8px rgba(239, 68, 68, 0.5)";
-  } else if (isCriticalPriority) {
-    borderColor = "#f97316";
-    boxShadow = "0 0 8px rgba(249, 115, 22, 0.4)";
-  } else if (isReadyForReview) {
-    borderColor = "#10b981";
-    boxShadow = "0 0 8px rgba(16, 185, 129, 0.4)";
+  let borderColor = isSelected ? "#4f46e5" : "transparent";
+  let boxShadow = isSelected
+    ? "0 0 0 2px rgba(79, 70, 229, 0.25), 0 4px 12px rgba(0, 0, 0, 0.08)"
+    : "0 0 8px rgba(10, 10, 10, 0.1)";
+
+  if (!isSelected) {
+    if (isOverdue) {
+      borderColor = "#ef4444";
+      boxShadow = "0 0 8px rgba(239, 68, 68, 0.5)";
+    } else if (isCriticalPriority) {
+      borderColor = "#f97316";
+      boxShadow = "0 0 8px rgba(249, 115, 22, 0.4)";
+    } else if (isReadyForReview) {
+      borderColor = "#10b981";
+      boxShadow = "0 0 8px rgba(16, 185, 129, 0.4)";
+    }
   }
 
   return (
@@ -47,9 +58,11 @@ export default function ProjectCard({ proj, i }) {
       style={{
         display: "flex",
         flexDirection: "column",
-        border: `1px solid ${borderColor}`,
+        border: `1.5px solid ${borderColor}`,
         boxShadow: boxShadow,
-        transition: "all 0.3s ease",
+        backgroundColor: isSelected ? "#f8faff" : undefined,
+        transition: "all 0.2s ease",
+        position: "relative",
       }}
     >
       <div
@@ -58,25 +71,46 @@ export default function ProjectCard({ proj, i }) {
           justifyContent: "space-between",
           alignItems: "flex-start",
           marginBottom: "1rem",
+          gap: "0.5rem",
         }}
       >
-        <h3
-          style={{
-            fontSize: "1rem",
-            fontWeight: "700",
-            margin: 0,
-            textTransform: "uppercase",
-          }}
-        >
-          <Link
-            to={`/projects/${proj._id}`}
-            style={{ color: "inherit", textDecoration: "none" }}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1, minWidth: 0 }}>
+          {selectable && (
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect && onToggleSelect(proj._id)}
+              style={{
+                width: "17px",
+                height: "17px",
+                cursor: "pointer",
+                accentColor: "#4f46e5",
+                flexShrink: 0,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
+          <h3
+            style={{
+              fontSize: "1rem",
+              fontWeight: "700",
+              margin: 0,
+              textTransform: "uppercase",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
           >
-            {proj.title.length > 20
-              ? proj.title.slice(0, 20) + "..."
-              : proj.title}
-          </Link>
-        </h3>
+            <Link
+              to={`/projects/${proj._id}`}
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              {proj.title.length > 20
+                ? proj.title.slice(0, 20) + "..."
+                : proj.title}
+            </Link>
+          </h3>
+        </div>
 
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {/* Alarms */}

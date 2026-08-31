@@ -277,56 +277,74 @@ router.post(
         ),
       );
 
-      // Check for duplicate titles within the uploaded batch
-      const batchTitles = projects
-        .map((p) => (p.title || p.name || "").trim())
-        .filter(Boolean);
+      // Check for duplicate projects (same title AND category) within the uploaded batch
+      const seenBatchKeys = new Set();
+      const duplicateInBatch = [];
 
-      const seenTitles = new Set();
-      const duplicateInBatch = new Set();
-      for (const t of batchTitles) {
-        const lower = t.toLowerCase();
-        if (seenTitles.has(lower)) {
-          duplicateInBatch.add(t);
+      for (const p of projects) {
+        const title = (p.title || p.name || "").trim();
+        const category = (p.category || "").trim();
+        if (!title) continue;
+
+        const key = `${title.toLowerCase()}:::${category.toLowerCase()}`;
+        if (seenBatchKeys.has(key)) {
+          duplicateInBatch.push(
+            category ? `"${title}" (${category})` : `"${title}"`,
+          );
         } else {
-          seenTitles.add(lower);
+          seenBatchKeys.add(key);
         }
       }
 
-      if (duplicateInBatch.size > 0) {
+      if (duplicateInBatch.length > 0) {
+        const uniqueDups = [...new Set(duplicateInBatch)];
         return next(
           new ErrorResponse(
-            `Duplicate project title(s) found in the uploaded file: "${[...duplicateInBatch].join('", "')}"`,
+            `Duplicate project(s) under the same category found in the uploaded file: ${uniqueDups.join(", ")}`,
             400,
           ),
         );
       }
 
-      // Check for titles that already exist in the database (case-insensitive)
-      const existingProjects = await Project.find({
-        title: {
-          $in: batchTitles.map(
-            (t) =>
-              new RegExp(
-                `^${t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-                "i",
-              ),
-          ),
-        },
-      })
-        .select("title")
-        .lean();
+      // Check for projects that already exist with the same title AND category in the database
+      const dbCheckConditions = projects
+        .map((p) => {
+          const title = (p.title || p.name || "").trim();
+          const category = (p.category || "").trim();
+          if (!title) return null;
 
-      if (existingProjects.length > 0) {
-        const existingTitles = existingProjects
-          .map((p) => `"${p.title}"`)
-          .join(", ");
-        return next(
-          new ErrorResponse(
-            `The following project title(s) already exist in the system: ${existingTitles}`,
-            400,
-          ),
-        );
+          const escapedTitle = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const condition = {
+            title: new RegExp(`^${escapedTitle}$`, "i"),
+          };
+          if (category) {
+            const escapedCat = category.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            condition.category = new RegExp(`^${escapedCat}$`, "i");
+          }
+          return condition;
+        })
+        .filter(Boolean);
+
+      if (dbCheckConditions.length > 0) {
+        const existingProjects = await Project.find({
+          $or: dbCheckConditions,
+        })
+          .select("title category")
+          .lean();
+
+        if (existingProjects.length > 0) {
+          const existingFormatted = existingProjects
+            .map((p) =>
+              p.category ? `"${p.title}" (${p.category})` : `"${p.title}"`,
+            )
+            .join(", ");
+          return next(
+            new ErrorResponse(
+              `The following project(s) already exist under the same category in the system: ${existingFormatted}`,
+              400,
+            ),
+          );
+        }
       }
 
       // Validate each project
@@ -531,8 +549,65 @@ router.put(
   },
 );
 
-// Delete a project (Admin only)
-router.delete("/:id", protect, authorize("Admin"), async (req, res) => {
+// Bulk delete projects (Admin, Manager only) - must be before /:id route
+router.post(
+  "/bulk-delete",
+  protect,
+  authorize("Admin", "Manager"),
+  async (req, res) => {
+    try {
+      const ids =
+        req.body.ids ||
+        req.body.projectIds ||
+        (Array.isArray(req.body) ? req.body : []);
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Please provide an array of project IDs to delete" });
+      }
+
+      const result = await Project.deleteMany({ _id: { $in: ids } });
+      res.status(200).json({
+        message: `${result.deletedCount} project(s) deleted successfully`,
+        deletedCount: result.deletedCount,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+);
+
+router.delete(
+  "/bulk",
+  protect,
+  authorize("Admin", "Manager"),
+  async (req, res) => {
+    try {
+      const ids =
+        req.body.ids ||
+        req.body.projectIds ||
+        (Array.isArray(req.body) ? req.body : []);
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Please provide an array of project IDs to delete" });
+      }
+
+      const result = await Project.deleteMany({ _id: { $in: ids } });
+      res.status(200).json({
+        message: `${result.deletedCount} project(s) deleted successfully`,
+        deletedCount: result.deletedCount,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+);
+
+// Delete a project (Admin, Manager)
+router.delete("/:id", protect, authorize("Admin", "Manager"), async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ message: "Project not found" });
