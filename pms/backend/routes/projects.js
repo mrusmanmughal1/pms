@@ -453,7 +453,7 @@ router.post(
 // Create a new project (Admin, Manager only)
 router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
   try {
-    const { category, budget = 0, spent = 0 } = req.body;
+    const { category, siteId, tawalId, budget = 0, spent = 0 } = req.body;
     if (category) {
       const cat = await Category.findOne({ name: category });
       if (!cat)
@@ -471,6 +471,24 @@ router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
           .json({ message: "Project spent cannot exceed category budget" });
       }
       req.body.categoryBudget = cat.budget;
+    }
+
+    // Site ID & Tawal ID must be unique — reject duplicates on create
+    if (siteId && siteId.trim() !== "") {
+      const existingSite = await Project.findOne({ siteId: siteId.trim() });
+      if (existingSite) {
+        return res.status(400).json({
+          message: `A project with Site ID "${siteId.trim()}" already exists`,
+        });
+      }
+    }
+    if (tawalId && tawalId.trim() !== "") {
+      const existingTawal = await Project.findOne({ tawalId: tawalId.trim() });
+      if (existingTawal) {
+        return res.status(400).json({
+          message: `A project with Tawal ID "${tawalId.trim()}" already exists`,
+        });
+      }
     }
 
     const project = new Project(req.body);
