@@ -1,17 +1,24 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const CategorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Category name is required'],
-    unique: true,
-    trim: true,
+const CategorySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Category name is required"],
+      unique: true,
+      trim: true,
+    },
+    budget: {
+      type: Number,
+      default: 0,
+      min: [0, "Budget must be at least 0"],
+    },
+    scopes: {
+      type: [String],
+      default: [],
+    },
   },
-  budget: {
-    type: Number,
-    default: 0,
-    min: [0, 'Budget must be at least 0'],
-  },
-}, { timestamps: true });
+  { timestamps: true },
+);
 
-module.exports = mongoose.model('Category', CategorySchema);
+module.exports = mongoose.model("Category", CategorySchema);

@@ -6,7 +6,9 @@ import {
   useDeleteProject,
   useProjectById,
   useUpdateProject,
+  useCategories,
 } from "../hooks/project";
+import { useMemo } from "react";
 import ConfirmModal from "../components/ConfirmModal";
 import {
   ResponsiveContainer,
@@ -75,11 +77,20 @@ export default function ProjectDetails() {
     enabled: canViewUsersList,
   });
   const updateMutation = useUpdateProject();
+  const { data: categories = [] } = useCategories();
+  // Scopes available for the project's category
+  const categoryScopes = useMemo(() => {
+    const cat = categories.find(
+      (c) => c.name === (project?.category || form?.category),
+    );
+    return cat?.scopes || [];
+  }, [categories, project?.category, form?.category]);
   React.useEffect(() => {
     if (project)
       setForm({
         title: project.title || "",
         description: project.description || "",
+        projectScope: project.projectScope || "",
         status: project.status || "Initiation",
         priority: project.priority || "Low",
         progress: project.progress || 0,
@@ -423,6 +434,23 @@ export default function ProjectDetails() {
           >
             {project.category}
           </span>
+          {project.projectScope && (
+            <span
+              style={{
+                display: "inline-block",
+                background: "#e0e7ff",
+                color: "#3730a3",
+                fontSize: "0.72rem",
+                fontWeight: "600",
+                padding: "0.2rem 0.6rem",
+                borderRadius: "9999px",
+                border: "1px solid #c7d2fe",
+                marginRight: "0.5rem",
+              }}
+            >
+              {project.projectScope}
+            </span>
+          )}
         </h2>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {canEdit && (
@@ -443,6 +471,7 @@ export default function ProjectDetails() {
                       setForm({
                         title: project.title || "",
                         description: project.description || "",
+                        projectScope: project.projectScope || "",
                         status: project.status || "Initiation",
                         priority: project.priority || "Low",
                         progress: project.progress || 0,
@@ -861,7 +890,7 @@ export default function ProjectDetails() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
+          gridTemplateColumns: "1fr 1fr 1fr ",
           gap: "0.5rem",
         }}
       >
@@ -897,6 +926,7 @@ export default function ProjectDetails() {
             </p>
           )}
         </div>
+
         <div className="">
           <div className=" glass-panel" style={{ minHeight: "100%" }}>
             <label

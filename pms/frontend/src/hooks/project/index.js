@@ -244,6 +244,44 @@ export const useUploadProjectsBulk = () => {
   });
 };
 
+// Add a scope to a category
+export const useAddCategoryScope = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, scope }) =>
+      apiInstance
+        .post(`${API_BASE}/categories/${id}/scopes`, { scope })
+        .then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories"]);
+      toast.success("Scope added");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to add scope");
+    },
+  });
+};
+
+// Remove a scope from a category
+export const useDeleteCategoryScope = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, scopeName }) =>
+      apiInstance
+        .delete(
+          `${API_BASE}/categories/${id}/scopes/${encodeURIComponent(scopeName)}`
+        )
+        .then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["categories"]);
+      toast.success("Scope removed");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to remove scope");
+    },
+  });
+};
+
 export default {
   useProjectsHook,
   useCreateProject,
@@ -256,4 +294,6 @@ export default {
   useDeleteCategory,
   useUpdateCategory,
   useUploadProjectsBulk,
+  useAddCategoryScope,
+  useDeleteCategoryScope,
 };

@@ -28,5 +28,6 @@ apiInstance.interceptors.request.use(
 
 const storedToken = localStorage.getItem("token");
 if (storedToken) {
-  apiInstance.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+  apiInstance.defaults.headers.common["Authorization"] =
+    `Bearer ${storedToken}`;
 }

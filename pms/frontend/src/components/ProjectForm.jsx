@@ -18,8 +18,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
   const { mutate, isLoading, error } = useCreateProject();
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useCategories();
-  const canCreateProject =
-    user?.role === "Admin" || user?.role === "Manager";
+  const canCreateProject = user?.role === "Admin" || user?.role === "Manager";
   const { data: users = [], isLoading: isUsersLoading } = useUsers(
     isOpen && canCreateProject,
   );
@@ -27,6 +26,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     title: "",
     category: SelectCategoryFroMParams || "",
+    projectScope: "",
     description: "",
     status: "Initiation",
     priority: "Low",
@@ -158,6 +158,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
         setFormData({
           title: "",
           category: "",
+          projectScope: "",
           description: "",
           status: "Initiation",
           priority: "Low",
@@ -249,7 +250,11 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     required
                     value={formData.category}
                     onChange={(e) =>
-                      setFormData({ ...formData, category: e.target.value })
+                      setFormData({
+                        ...formData,
+                        category: e.target.value,
+                        projectScope: "",
+                      })
                     }
                     disabled={isCategoriesLoading}
                   >
@@ -264,6 +269,33 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={formStyles.label}>Project Scope</label>
+                <select
+                  style={formStyles.input}
+                  value={formData.projectScope}
+                  onChange={(e) =>
+                    setFormData({ ...formData, projectScope: e.target.value })
+                  }
+                  disabled={
+                    !formData.category || !selectedCategory?.scopes?.length
+                  }
+                >
+                  <option value="">
+                    {!formData.category
+                      ? "Select a category first"
+                      : !selectedCategory?.scopes?.length
+                        ? "No scopes defined for this category"
+                        : "— Select scope —"}
+                  </option>
+                  {(selectedCategory?.scopes || []).map((scope) => (
+                    <option key={scope} value={scope}>
+                      {scope}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div style={{ marginBottom: "1rem" }}>

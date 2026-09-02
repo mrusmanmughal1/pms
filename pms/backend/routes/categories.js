@@ -114,4 +114,57 @@ router.delete("/:id", protect, authorize("Admin"), async (req, res) => {
   }
 });
 
+// Add a scope to a category - admin only
+router.post("/:id/scopes", protect, authorize("Admin"), async (req, res) => {
+  try {
+    const { scope } = req.body;
+    if (!scope || !scope.trim())
+      return res.status(400).json({ message: "Scope name is required" });
+
+    const category = await Category.findById(req.params.id);
+    if (!category)
+      return res.status(404).json({ message: "Category not found" });
+
+    const scopeTrimmed = scope.trim();
+
+    // Check for duplicate (case-insensitive)
+    const exists = category.scopes.some(
+      (s) => s.toLowerCase() === scopeTrimmed.toLowerCase()
+    );
+    if (exists)
+      return res
+        .status(400)
+        .json({ message: `Scope "${scopeTrimmed}" already exists in this category` });
+
+    category.scopes.push(scopeTrimmed);
+    await category.save();
+    res.json(category);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Remove a scope from a category - admin only
+router.delete(
+  "/:id/scopes/:scopeName",
+  protect,
+  authorize("Admin"),
+  async (req, res) => {
+    try {
+      const category = await Category.findById(req.params.id);
+      if (!category)
+        return res.status(404).json({ message: "Category not found" });
+
+      const scopeName = decodeURIComponent(req.params.scopeName);
+      category.scopes = category.scopes.filter(
+        (s) => s.toLowerCase() !== scopeName.toLowerCase()
+      );
+      await category.save();
+      res.json(category);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
 module.exports = router;

@@ -20,6 +20,11 @@ const ProjectSchema = new mongoose.Schema(
       type: String,
       // No enum - categories are managed dynamically via the categories collection
     },
+    projectScope: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     status: {
       type: String,
       enum: [

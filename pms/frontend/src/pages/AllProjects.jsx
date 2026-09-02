@@ -612,6 +612,7 @@ const AllProjects = () => {
                 )}
                 <th style={{ padding: "0.85rem 1rem" }}>Project</th>
                 <th style={{ padding: "0.85rem 1rem" }}>Category</th>
+                <th style={{ padding: "0.85rem 1rem" }}>Scope</th>
                 <th style={{ padding: "0.85rem 1rem" }}>Status</th>
                 <th style={{ padding: "0.85rem 1rem" }}>Priority</th>
                 <th style={{ padding: "0.85rem 1rem" }}>Progress</th>
@@ -707,6 +708,26 @@ const AllProjects = () => {
                       <span className={`badge ${getCatBadge(proj.category)}`}>
                         {proj.category || "—"}
                       </span>
+                    </td>
+                    <td style={{ padding: "0.85rem 1rem" }}>
+                      {proj.projectScope ? (
+                        <span
+                          style={{
+                            display: "inline-block",
+                            background: "#e0e7ff",
+                            color: "#3730a3",
+                            fontSize: "0.72rem",
+                            fontWeight: "600",
+                            padding: "0.2rem 0.6rem",
+                            borderRadius: "9999px",
+                            border: "1px solid #c7d2fe",
+                          }}
+                        >
+                          {proj.projectScope}
+                        </span>
+                      ) : (
+                        <span style={{ color: "#94a3b8", fontSize: "0.8rem" }}>—</span>
+                      )}
                     </td>
                     <td style={{ padding: "0.85rem 1rem" }}>
                       <span
