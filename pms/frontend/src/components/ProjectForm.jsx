@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
-import { SaudiRiyal, Save } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Save } from "lucide-react";
+import { z } from "zod";
 import { useAuthStore } from "../store/authStore";
 import {
   useCreateProject,
@@ -10,8 +11,57 @@ import { useUsers } from "../hooks/user";
 import LocationPicker from "./LocationPicker";
 import { useParams } from "react-router-dom";
 
+const projectFormSchema = z.object({
+  title: z
+    .string({ required_error: "Project title is required" })
+    .trim()
+    .min(1, "Project title is required"),
+  category: z
+    .string({ required_error: "Category is required" })
+    .trim()
+    .min(1, "Category is required"),
+  projectScope: z
+    .string({ required_error: "Project Scope is required" })
+    .trim()
+    .min(1, "Project Scope is required"),
+  siteId: z
+    .string({ required_error: "Site ID is required" })
+    .trim()
+    .min(1, "Site ID is required"),
+  tawalId: z
+    .string({ required_error: "Tawal ID is required" })
+    .trim()
+    .min(1, "Tawal ID is required"),
+  description: z.string().optional(),
+  priority: z.enum(["Low", "Medium", "High", "Critical"]).optional(),
+  teamLead: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  budget: z.coerce.number().min(0, "Budget must be at least 0").optional(),
+  spent: z.coerce.number().min(0, "Spent must be at least 0").optional(),
+  region: z.string().optional(),
+  city: z.string().optional(),
+  latitude: z
+    .union([
+      z.literal(""),
+      z.coerce
+        .number()
+        .min(-90, "Latitude must be between -90 and 90")
+        .max(90, "Latitude must be between -90 and 90"),
+    ])
+    .optional(),
+  longitude: z
+    .union([
+      z.literal(""),
+      z.coerce
+        .number()
+        .min(-180, "Longitude must be between -180 and 180")
+        .max(180, "Longitude must be between -180 and 180"),
+    ])
+    .optional(),
+});
+
 const ProjectForm = ({ isOpen, onClose }) => {
-  ///category/IoTs
   const params = useParams();
   const SelectCategoryFroMParams = params.categoryName;
   const { user } = useAuthStore();
@@ -23,6 +73,8 @@ const ProjectForm = ({ isOpen, onClose }) => {
     isOpen && canCreateProject,
   );
   const [validationError, setValidationError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+
   const [formData, setFormData] = useState({
     title: "",
     category: SelectCategoryFroMParams || "",
@@ -45,14 +97,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
     teamMembers: [],
     tags: "",
   });
-  useEffect(() => {
-    if (SelectCategoryFroMParams) {
-      setFormData((prev) => ({
-        ...prev,
-        category: SelectCategoryFroMParams,
-      }));
-    }
-  }, [SelectCategoryFroMParams]);
+
   const selectedCategory = useMemo(
     () => categories.find((cat) => cat.name === formData.category),
     [categories, formData.category],
@@ -66,17 +111,17 @@ const ProjectForm = ({ isOpen, onClose }) => {
       enabled: !!formData.category,
     },
   );
-  const categoryProjects =
-    categoryProjectsResponse?.data || categoryProjectsResponse || [];
 
-  const existingCategoryAllocated = useMemo(
-    () =>
-      categoryProjects.reduce(
-        (sum, project) => sum + Number(project.budget || 0),
-        0,
-      ),
-    [categoryProjects],
-  );
+  const existingCategoryAllocated = useMemo(() => {
+    const projectsList =
+      categoryProjectsResponse?.data || categoryProjectsResponse || [];
+    return Array.isArray(projectsList)
+      ? projectsList.reduce(
+          (sum, project) => sum + Number(project.budget || 0),
+          0,
+        )
+      : 0;
+  }, [categoryProjectsResponse]);
 
   const currentProjectBudget = Number(formData.budget) || 0;
   const categoryAllocated = existingCategoryAllocated + currentProjectBudget;
@@ -87,9 +132,52 @@ const ProjectForm = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const handleFieldChange = (field, value, extraState = {}) => {
+    setFormData((prev) => ({ ...prev, [field]: value, ...extraState }));
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const renderFieldError = (field) => {
+    if (!fieldErrors[field]) return null;
+    return (
+      <span
+        style={{
+          color: "#ef4444",
+          fontSize: "0.75rem",
+          marginTop: "0.25rem",
+          display: "block",
+          fontWeight: "500",
+        }}
+      >
+        {fieldErrors[field]}
+      </span>
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setValidationError("");
+    setFieldErrors({});
+
+    // Zod validation
+    const validationResult = projectFormSchema.safeParse(formData);
+    const errors = {};
+
+    if (!validationResult.success) {
+      validationResult.error.issues.forEach((issue) => {
+        const fieldName = issue.path[0];
+        if (fieldName && !errors[fieldName]) {
+          errors[fieldName] = issue.message;
+        }
+      });
+    }
+
+    // Required project scope if category has defined scopes
+    if (selectedCategory?.scopes?.length > 0 && !formData.projectScope) {
+      errors.projectScope = "Project Scope is required for this category";
+    }
 
     const parsedBudget = Number(formData.budget) || 0;
     const parsedSpent = Number(formData.spent) || 0;
@@ -104,38 +192,16 @@ const ProjectForm = ({ isOpen, onClose }) => {
         categoryBudget - existingCategoryAllocated,
       );
       if (parsedBudget > remainingBudget) {
-        setValidationError(
-          `Project budget cannot exceed the remaining category budget: ₡${remainingBudget.toLocaleString()}`,
-        );
-        return;
-      }
-      if (parsedSpent > parsedBudget) {
-        setValidationError("Spent cannot be greater than project budget.");
-        return;
+        errors.budget = `Project budget cannot exceed remaining category budget: ₡${remainingBudget.toLocaleString()}`;
       }
     }
 
     if (parsedSpent > parsedBudget) {
-      setValidationError("Spent cannot be greater than project budget.");
-      return;
+      errors.spent = "Spent cannot be greater than project budget.";
     }
 
-    if (
-      formData.longitude !== "" &&
-      (Number.isNaN(parsedLongitude) ||
-        parsedLongitude < -180 ||
-        parsedLongitude > 180)
-    ) {
-      setValidationError("Longitude must be a number between -180 and 180.");
-      return;
-    }
-    if (
-      formData.latitude !== "" &&
-      (Number.isNaN(parsedLatitude) ||
-        parsedLatitude < -90 ||
-        parsedLatitude > 90)
-    ) {
-      setValidationError("Latitude must be a number between -90 and 90.");
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
@@ -155,6 +221,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
     mutate(parsedData, {
       onSuccess: () => {
         onClose();
+        setFieldErrors({});
         setFormData({
           title: "",
           category: "",
@@ -205,6 +272,12 @@ const ProjectForm = ({ isOpen, onClose }) => {
     },
   };
 
+  const getInputStyle = (field, extraStyle = {}) => ({
+    ...formStyles.input,
+    ...extraStyle,
+    borderColor: fieldErrors[field] ? "#ef4444" : "#e2e8f0",
+  });
+
   return (
     <div
       className="modal-overlay"
@@ -225,7 +298,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
           style={{ padding: "1.5rem", maxHeight: "90vh", overflowY: "auto" }}
         >
           {user?.role === "Admin" || user?.role === "Manager" ? (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <h3 className="text-xl font-bold mb-8 text-center">
                 New Project
               </h3>
@@ -234,25 +307,20 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   <label style={formStyles.label}>Project Title *</label>
                   <input
                     type="text"
-                    style={formStyles.input}
+                    style={getInputStyle("title")}
                     placeholder="e.g. RMS Dashboard v2"
-                    required
                     value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("title", e.target.value)}
                   />
+                  {renderFieldError("title")}
                 </div>
                 <div>
                   <label style={formStyles.label}>Category *</label>
                   <select
-                    style={formStyles.input}
-                    required
+                    style={getInputStyle("category")}
                     value={formData.category}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        category: e.target.value,
+                      handleFieldChange("category", e.target.value, {
                         projectScope: "",
                       })
                     }
@@ -268,16 +336,17 @@ const ProjectForm = ({ isOpen, onClose }) => {
                       </option>
                     ))}
                   </select>
+                  {renderFieldError("category")}
                 </div>
               </div>
 
               <div style={{ marginBottom: "1rem" }}>
-                <label style={formStyles.label}>Project Scope</label>
+                <label style={formStyles.label}>Project Scope *</label>
                 <select
-                  style={formStyles.input}
+                  style={getInputStyle("projectScope")}
                   value={formData.projectScope}
                   onChange={(e) =>
-                    setFormData({ ...formData, projectScope: e.target.value })
+                    handleFieldChange("projectScope", e.target.value)
                   }
                   disabled={
                     !formData.category || !selectedCategory?.scopes?.length
@@ -296,48 +365,51 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     </option>
                   ))}
                 </select>
+                {renderFieldError("projectScope")}
               </div>
 
               <div style={{ marginBottom: "1rem" }}>
                 <label style={formStyles.label}>Description</label>
                 <textarea
-                  style={{
-                    ...formStyles.input,
+                  style={getInputStyle("description", {
                     minHeight: "80px",
                     resize: "vertical",
-                  }}
+                  })}
                   placeholder="Brief project description..."
                   value={formData.description}
                   onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
+                    handleFieldChange("description", e.target.value)
                   }
                 ></textarea>
+                {renderFieldError("description")}
               </div>
 
               <div style={formStyles.gridRow}>
                 <div>
-                  <label style={formStyles.label}>Site ID</label>
+                  <label style={formStyles.label}>Site ID *</label>
                   <input
                     type="text"
-                    style={formStyles.input}
+                    style={getInputStyle("siteId")}
                     placeholder="e.g. STC-12345"
                     value={formData.siteId}
                     onChange={(e) =>
-                      setFormData({ ...formData, siteId: e.target.value })
+                      handleFieldChange("siteId", e.target.value)
                     }
                   />
+                  {renderFieldError("siteId")}
                 </div>
                 <div>
-                  <label style={formStyles.label}>Tawal ID</label>
+                  <label style={formStyles.label}>Tawal ID *</label>
                   <input
                     type="text"
-                    style={formStyles.input}
+                    style={getInputStyle("tawalId")}
                     placeholder="e.g. TAW-98765"
                     value={formData.tawalId}
                     onChange={(e) =>
-                      setFormData({ ...formData, tawalId: e.target.value })
+                      handleFieldChange("tawalId", e.target.value)
                     }
                   />
+                  {renderFieldError("tawalId")}
                 </div>
               </div>
 
@@ -345,10 +417,10 @@ const ProjectForm = ({ isOpen, onClose }) => {
                 <div>
                   <label style={formStyles.label}>Priority</label>
                   <select
-                    style={formStyles.input}
+                    style={getInputStyle("priority")}
                     value={formData.priority}
                     onChange={(e) =>
-                      setFormData({ ...formData, priority: e.target.value })
+                      handleFieldChange("priority", e.target.value)
                     }
                   >
                     <option value="Low">Low</option>
@@ -356,6 +428,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     <option value="High">High</option>
                     <option value="Critical">Critical</option>
                   </select>
+                  {renderFieldError("priority")}
                 </div>
               </div>
 
@@ -363,10 +436,10 @@ const ProjectForm = ({ isOpen, onClose }) => {
                 <div>
                   <label style={formStyles.label}>Team Lead</label>
                   <select
-                    style={formStyles.input}
+                    style={getInputStyle("teamLead")}
                     value={formData.teamLead}
                     onChange={(e) =>
-                      setFormData({ ...formData, teamLead: e.target.value })
+                      handleFieldChange("teamLead", e.target.value)
                     }
                     disabled={isUsersLoading}
                   >
@@ -378,6 +451,7 @@ const ProjectForm = ({ isOpen, onClose }) => {
                       </option>
                     ))}
                   </select>
+                  {renderFieldError("teamLead")}
                 </div>
               </div>
 
@@ -386,23 +460,25 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   <label style={formStyles.label}>Start Date</label>
                   <input
                     type="date"
-                    style={formStyles.input}
+                    style={getInputStyle("startDate")}
                     value={formData.startDate}
                     onChange={(e) =>
-                      setFormData({ ...formData, startDate: e.target.value })
+                      handleFieldChange("startDate", e.target.value)
                     }
                   />
+                  {renderFieldError("startDate")}
                 </div>
                 <div>
                   <label style={formStyles.label}>Due Date</label>
                   <input
                     type="date"
-                    style={formStyles.input}
+                    style={getInputStyle("endDate")}
                     value={formData.endDate}
                     onChange={(e) =>
-                      setFormData({ ...formData, endDate: e.target.value })
+                      handleFieldChange("endDate", e.target.value)
                     }
                   />
+                  {renderFieldError("endDate")}
                 </div>
               </div>
 
@@ -411,27 +487,27 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   <label style={formStyles.label}>Budget (&#x20C1;)</label>
                   <input
                     type="number"
-                    style={formStyles.input}
+                    style={getInputStyle("budget")}
                     min="0"
                     placeholder="0"
                     value={formData.budget}
                     onChange={(e) =>
-                      setFormData({ ...formData, budget: e.target.value })
+                      handleFieldChange("budget", e.target.value)
                     }
                   />
+                  {renderFieldError("budget")}
                 </div>
                 <div>
                   <label style={formStyles.label}>Spent (&#x20C1;)</label>
                   <input
                     type="number"
-                    style={formStyles.input}
+                    style={getInputStyle("spent")}
                     min="0"
                     placeholder="0"
                     value={formData.spent}
-                    onChange={(e) =>
-                      setFormData({ ...formData, spent: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("spent", e.target.value)}
                   />
+                  {renderFieldError("spent")}
                 </div>
               </div>
               <div className="">
@@ -471,7 +547,14 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     const updates = { latitude, longitude };
                     if (city !== undefined) updates.city = city;
                     if (region !== undefined) updates.region = region;
-                    setFormData({ ...formData, ...updates });
+                    setFormData((prev) => ({ ...prev, ...updates }));
+                    setFieldErrors((prev) => ({
+                      ...prev,
+                      latitude: "",
+                      longitude: "",
+                      city: "",
+                      region: "",
+                    }));
                   }}
                 />
               </div>
@@ -480,25 +563,25 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   <label style={formStyles.label}>Region</label>
                   <input
                     type="text"
-                    style={formStyles.input}
+                    style={getInputStyle("region")}
                     placeholder="e.g. Riyadh Region"
                     value={formData.region}
                     onChange={(e) =>
-                      setFormData({ ...formData, region: e.target.value })
+                      handleFieldChange("region", e.target.value)
                     }
                   />
+                  {renderFieldError("region")}
                 </div>
                 <div>
                   <label style={formStyles.label}>City</label>
                   <input
                     type="text"
-                    style={formStyles.input}
+                    style={getInputStyle("city")}
                     placeholder="e.g. Riyadh"
                     value={formData.city}
-                    onChange={(e) =>
-                      setFormData({ ...formData, city: e.target.value })
-                    }
+                    onChange={(e) => handleFieldChange("city", e.target.value)}
                   />
+                  {renderFieldError("city")}
                 </div>
               </div>
               <div style={formStyles.gridRow}>
@@ -507,26 +590,28 @@ const ProjectForm = ({ isOpen, onClose }) => {
                   <input
                     type="number"
                     step="any"
-                    style={formStyles.input}
+                    style={getInputStyle("latitude")}
                     placeholder="e.g. 24.7136"
                     value={formData.latitude}
                     onChange={(e) =>
-                      setFormData({ ...formData, latitude: e.target.value })
+                      handleFieldChange("latitude", e.target.value)
                     }
                   />
+                  {renderFieldError("latitude")}
                 </div>
                 <div>
                   <label style={formStyles.label}>Longitude</label>
                   <input
                     type="number"
                     step="any"
-                    style={formStyles.input}
+                    style={getInputStyle("longitude")}
                     placeholder="e.g. 46.6753"
                     value={formData.longitude}
                     onChange={(e) =>
-                      setFormData({ ...formData, longitude: e.target.value })
+                      handleFieldChange("longitude", e.target.value)
                     }
                   />
+                  {renderFieldError("longitude")}
                 </div>
               </div>
 
@@ -536,14 +621,14 @@ const ProjectForm = ({ isOpen, onClose }) => {
                 </label>
                 <select
                   multiple
-                  style={{ ...formStyles.input, minHeight: "80px" }}
+                  style={getInputStyle("teamMembers", { minHeight: "80px" })}
                   value={formData.teamMembers}
                   onChange={(e) => {
                     const vals = Array.from(
                       e.target.selectedOptions,
                       (option) => option.value,
                     );
-                    setFormData({ ...formData, teamMembers: vals });
+                    handleFieldChange("teamMembers", vals);
                   }}
                   disabled={isUsersLoading}
                 >
@@ -553,19 +638,19 @@ const ProjectForm = ({ isOpen, onClose }) => {
                     </option>
                   ))}
                 </select>
+                {renderFieldError("teamMembers")}
               </div>
 
               <div style={{ marginBottom: "2rem" }}>
                 <label style={formStyles.label}>Tags (comma-separated)</label>
                 <input
                   type="text"
-                  style={formStyles.input}
+                  style={getInputStyle("tags")}
                   placeholder="e.g. IoT, API, dashboard"
                   value={formData.tags}
-                  onChange={(e) =>
-                    setFormData({ ...formData, tags: e.target.value })
-                  }
+                  onChange={(e) => handleFieldChange("tags", e.target.value)}
                 />
+                {renderFieldError("tags")}
               </div>
               <div className="">
                 {error && (

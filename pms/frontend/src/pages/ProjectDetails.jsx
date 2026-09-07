@@ -787,6 +787,56 @@ export default function ProjectDetails() {
                   {project.budget?.toLocaleString() ?? 0}
                 </div>
               </div>
+              <div className=" " style={{ width: "100%" }}>
+                <label className="form-label" style={{ fontWeight: "600" }}>
+                  Project Scope
+                </label>
+                {editMode && isFullEditor ? (
+                  <select
+                    className="form-select"
+                    value={form.projectScope || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, projectScope: e.target.value })
+                    }
+                    disabled={!categoryScopes.length}
+                    style={{ width: "100%", marginTop: "0.5rem" }}
+                  >
+                    <option value="">
+                      {categoryScopes.length === 0
+                        ? "No scopes defined for this category"
+                        : "— Select scope —"}
+                    </option>
+                    {categoryScopes.map((scope) => (
+                      <option key={scope} value={scope}>
+                        {scope}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div style={{ marginTop: "0.5rem" }}>
+                    {project.projectScope ? (
+                      <span
+                        style={{
+                          display: "inline-block",
+                          background: "#e0e7ff",
+                          color: "#3730a3",
+                          fontSize: "0.8rem",
+                          fontWeight: "600",
+                          padding: "0.3rem 0.85rem",
+                          borderRadius: "9999px",
+                          border: "1px solid #c7d2fe",
+                        }}
+                      >
+                        {project.projectScope}
+                      </span>
+                    ) : (
+                      <span style={{ color: "#94a3b8", fontSize: "0.82rem" }}>
+                        —
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div
@@ -890,7 +940,7 @@ export default function ProjectDetails() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr ",
+          gridTemplateColumns: "1fr 1fr 1fr  ",
           gap: "0.5rem",
         }}
       >

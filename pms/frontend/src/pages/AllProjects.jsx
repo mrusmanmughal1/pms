@@ -617,7 +617,6 @@ const AllProjects = () => {
                 <th style={{ padding: "0.85rem 1rem" }}>Priority</th>
                 <th style={{ padding: "0.85rem 1rem" }}>Progress</th>
                 <th style={{ padding: "0.85rem 1rem" }}>Location</th>
-                <th style={{ padding: "0.85rem 1rem" }}>Team Lead</th>
                 <th style={{ padding: "0.85rem 1rem" }}>End Date</th>
                 <th style={{ padding: "0.85rem 1rem", textAlign: "right" }}>
                   Actions
@@ -726,7 +725,9 @@ const AllProjects = () => {
                           {proj.projectScope}
                         </span>
                       ) : (
-                        <span style={{ color: "#94a3b8", fontSize: "0.8rem" }}>—</span>
+                        <span style={{ color: "#94a3b8", fontSize: "0.8rem" }}>
+                          —
+                        </span>
                       )}
                     </td>
                     <td style={{ padding: "0.85rem 1rem" }}>
@@ -806,46 +807,7 @@ const AllProjects = () => {
                         "—"
                       )}
                     </td>
-                    <td style={{ padding: "0.85rem 1rem", color: "#475569" }}>
-                      {proj.teamLead ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.4rem",
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: "22px",
-                              height: "22px",
-                              borderRadius: "50%",
-                              backgroundColor: "#e0e7ff",
-                              color: "#4f46e5",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "0.72rem",
-                              fontWeight: "600",
-                            }}
-                          >
-                            {proj.teamLead.charAt(0).toUpperCase()}
-                          </span>
-                          <span
-                            style={{
-                              maxWidth: "120px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {proj.teamLead}
-                          </span>
-                        </div>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
+
                     <td style={{ padding: "0.85rem 1rem" }}>
                       {proj.endDate ? (
                         <div
@@ -958,7 +920,9 @@ const AllProjects = () => {
 
           {/* Right: Page navigation (shown when not viewing All and totalPages > 1) */}
           {limit !== "All" && totalPages > 1 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+            >
               <button
                 className="btn btn-outline"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}

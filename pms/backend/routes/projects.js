@@ -272,6 +272,13 @@ router.post(
 
       const validatedProjects = [];
 
+      // Pre-fetch all categories once for fast case-insensitive lookup
+      const allCategories = await Category.find().lean();
+      const categoryMap = new Map();
+      allCategories.forEach((cat) => {
+        categoryMap.set(cat.name.trim().toLowerCase(), cat);
+      });
+
       // Fetch all existing user emails once for fast validation
       const existingUserEmails = new Set(
         (await User.find().select("email").lean()).map((u) =>
@@ -283,9 +290,16 @@ router.post(
       const seenBatchKeys = new Set();
       const duplicateInBatch = [];
 
+      // Track siteId and tawalId to prevent batch duplicate key errors
+      const seenSiteIds = new Set();
+      const seenTawalIds = new Set();
+
       for (const p of projects) {
         const title = (p.title || p.name || "").trim();
         const category = (p.category || "").trim();
+        const siteId = (p.siteId || "").trim();
+        const tawalId = (p.tawalId || "").trim();
+
         if (!title) continue;
 
         const key = `${title.toLowerCase()}:::${category.toLowerCase()}`;
@@ -295,6 +309,30 @@ router.post(
           );
         } else {
           seenBatchKeys.add(key);
+        }
+
+        if (siteId) {
+          if (seenSiteIds.has(siteId.toLowerCase())) {
+            return next(
+              new ErrorResponse(
+                `Duplicate Site ID "${siteId}" found in uploaded batch`,
+                400,
+              ),
+            );
+          }
+          seenSiteIds.add(siteId.toLowerCase());
+        }
+
+        if (tawalId) {
+          if (seenTawalIds.has(tawalId.toLowerCase())) {
+            return next(
+              new ErrorResponse(
+                `Duplicate Tawal ID "${tawalId}" found in uploaded batch`,
+                400,
+              ),
+            );
+          }
+          seenTawalIds.add(tawalId.toLowerCase());
         }
       }
 
@@ -349,25 +387,73 @@ router.post(
         }
       }
 
+      // Check if siteId or tawalId already exist in database
+      if (seenSiteIds.size > 0) {
+        const siteRegexes = Array.from(seenSiteIds).map(
+          (s) =>
+            new RegExp(`^${s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+        );
+        const existingSites = await Project.find({
+          siteId: { $in: siteRegexes },
+        })
+          .select("siteId")
+          .lean();
+        if (existingSites.length > 0) {
+          const ids = existingSites.map((p) => p.siteId).join(", ");
+          return next(
+            new ErrorResponse(
+              `Project(s) with Site ID(s) already exist in system: ${ids}`,
+              400,
+            ),
+          );
+        }
+      }
+
+      if (seenTawalIds.size > 0) {
+        const tawalRegexes = Array.from(seenTawalIds).map(
+          (s) =>
+            new RegExp(`^${s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+        );
+        const existingTawals = await Project.find({
+          tawalId: { $in: tawalRegexes },
+        })
+          .select("tawalId")
+          .lean();
+        if (existingTawals.length > 0) {
+          const ids = existingTawals.map((p) => p.tawalId).join(", ");
+          return next(
+            new ErrorResponse(
+              `Project(s) with Tawal ID(s) already exist in system: ${ids}`,
+              400,
+            ),
+          );
+        }
+      }
+
       // Validate each project
       for (let i = 0; i < projects.length; i++) {
-        const projectData = projects[i];
+        const projectData = { ...projects[i] };
         if (projectData.name && !projectData.title) {
           projectData.title = projectData.name;
         }
+
         const {
           category,
+          projectScope = "",
+          scope = "",
           budget = 0,
           spent = 0,
           teamMembers = [],
           teamLead,
         } = projectData;
 
-        if (!projectData.title) {
+        if (!projectData.title || String(projectData.title).trim() === "") {
           return next(
             new ErrorResponse(`Project at index ${i} requires a title`, 400),
           );
         }
+
+        projectData.title = String(projectData.title).trim();
 
         // Validate teamLead email exists in database
         if (typeof teamLead === "string" && teamLead.trim() !== "") {
@@ -380,6 +466,7 @@ router.post(
               ),
             );
           }
+          projectData.teamLead = teamLead.trim();
         }
 
         // Validate teamMembers emails exist in database
@@ -398,16 +485,25 @@ router.post(
           }
         }
 
-        if (category) {
-          const cat = await Category.findOne({ name: category });
+        const scopeToUse = String(projectScope || scope || "").trim();
+
+        if (category && String(category).trim() !== "") {
+          const catKey = String(category).trim().toLowerCase();
+          const cat = categoryMap.get(catKey);
+
           if (!cat) {
+            const availableCats = Array.from(categoryMap.values())
+              .map((c) => c.name)
+              .join(", ");
             return next(
               new ErrorResponse(
-                `Category "${category}" does not exist for project "${projectData.title}"`,
+                `Category "${category}" does not exist for project "${projectData.title}". Available categories: ${availableCats || "None"}`,
                 400,
               ),
             );
           }
+
+          projectData.category = cat.name;
 
           if (budget > cat.budget) {
             return next(
@@ -428,7 +524,33 @@ router.post(
           }
 
           projectData.categoryBudget = cat.budget;
+
+          // Scope Validation against Category scopes
+          const catScopes = cat.scopes || [];
+          if (scopeToUse !== "") {
+            if (catScopes.length > 0) {
+              const matchedScope = catScopes.find(
+                (s) => s.trim().toLowerCase() === scopeToUse.toLowerCase(),
+              );
+              if (!matchedScope) {
+                return next(
+                  new ErrorResponse(
+                    `Project "${projectData.title}": Scope "${scopeToUse}" is invalid for category "${cat.name}". Valid scope(s) under "${cat.name}": ${catScopes.join(", ")}`,
+                    400,
+                  ),
+                );
+              }
+              projectData.projectScope = matchedScope;
+            } else {
+              projectData.projectScope = scopeToUse;
+            }
+          } else {
+            projectData.projectScope = "";
+          }
+        } else if (scopeToUse !== "") {
+          projectData.projectScope = scopeToUse;
         }
+
         validatedProjects.push(projectData);
       }
 
@@ -453,9 +575,24 @@ router.post(
 // Create a new project (Admin, Manager only)
 router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
   try {
-    const { category, siteId, tawalId, budget = 0, spent = 0 } = req.body;
+    const {
+      category,
+      projectScope = "",
+      scope = "",
+      siteId,
+      tawalId,
+      budget = 0,
+      spent = 0,
+    } = req.body;
+    const scopeToUse = String(projectScope || scope || "").trim();
+
     if (category) {
-      const cat = await Category.findOne({ name: category });
+      const cat = await Category.findOne({
+        name: new RegExp(
+          `^${category.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+          "i",
+        ),
+      });
       if (!cat)
         return res
           .status(400)
@@ -471,6 +608,26 @@ router.post("/", protect, authorize("Admin", "Manager"), async (req, res) => {
           .json({ message: "Project spent cannot exceed category budget" });
       }
       req.body.categoryBudget = cat.budget;
+      req.body.category = cat.name;
+
+      const catScopes = cat.scopes || [];
+      if (scopeToUse !== "") {
+        if (catScopes.length > 0) {
+          const matchedScope = catScopes.find(
+            (s) => s.trim().toLowerCase() === scopeToUse.toLowerCase(),
+          );
+          if (!matchedScope) {
+            return res.status(400).json({
+              message: `Scope "${scopeToUse}" is invalid for category "${cat.name}". Valid scope(s): ${catScopes.join(", ")}`,
+            });
+          }
+          req.body.projectScope = matchedScope;
+        } else {
+          req.body.projectScope = scopeToUse;
+        }
+      }
+    } else if (scopeToUse !== "") {
+      req.body.projectScope = scopeToUse;
     }
 
     // Site ID & Tawal ID must be unique — reject duplicates on create
@@ -515,9 +672,22 @@ router.put(
   ),
   async (req, res, next) => {
     try {
-      const { category, budget = 0, spent = 0 } = req.body;
+      const {
+        category,
+        projectScope = "",
+        scope = "",
+        budget = 0,
+        spent = 0,
+      } = req.body;
+      const scopeToUse = String(projectScope || scope || "").trim();
+
       if (category) {
-        const cat = await Category.findOne({ name: category });
+        const cat = await Category.findOne({
+          name: new RegExp(
+            `^${category.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+            "i",
+          ),
+        });
         if (!cat)
           return res
             .status(400)
@@ -533,6 +703,24 @@ router.put(
             .json({ message: "Project spent cannot exceed category budget" });
         }
         req.body.categoryBudget = cat.budget;
+        req.body.category = cat.name;
+
+        const catScopes = cat.scopes || [];
+        if (scopeToUse !== "") {
+          if (catScopes.length > 0) {
+            const matchedScope = catScopes.find(
+              (s) => s.trim().toLowerCase() === scopeToUse.toLowerCase(),
+            );
+            if (!matchedScope) {
+              return res.status(400).json({
+                message: `Scope "${scopeToUse}" is invalid for category "${cat.name}". Valid scope(s): ${catScopes.join(", ")}`,
+              });
+            }
+            req.body.projectScope = matchedScope;
+          } else {
+            req.body.projectScope = scopeToUse;
+          }
+        }
       }
 
       if (

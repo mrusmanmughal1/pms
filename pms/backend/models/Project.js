@@ -267,7 +267,7 @@ ProjectSchema.pre("save", function () {
   );
 
   const isMappingDone =
-    ["Approved", "N/A"].includes(this.mapping?.woRequest?.status) &&
+    ["Requested", "N/A"].includes(this.mapping?.woRequest?.status) &&
     ["Approved", "N/A"].includes(this.mapping?.woIssuance?.status);
 
   if (isCloseoutDone) {

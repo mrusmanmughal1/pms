@@ -34,6 +34,14 @@ function normalizeProjectRow(rawRow) {
   const category = getVal("category");
   if (category !== undefined) obj.category = String(category).trim();
 
+  const projectScope = getVal(
+    "projectScope",
+    "project_scope",
+    "project scope",
+    "scope",
+  );
+  if (projectScope !== undefined) obj.projectScope = String(projectScope).trim();
+
   const status = getVal("status");
   if (status !== undefined && String(status).trim() !== "") {
     obj.status = String(status).trim();
@@ -220,6 +228,7 @@ function prepareExportRows(data) {
     "title",
     "description",
     "category",
+    "projectScope",
     "status",
     "priority",
     "siteId",
@@ -291,6 +300,7 @@ export function exportToCSV(data, filename = "projects_export.csv") {
     "title",
     "description",
     "category",
+    "projectScope",
     "status",
     "priority",
     "siteId",

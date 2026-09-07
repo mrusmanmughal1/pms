@@ -180,6 +180,22 @@ export default function ProjectCard({
           <span className={`badge ${getCatBadge(proj.category)}`}>
             {proj.category}
           </span>
+          {proj.projectScope && (
+            <span
+              style={{
+                display: "inline-block",
+                background: "#e0e7ff",
+                color: "#3730a3",
+                fontSize: "0.72rem",
+                fontWeight: "600",
+                padding: "0.2rem 0.6rem",
+                borderRadius: "9999px",
+                border: "1px solid #c7d2fe",
+              }}
+            >
+              {proj.projectScope}
+            </span>
+          )}
         </div>
       </div>
 
