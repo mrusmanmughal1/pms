@@ -145,9 +145,7 @@ export const useProjectFilters = () => {
   return useQuery({
     queryKey: ["projectFilters"],
     queryFn: () =>
-      apiInstance
-        .get(`${API_BASE}/projects/filters`)
-        .then((res) => res.data),
+      apiInstance.get(`${API_BASE}/projects/filters`).then((res) => res.data),
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -269,7 +267,7 @@ export const useDeleteCategoryScope = () => {
     mutationFn: ({ id, scopeName }) =>
       apiInstance
         .delete(
-          `${API_BASE}/categories/${id}/scopes/${encodeURIComponent(scopeName)}`
+          `${API_BASE}/categories/${id}/scopes/${encodeURIComponent(scopeName)}`,
         )
         .then((res) => res.data),
     onSuccess: () => {

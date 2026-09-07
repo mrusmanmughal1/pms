@@ -59,17 +59,21 @@ const Dashboard = () => {
   const totalBudget = stats?.totalBudget || 0;
 
   // Use stats arrays for charts
+  const CATEGORY_COLORS = [
+    "#f59e0b",
+    "#10b981",
+    "#8b5cf6",
+    "#e11d48",
+    "#0ea5e9",
+    "#f97316",
+  ];
   const categoryData = (stats?.categoryData || []).map((c, idx) => ({
     ...c,
-    color: [
-      "#f59e0b",
-      "#10b981",
-      "#8b5cf6",
-      "#c144e7ff",
-      "#c8327aff",
-      "#49424dff",
-    ][idx % 6],
+    color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+    // Recharts Legend reads `fill` (not `color`) for icon colors
+    fill: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
   }));
+  console.log(categoryData);
   const statusColorMap = {
     Initiation: "#94a3b8",
     Mapping: "#4f46e5",
@@ -210,9 +214,9 @@ const Dashboard = () => {
                 <Pie
                   data={categoryData}
                   cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  cy="40%"
+                  innerRadius={50}
+                  outerRadius={75}
                   paddingAngle={2}
                   dataKey="value"
                 >
@@ -220,9 +224,11 @@ const Dashboard = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
+                <Tooltip formatter={(val) => [val, "Projects"]} />
                 <Legend
-                  iconType="rect"
-                  wrapperStyle={{ fontSize: "0.75rem" }}
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{ fontSize: "0.7rem", paddingTop: "4px" }}
                 />
               </PieChart>
             </ResponsiveContainer>
