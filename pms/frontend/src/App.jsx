@@ -21,17 +21,28 @@ import ProjectDetails from "./pages/ProjectDetails";
 import Unauthorized from "./pages/Unauthorized";
 import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
+import SitePlanner from "./pages/SitePlanner";
+import BoqProcessor from "./pages/BoqProcessor";
 
 function Header() {
   const location = useLocation();
   const path = location.pathname;
-  let title = "Dashboard";
+  // Every branch below assigns a title; subtitle stays empty unless a
+  // tool page sets its own.
+  let title;
+  let subtitle = "";
   if (path.startsWith("/category/")) {
     const cat = path.split("/")[2];
     const formatted = cat.charAt(0).toUpperCase() + cat.slice(1);
     title = `${formatted} Projects`;
   } else if (path === "/") {
     title = "Dashboard";
+  } else if (path === "/site-planner") {
+    title = "Site Planner";
+    subtitle = "Map your sites, draw zones and build an optimised day route.";
+  } else if (path === "/boq-processor") {
+    title = "BOQ Processor";
+    subtitle = "Combine site data with the BOQ reference into one output sheet.";
   } else {
     title = "Projects";
   }
@@ -49,7 +60,7 @@ function Header() {
           {title}
         </h1>
         <p style={{ fontSize: "0.775rem", color: "var(--text-secondary)" }}>
-          {title} overview and details.
+          {subtitle || `${title} overview and details.`}
         </p>
       </div>
     </div>
@@ -71,6 +82,10 @@ function MainLayout() {
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/category/:categoryName" element={<ProjectList />} />
           <Route path="/analytics" element={<Analytics />} />
+
+          {/* Tools — available to every authenticated role */}
+          <Route path="/site-planner" element={<SitePlanner />} />
+          <Route path="/boq-processor" element={<BoqProcessor />} />
           <Route
             path="/reports"
             element={

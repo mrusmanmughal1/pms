@@ -81,3 +81,31 @@ export const getMaterialsStatusColor = (materialsStatus) => {
       return "var(--text-secondary)";
   }
 };
+
+// ─── Site Planner ────────────────────────────────────────────────────────────
+// Field-visit status for a site on a day plan (distinct from Project.status).
+export const getSiteStatusColor = (status) => {
+  switch (status) {
+    case "completed":
+      return "var(--success)";
+    case "skipped":
+      return "var(--status-onhold)";
+    case "pending":
+    default:
+      return "var(--warning)";
+  }
+};
+
+// Site priorities are High/Medium/Low; reuse the existing priority pills.
+export const getSitePriorityClass = (priority) => {
+  switch (priority) {
+    case "High":
+      return "priority-high";
+    case "Medium":
+      return "priority-medium";
+    case "Low":
+      return "priority-low";
+    default:
+      return "priority-low";
+  }
+};

@@ -8,6 +8,8 @@ import {
   UserCog,
   FileBarChart2,
   ClipboardList,
+  MapPinned,
+  FileSpreadsheet,
 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useCategories } from "../hooks/project";
@@ -88,6 +90,23 @@ export default function Sidebar() {
             <span>Reports</span>
           </NavLink>
         )}
+
+        {/* Tools — all roles */}
+        <div className="sidebar-heading">Tools</div>
+        <NavLink
+          to="/site-planner"
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+        >
+          <MapPinned size={20} />
+          <span>Site Planner</span>
+        </NavLink>
+        <NavLink
+          to="/boq-processor"
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+        >
+          <FileSpreadsheet size={20} />
+          <span>BOQ Processor</span>
+        </NavLink>
 
         {/* Category links — hidden for Coordinator */}
 
