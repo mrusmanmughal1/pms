@@ -39,7 +39,7 @@ export default function SavedZones() {
       return;
     }
     const plan = {
-      id: crypto.randomUUID(),
+      id: crypto.randomBytes(16).toString('hex'),
       date: todayISO(),
       city: zone.city || inside[0].city || "—",
       sites: inside,

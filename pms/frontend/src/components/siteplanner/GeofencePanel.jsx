@@ -55,7 +55,7 @@ export default function GeofencePanel({ polygon, onClearZone }) {
   // Build a day plan from the exact geofenced sites and show it in DayPlanner.
   const handlePlanThese = () => {
     const plan = {
-      id: crypto.randomUUID(),
+      id: crypto.randomBytes(16).toString('hex'),
       date: todayISO(),
       city: detectedCity || geofencedSites[0].city || "—",
       sites: geofencedSites,

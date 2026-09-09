@@ -63,7 +63,7 @@ export const useSiteStore = create()(
             .getArray()
             .map((p) => ({ lat: p.lat(), lng: p.lng() }));
           const zone = {
-            id: crypto.randomUUID(),
+            id: crypto.randomBytes(16).toString('hex'),
             name,
             city: mostCommonCity(sites),
             siteCount: sites.length,

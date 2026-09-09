@@ -108,7 +108,7 @@ export async function parseSitesFromExcel(file) {
     const siteId = idKey ? toText(row[idKey]) : "";
 
     sites.push({
-      id: crypto.randomUUID(),
+      id: crypto.randomBytes(16).toString('hex'),
       siteId: siteId || undefined,
       name: name || siteId || `Site ${sites.length + 1}`,
       city: cityKey ? toText(row[cityKey]) : "",

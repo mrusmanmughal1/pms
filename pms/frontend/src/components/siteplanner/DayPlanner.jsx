@@ -101,7 +101,7 @@ export default function DayPlanner() {
       const selected = geofencedSites.slice(0, siteCount);
       if (selected.length === 0) return;
       const plan = {
-        id: crypto.randomUUID(),
+        id: crypto.randomBytes(16).toString('hex'),
         date: dateString,
         city: selectedCity ?? selected[0].city ?? "—",
         sites: selected,
@@ -115,7 +115,7 @@ export default function DayPlanner() {
     if (!selectedCity) return;
     const cluster = getNearestSites(citySites, Math.min(siteCount, maxCount));
     const plan = {
-      id: crypto.randomUUID(),
+      id: crypto.randomBytes(16).toString('hex'),
       date: dateString,
       city: selectedCity,
       sites: cluster,
