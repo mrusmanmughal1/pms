@@ -7,6 +7,7 @@ import { exportZonesToExcel } from "../../utils/exportSites";
 import { buildRoute } from "../../utils/routeOptimizer";
 import { formatDate } from "../../utils/date";
 import ConfirmModal from "../ConfirmModal";
+import { v4 as uuidv4 } from 'uuid';
 
 function todayISO() {
   const d = new Date();
@@ -39,7 +40,7 @@ export default function SavedZones() {
       return;
     }
     const plan = {
-      id: crypto.randomBytes(16).toString('hex'),
+      id: uuidv4(),
       date: todayISO(),
       city: zone.city || inside[0].city || "—",
       sites: inside,

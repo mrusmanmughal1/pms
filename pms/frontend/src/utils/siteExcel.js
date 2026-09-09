@@ -8,6 +8,7 @@ const ADDRESS_KEYS = ["address", "addr", "location"];
 const TYPE_KEYS = ["type", "category", "kind"];
 const PRIORITY_KEYS = ["priority", "urgency"];
 const REGION_KEYS = ["region", "area", "province", "state"];
+import { v4 as uuidv4 } from 'uuid';
 const ID_KEYS = [
   "stc id",
   "stc_id",
@@ -108,7 +109,7 @@ export async function parseSitesFromExcel(file) {
     const siteId = idKey ? toText(row[idKey]) : "";
 
     sites.push({
-      id: crypto.randomBytes(16).toString('hex'),
+      id: uuidv4(),
       siteId: siteId || undefined,
       name: name || siteId || `Site ${sites.length + 1}`,
       city: cityKey ? toText(row[cityKey]) : "",

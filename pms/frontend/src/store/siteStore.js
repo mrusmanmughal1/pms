@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { mostCommonCity } from "../utils/geofence";
+import { v4 as uuidv4 } from 'uuid';
 
 // Each saved zone gets the next color in this palette (round-robin).
 const ZONE_COLORS = [
@@ -63,7 +64,7 @@ export const useSiteStore = create()(
             .getArray()
             .map((p) => ({ lat: p.lat(), lng: p.lng() }));
           const zone = {
-            id: crypto.randomBytes(16).toString('hex'),
+            id: uuidv4(),
             name,
             city: mostCommonCity(sites),
             siteCount: sites.length,

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useSiteStore } from "../../store/siteStore";
 import { buildRoute } from "../../utils/routeOptimizer";
 import { mostCommonCity } from "../../utils/geofence";
+import { v4 as uuidv4 } from 'uuid';
 import {
   getSitePriorityClass,
   getSiteStatusColor,
@@ -55,7 +56,7 @@ export default function GeofencePanel({ polygon, onClearZone }) {
   // Build a day plan from the exact geofenced sites and show it in DayPlanner.
   const handlePlanThese = () => {
     const plan = {
-      id: crypto.randomBytes(16).toString('hex'),
+      id: uuidv4(),
       date: todayISO(),
       city: detectedCity || geofencedSites[0].city || "—",
       sites: geofencedSites,
